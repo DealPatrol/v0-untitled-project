@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Completely disable the CSR bailout warning
+  // Disable the CSR bailout warning
   experimental: {
     missingSuspenseWithCSRBailout: false,
   },
@@ -12,15 +12,10 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Ensure images work with static export
+  // Ensure images work properly
   images: {
     unoptimized: true,
   },
-  // Don't use static export as it's causing issues
-  // output: "export",
-  // Skip the problematic not-found page during build
-  distDir: ".next",
-  pageExtensions: ["js", "jsx", "ts", "tsx"],
 }
 
 module.exports = nextConfig
