@@ -55,10 +55,10 @@ export function CartButton() {
 
   return (
     <Link href="/cart">
-      <div className="relative">
+      <div className="relative text-white hover:text-rose-200 transition-colors">
         <ShoppingCart className="h-6 w-6" />
         {showCount && (
-          <span className="absolute -top-2 -right-2 bg-gray-900 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+          <span className="absolute -top-2 -right-2 bg-yellow-400 text-rose-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
             {itemCount}
           </span>
         )}

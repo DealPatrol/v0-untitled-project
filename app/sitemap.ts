@@ -1,47 +1,47 @@
+export const dynamic = "force-static"
+
 import type { MetadataRoute } from "next"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"
-
   return [
     {
-      url: baseUrl,
+      url: "https://memorialqr.com",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${baseUrl}/pricing`,
+      url: "https://memorialqr.com/how-it-works",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/how-it-works`,
+      url: "https://memorialqr.com/pricing",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/memorials`,
+      url: "https://memorialqr.com/memorials",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/contact`,
+      url: "https://memorialqr.com/contact",
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/privacy-policy`,
+      url: "https://memorialqr.com/privacy-policy",
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/terms-of-service`,
+      url: "https://memorialqr.com/terms-of-service",
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,

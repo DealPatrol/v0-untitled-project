@@ -1,3 +1,5 @@
+export const dynamic = "force-static"
+
 import type { MetadataRoute } from "next"
 
 export default function robots(): MetadataRoute.Robots {
@@ -5,8 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/dashboard/", "/checkout/", "/api/"],
+      disallow: ["/api/", "/dashboard/"],
     },
-    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/sitemap.xml`,
+    sitemap: "https://memorialqr.com/sitemap.xml",
   }
 }
