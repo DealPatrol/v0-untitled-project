@@ -5,15 +5,13 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Package, Truck, Calendar } from "lucide-react"
-import { getCheckoutSession } from "@/app/actions/payment"
-import { getSupabaseBrowserClient } from "@/lib/supabase"
+import { CheckCircle, Package, Truck, Calendar, Building, AlertCircle } from "lucide-react"
+import { getOrderDetails } from "@/app/actions/payment"
 
 export default function ConfirmationPage() {
   const searchParams = useSearchParams()
-  const sessionId = searchParams.get("session_id")
+  const orderId = searchParams.get("order_id")
 
-  const [orderId, setOrderId] = useState("")
   const [orderDetails, setOrderDetails] = useState<any>(null)
   const [estimatedDelivery, setEstimatedDelivery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
@@ -36,25 +34,16 @@ export default function ConfirmationPage() {
 
     // Fetch order details
     async function fetchOrderDetails() {
-      if (!sessionId) {
-        setError("No session ID found. Please try again.")
+      if (!orderId) {
+        setError("No order ID found. Please try again.")
         setIsLoading(false)
         return
       }
 
       try {
-        // Get session data from Stripe
-        const session = await getCheckoutSession(sessionId)
-
         // Get order data from database
-        const supabase = getSupabaseBrowserClient()
-        const { data: order } = await supabase.from("orders").select("*").eq("stripe_session_id", sessionId).single()
-
-        if (order) {
-          setOrderId(order.id)
-          setOrderDetails(order)
-        }
-
+        const order = await getOrderDetails(orderId)
+        setOrderDetails(order)
         setIsLoading(false)
       } catch (err) {
         console.error("Error fetching order details:", err)
@@ -64,7 +53,7 @@ export default function ConfirmationPage() {
     }
 
     fetchOrderDetails()
-  }, [sessionId])
+  }, [orderId])
 
   if (isLoading) {
     return (
@@ -133,9 +122,58 @@ export default function ConfirmationPage() {
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <CardTitle className="text-2xl font-serif">Order Confirmed!</CardTitle>
-              <CardDescription>Thank you for your purchase. Your order #{orderId} has been confirmed.</CardDescription>
+              <CardDescription>
+                Thank you for your purchase. Your order #{orderDetails?.id.substring(0, 8)} has been confirmed.
+              </CardDescription>
             </CardHeader>
             <CardContent>
+              {orderDetails?.payment_method === "bank_transfer" && (
+                <div className="bg-blue-50 p-6 rounded-lg mb-6 border border-blue-100">
+                  <div className="flex items-center mb-4">
+                    <Building className="h-5 w-5 text-blue-600 mr-2" />
+                    <h3 className="font-medium text-blue-800">Bank Transfer Information</h3>
+                  </div>
+                  <p className="text-gray-700 mb-4">
+                    Please transfer the total amount of{" "}
+                    <strong>${Number.parseFloat(orderDetails?.amount).toFixed(2)}</strong> to our bank account using the
+                    reference number below.
+                  </p>
+                  <div className="bg-white p-4 rounded border border-blue-200 mb-4">
+                    <p className="font-medium">Bank: Memorial QR Bank</p>
+                    <p>Account Number: 1234567890</p>
+                    <p>Routing Number: 987654321</p>
+                    <p>Reference: {orderDetails?.reference_number}</p>
+                  </div>
+                  <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200 flex items-start">
+                    <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-yellow-800">
+                      Your order will be processed once we confirm your payment. Please include your reference number in
+                      the payment description.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {orderDetails?.payment_method === "pay_on_delivery" && (
+                <div className="bg-green-50 p-6 rounded-lg mb-6 border border-green-100">
+                  <div className="flex items-center mb-4">
+                    <Truck className="h-5 w-5 text-green-600 mr-2" />
+                    <h3 className="font-medium text-green-800">Pay on Delivery</h3>
+                  </div>
+                  <p className="text-gray-700 mb-4">
+                    You've selected to pay on delivery. Please have{" "}
+                    <strong>${Number.parseFloat(orderDetails?.amount).toFixed(2)}</strong> ready when your package
+                    arrives.
+                  </p>
+                  <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200 flex items-start">
+                    <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-yellow-800">
+                      Our delivery person will accept cash or card payment upon delivery of your QR code.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-gray-50 p-6 rounded-lg mb-6">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center">

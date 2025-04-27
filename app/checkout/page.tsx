@@ -11,9 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { AlertCircle, CheckCircle, Lock } from "lucide-react"
-import { createCheckoutSession, type CheckoutItem, type ShippingInfo } from "../actions/payment"
-import { getStripe } from "@/lib/stripe"
+import { AlertCircle, CheckCircle, Lock, Building, Truck } from "lucide-react"
+import { createOrder, type CheckoutItem, type ShippingInfo, type PaymentMethod } from "../actions/payment"
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -22,6 +21,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [selectedPlan, setSelectedPlan] = useState("premium")
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer")
 
   // Form state
   const [firstName, setFirstName] = useState("")
@@ -90,23 +90,17 @@ export default function CheckoutPage() {
         },
       }
 
-      // Create checkout session
-      const { sessionId, sessionUrl } = await createCheckoutSession(items, shippingInfo, {
+      // Create order
+      const { orderId, redirectUrl } = await createOrder(items, shippingInfo, paymentMethod, {
         plan: selectedPlan,
         email,
         quantity: quantity.toString(),
       })
 
-      if (sessionUrl) {
-        // Redirect to Stripe Checkout
-        window.location.href = sessionUrl
-      } else {
-        // Redirect to Stripe Checkout using the client-side SDK
-        const stripe = await getStripe()
-        await stripe?.redirectToCheckout({ sessionId })
-      }
+      // Redirect to confirmation page
+      router.push(redirectUrl)
     } catch (err: any) {
-      setError(err.message || "Payment processing failed. Please try again.")
+      setError(err.message || "Order processing failed. Please try again.")
       setIsProcessing(false)
     }
   }
@@ -163,10 +157,10 @@ export default function CheckoutPage() {
                     className="grid grid-cols-1 md:grid-cols-3 gap-4"
                   >
                     <div
-                      className={`border-2 ${selectedPlan === "premium" ? "border-blue-500" : "border-gray-200"} rounded-lg p-4 relative`}
+                      className={`border-2 ${selectedPlan === "premium" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
                     >
                       {selectedPlan === "premium" && (
-                        <div className="absolute -top-3 right-3 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="absolute -top-3 right-3 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
                           BASIC
                         </div>
                       )}
@@ -179,10 +173,10 @@ export default function CheckoutPage() {
                     </div>
 
                     <div
-                      className={`border-2 ${selectedPlan === "deluxe" ? "border-blue-500" : "border-gray-200"} rounded-lg p-4 relative`}
+                      className={`border-2 ${selectedPlan === "deluxe" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
                     >
                       {selectedPlan === "deluxe" && (
-                        <div className="absolute -top-3 right-3 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="absolute -top-3 right-3 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
                           POPULAR
                         </div>
                       )}
@@ -195,7 +189,7 @@ export default function CheckoutPage() {
                     </div>
 
                     <div
-                      className={`border-2 ${selectedPlan === "legacy" ? "border-blue-500" : "border-gray-200"} rounded-lg p-4`}
+                      className={`border-2 ${selectedPlan === "legacy" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4`}
                     >
                       <RadioGroupItem value="legacy" id="legacy" className="sr-only" />
                       <Label htmlFor="legacy" className="flex flex-col cursor-pointer">
@@ -214,7 +208,7 @@ export default function CheckoutPage() {
                       <div
                         key={qty}
                         onClick={() => setQuantity(qty)}
-                        className={`border-2 ${quantity === qty ? "border-blue-500" : "border-gray-200"} rounded-lg p-4 text-center cursor-pointer`}
+                        className={`border-2 ${quantity === qty ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 text-center cursor-pointer`}
                       >
                         <div className="font-medium">Buy {qty}</div>
                         <div className="relative w-full h-16 my-2">
@@ -229,13 +223,54 @@ export default function CheckoutPage() {
                           ${(basePrice * qty * (1 - (qty > 1 ? (qty === 2 ? 0.2 : 0.25) : 0))).toFixed(2)}
                         </div>
                         {qty > 1 && (
-                          <div className="bg-gray-800 text-white text-xs rounded-full py-1 px-2 mt-1">
+                          <div className="bg-rose-800 text-white text-xs rounded-full py-1 px-2 mt-1">
                             Save {qty === 2 ? "20%" : "25%"}
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
+                </div>
+
+                <div className="mb-8">
+                  <h3 className="font-medium mb-4">Select Payment Method</h3>
+                  <RadioGroup
+                    defaultValue="bank_transfer"
+                    value={paymentMethod}
+                    onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+                    className="space-y-4"
+                  >
+                    <div
+                      className={`border-2 ${paymentMethod === "bank_transfer" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
+                    >
+                      <RadioGroupItem value="bank_transfer" id="bank_transfer" className="sr-only" />
+                      <Label htmlFor="bank_transfer" className="flex items-start cursor-pointer">
+                        <Building className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-medium">Bank Transfer</span>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Make a direct transfer to our bank account. We'll send you the details after you place your
+                            order.
+                          </p>
+                        </div>
+                      </Label>
+                    </div>
+
+                    <div
+                      className={`border-2 ${paymentMethod === "pay_on_delivery" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
+                    >
+                      <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" className="sr-only" />
+                      <Label htmlFor="pay_on_delivery" className="flex items-start cursor-pointer">
+                        <Truck className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-medium">Pay on Delivery</span>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Pay with cash or card when your QR code is delivered to your address.
+                          </p>
+                        </div>
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
@@ -336,11 +371,11 @@ export default function CheckoutPage() {
 
                   <div className="flex items-center text-sm text-gray-500 mt-4">
                     <Lock size={16} className="mr-2" />
-                    Your payment information is encrypted and secure
+                    Your information is secure and encrypted
                   </div>
 
                   <Button type="submit" className="w-full mt-6" disabled={isProcessing}>
-                    {isProcessing ? "Processing..." : `Proceed to Payment - $${(total + shipping).toFixed(2)}`}
+                    {isProcessing ? "Processing..." : `Complete Order - $${(total + shipping).toFixed(2)}`}
                   </Button>
                 </form>
               </CardContent>
@@ -405,7 +440,7 @@ export default function CheckoutPage() {
               <CardFooter className="flex flex-col space-y-4 border-t pt-4">
                 <div className="text-sm text-center text-gray-600">
                   Need help?{" "}
-                  <Link href="/contact" className="text-blue-600 hover:text-blue-800">
+                  <Link href="/contact" className="text-rose-600 hover:text-rose-800">
                     Contact Support
                   </Link>
                 </div>
