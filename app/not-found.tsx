@@ -1,6 +1,10 @@
 import Link from "next/link"
+import { track404Error } from "./actions/track-404"
 
-export default function NotFound() {
+export default async function NotFound() {
+  // Track the 404 error
+  await track404Error()
+
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-16 bg-rose-600 text-white">
       <div className="text-center max-w-md">
