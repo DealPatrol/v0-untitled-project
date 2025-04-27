@@ -12,12 +12,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Use standalone instead of export to support API routes
-  output: "standalone",
-  // Disable automatic 404 page generation
+  // Disable experimental features that might be causing issues
   experimental: {
-    missingSuspenseWithCSRBailout: false,
+    appDir: true, // Keep App Router enabled
+    missingSuspenseWithCSRBailout: false, // Disable the warning
   },
+  // Disable automatic 404 page generation in App Router
+  pageExtensions: ["tsx", "ts", "jsx", "js"],
 }
 
 module.exports = nextConfig
