@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   reactStrictMode: true,
   swcMinify: true,
   eslint: {
@@ -8,17 +9,20 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Ensure images work properly
   images: {
+    domains: ["memorialqr.com", "localhost"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
     unoptimized: true,
   },
-  // Disable experimental features that might be causing issues
   experimental: {
-    appDir: true, // Keep App Router enabled
-    missingSuspenseWithCSRBailout: false, // Disable the warning
+    // Disable static generation for problematic pages
+    unstable_excludeFiles: ["**/404*", "**/_not-found*"],
   },
-  // Disable automatic 404 page generation in App Router
-  pageExtensions: ["tsx", "ts", "jsx", "js"],
 }
 
 module.exports = nextConfig

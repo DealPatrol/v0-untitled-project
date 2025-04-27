@@ -39,9 +39,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} bg-rose-600 min-h-screen`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AnalyticsProvider>
-            <Suspense>
+            <Suspense fallback={null}>
               <Header />
-              <div className="bg-rose-600 min-h-screen">{children}</div>
+            </Suspense>
+            <div className="bg-rose-600 min-h-screen">{children}</div>
+            <Suspense fallback={null}>
               <CookieConsent />
             </Suspense>
           </AnalyticsProvider>
