@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { CookieConsent } from "@/components/cookie-consent"
 import { AnalyticsProvider } from "@/components/analytics-provider"
 import { Suspense } from "react"
-import Link from "next/link"
 import { Header } from "@/components/header"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -17,6 +16,14 @@ export const metadata = {
     icon: "/favicon.ico",
   },
     generator: 'v0.dev'
+}
+
+function AnalyticsWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={null}>
+      <AnalyticsProvider>{children}</AnalyticsProvider>
+    </Suspense>
+  )
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -38,30 +45,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${inter.className} bg-rose-600 min-h-screen`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <AnalyticsProvider>
-            <Suspense fallback={null}>
+          <AnalyticsWrapper>
+            <Suspense fallback={<div>Loading...</div>}>
               <Header />
             </Suspense>
             <div className="bg-rose-600 min-h-screen">{children}</div>
             <Suspense fallback={null}>
               <CookieConsent />
             </Suspense>
-          </AnalyticsProvider>
+          </AnalyticsWrapper>
         </ThemeProvider>
         {/* Footer with Privacy and Terms links */}
         <footer className="bg-rose-700 border-t border-rose-500 py-6 text-white">
           <div className="container mx-auto px-4 text-center text-sm">
             <p>&copy; {new Date().getFullYear()} Memorial QR. All rights reserved.</p>
             <div className="flex justify-center space-x-4 mt-2">
-              <Link href="/privacy-policy" className="hover:text-rose-200">
+              <a href="/privacy-policy" className="hover:text-rose-200">
                 Privacy Policy
-              </Link>
-              <Link href="/terms-of-service" className="hover:text-rose-200">
+              </a>
+              <a href="/terms-of-service" className="hover:text-rose-200">
                 Terms of Service
-              </Link>
-              <Link href="/contact" className="hover:text-rose-200">
+              </a>
+              <a href="/contact" className="hover:text-rose-200">
                 Contact Us
-              </Link>
+              </a>
             </div>
           </div>
         </footer>

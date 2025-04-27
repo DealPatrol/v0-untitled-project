@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  // Remove output: "standalone" to prevent static export
   reactStrictMode: true,
   swcMinify: true,
   eslint: {
@@ -19,9 +19,11 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
+  // Disable static generation completely
   experimental: {
-    // Disable static generation for problematic pages
-    unstable_excludeFiles: ["**/404*", "**/_not-found*"],
+    // Force server-side rendering for all pages
+    appDir: true,
+    serverActions: true,
   },
 }
 
