@@ -16,6 +16,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Disable automatic static optimization for the not-found page
+  output: "standalone",
 }
 
 module.exports = nextConfig
