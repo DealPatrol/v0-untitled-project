@@ -2,10 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Disable the CSR bailout warning
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -16,8 +12,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Disable automatic static optimization for the not-found page
-  output: "standalone",
+  // Use static export
+  output: "export",
+  // Disable automatic 404 page generation
+  trailingSlash: false,
 }
 
 module.exports = nextConfig
