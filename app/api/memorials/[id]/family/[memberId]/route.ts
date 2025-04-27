@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase"
 
+// Make this route static for export
+export const dynamic = "force-static"
 export const runtime = "edge"
 
 // GET a specific family member

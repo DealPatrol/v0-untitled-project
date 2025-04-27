@@ -12,10 +12,12 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Use static export
-  output: "export",
+  // Use standalone instead of export to support API routes
+  output: "standalone",
   // Disable automatic 404 page generation
-  trailingSlash: false,
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
 }
 
 module.exports = nextConfig
