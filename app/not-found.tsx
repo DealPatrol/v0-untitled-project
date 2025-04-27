@@ -1,4 +1,3 @@
-// Static not-found page with no client components or hooks
 export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-rose-500 text-white">

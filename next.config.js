@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Remove output: "standalone" to prevent static export
   reactStrictMode: true,
   swcMinify: true,
   eslint: {
@@ -9,21 +8,14 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Ensure images work properly
   images: {
-    domains: ["memorialqr.com", "localhost"],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-    ],
     unoptimized: true,
   },
-  // Disable static generation completely
+  // Disable experimental features that might be causing issues
   experimental: {
-    // Force server-side rendering for all pages
-    appDir: true,
-    serverActions: true,
+    appDir: true, // Keep App Router enabled
+    missingSuspenseWithCSRBailout: false, // Disable the warning
   },
 }
 
