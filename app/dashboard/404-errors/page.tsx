@@ -36,13 +36,16 @@ export default async function NotFoundErrorsPage() {
     if (commonErrors) {
       topErrors = commonErrors
     } else {
-      // Fallback if the RPC doesn't exist
-      const { data } = await supabase
-        .from("not_found_errors")
-        .select("path, count(*)")
-        .group("path")
-        .order("count", { ascending: false })
-        .limit(10)
+      // Fallback if the RPC doesn't exist - using raw SQL instead of group()
+      const { data } = await supabase.rpc("exec_sql", {
+        sql_query: `
+          SELECT path, COUNT(*) as count
+          FROM not_found_errors
+          GROUP BY path
+          ORDER BY count DESC
+          LIMIT 10;
+        `,
+      })
 
       if (data) {
         topErrors = data
