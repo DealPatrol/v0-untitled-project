@@ -5,12 +5,13 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Package, Truck, Calendar, Building, AlertCircle } from "lucide-react"
-import { getOrderDetails } from "@/app/actions/payment"
+import { CheckCircle, Package, Truck, Calendar, Building, AlertCircle, CreditCard } from "lucide-react"
+import { getOrderDetails, getCheckoutSession } from "@/app/actions/payment"
 
 export default function ConfirmationPage() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get("order_id")
+  const sessionId = searchParams.get("session_id")
 
   const [orderDetails, setOrderDetails] = useState<any>(null)
   const [estimatedDelivery, setEstimatedDelivery] = useState("")
@@ -34,15 +35,21 @@ export default function ConfirmationPage() {
 
     // Fetch order details
     async function fetchOrderDetails() {
-      if (!orderId) {
-        setError("No order ID found. Please try again.")
+      if (!orderId && !sessionId) {
+        setError("No order ID or session ID found. Please try again.")
         setIsLoading(false)
         return
       }
 
       try {
         // Get order data from database
-        const order = await getOrderDetails(orderId)
+        let order
+        if (sessionId) {
+          order = await getCheckoutSession(sessionId)
+        } else if (orderId) {
+          order = await getOrderDetails(orderId)
+        }
+
         setOrderDetails(order)
         setIsLoading(false)
       } catch (err) {
@@ -53,7 +60,7 @@ export default function ConfirmationPage() {
     }
 
     fetchOrderDetails()
-  }, [orderId])
+  }, [orderId, sessionId])
 
   if (isLoading) {
     return (
@@ -123,10 +130,29 @@ export default function ConfirmationPage() {
               </div>
               <CardTitle className="text-2xl font-serif">Order Confirmed!</CardTitle>
               <CardDescription>
-                Thank you for your purchase. Your order #{orderDetails?.id.substring(0, 8)} has been confirmed.
+                Thank you for your purchase. Your order #
+                {orderDetails?.id?.substring(0, 8) || orderDetails?.stripe_session_id?.substring(0, 8)} has been
+                confirmed.
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {orderDetails?.payment_method === "stripe" && (
+                <div className="bg-blue-50 p-6 rounded-lg mb-6 border border-blue-100">
+                  <div className="flex items-center mb-4">
+                    <CreditCard className="h-5 w-5 text-blue-600 mr-2" />
+                    <h3 className="font-medium text-blue-800">Payment Successful</h3>
+                  </div>
+                  <p className="text-gray-700 mb-4">
+                    Your payment of <strong>${Number.parseFloat(orderDetails?.amount).toFixed(2)}</strong> has been
+                    processed successfully.
+                  </p>
+                  <div className="bg-green-50 p-3 rounded-lg border border-green-200 flex items-start">
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-green-800">A receipt has been sent to your email address.</p>
+                  </div>
+                </div>
+              )}
+
               {orderDetails?.payment_method === "bank_transfer" && (
                 <div className="bg-blue-50 p-6 rounded-lg mb-6 border border-blue-100">
                   <div className="flex items-center mb-4">

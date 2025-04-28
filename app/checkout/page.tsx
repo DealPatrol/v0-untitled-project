@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { AlertCircle, CheckCircle, Lock, Building, Truck } from "lucide-react"
+import { AlertCircle, CheckCircle, Lock, Building, Truck, CreditCard } from "lucide-react"
 import { createOrder, type CheckoutItem, type ShippingInfo, type PaymentMethod } from "../actions/payment"
 
 export default function CheckoutPage() {
@@ -21,7 +21,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [selectedPlan, setSelectedPlan] = useState("premium")
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer")
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe")
 
   // Form state
   const [firstName, setFirstName] = useState("")
@@ -91,13 +91,13 @@ export default function CheckoutPage() {
       }
 
       // Create order
-      const { orderId, redirectUrl } = await createOrder(items, shippingInfo, paymentMethod, {
+      const { redirectUrl } = await createOrder(items, shippingInfo, paymentMethod, {
         plan: selectedPlan,
         email,
         quantity: quantity.toString(),
       })
 
-      // Redirect to confirmation page
+      // Redirect to confirmation page or Stripe checkout
       router.push(redirectUrl)
     } catch (err: any) {
       setError(err.message || "Order processing failed. Please try again.")
@@ -235,11 +235,26 @@ export default function CheckoutPage() {
                 <div className="mb-8">
                   <h3 className="font-medium mb-4">Select Payment Method</h3>
                   <RadioGroup
-                    defaultValue="bank_transfer"
+                    defaultValue="stripe"
                     value={paymentMethod}
                     onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
                     className="space-y-4"
                   >
+                    <div
+                      className={`border-2 ${paymentMethod === "stripe" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
+                    >
+                      <RadioGroupItem value="stripe" id="stripe" className="sr-only" />
+                      <Label htmlFor="stripe" className="flex items-start cursor-pointer">
+                        <CreditCard className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-medium">Credit Card</span>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Pay securely with your credit or debit card via Stripe.
+                          </p>
+                        </div>
+                      </Label>
+                    </div>
+
                     <div
                       className={`border-2 ${paymentMethod === "bank_transfer" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
                     >
@@ -274,100 +289,125 @@ export default function CheckoutPage() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
-                  <div>
-                    <h3 className="font-medium mb-4">Shipping Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="firstName">First Name</Label>
-                        <Input
-                          id="firstName"
-                          placeholder="John"
-                          className="mt-1"
-                          required
-                          value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="lastName">Last Name</Label>
-                        <Input
-                          id="lastName"
-                          placeholder="Doe"
-                          className="mt-1"
-                          required
-                          value={lastName}
-                          onChange={(e) => setLastName(e.target.value)}
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your.email@example.com"
-                          className="mt-1"
-                          required
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <Label htmlFor="address">Address</Label>
-                        <Input
-                          id="address"
-                          placeholder="123 Main St"
-                          className="mt-1"
-                          required
-                          value={address}
-                          onChange={(e) => setAddress(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="city">City</Label>
-                        <Input
-                          id="city"
-                          placeholder="New York"
-                          className="mt-1"
-                          required
-                          value={city}
-                          onChange={(e) => setCity(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="zipCode">ZIP Code</Label>
-                        <Input
-                          id="zipCode"
-                          placeholder="10001"
-                          className="mt-1"
-                          required
-                          value={zipCode}
-                          onChange={(e) => setZipCode(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="state">State</Label>
-                        <Input
-                          id="state"
-                          placeholder="NY"
-                          className="mt-1"
-                          required
-                          value={state}
-                          onChange={(e) => setState(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="country">Country</Label>
-                        <Input
-                          id="country"
-                          placeholder="United States"
-                          className="mt-1"
-                          required
-                          value={country}
-                          onChange={(e) => setCountry(e.target.value)}
-                        />
+                  {paymentMethod !== "stripe" && (
+                    <div>
+                      <h3 className="font-medium mb-4">Shipping Information</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="firstName">First Name</Label>
+                          <Input
+                            id="firstName"
+                            placeholder="John"
+                            className="mt-1"
+                            required
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input
+                            id="lastName"
+                            placeholder="Doe"
+                            className="mt-1"
+                            required
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label htmlFor="email">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your.email@example.com"
+                            className="mt-1"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label htmlFor="address">Address</Label>
+                          <Input
+                            id="address"
+                            placeholder="123 Main St"
+                            className="mt-1"
+                            required
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="city">City</Label>
+                          <Input
+                            id="city"
+                            placeholder="New York"
+                            className="mt-1"
+                            required
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="zipCode">ZIP Code</Label>
+                          <Input
+                            id="zipCode"
+                            placeholder="10001"
+                            className="mt-1"
+                            required
+                            value={zipCode}
+                            onChange={(e) => setZipCode(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="state">State</Label>
+                          <Input
+                            id="state"
+                            placeholder="NY"
+                            className="mt-1"
+                            required
+                            value={state}
+                            onChange={(e) => setState(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="country">Country</Label>
+                          <Input
+                            id="country"
+                            placeholder="United States"
+                            className="mt-1"
+                            required
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {paymentMethod === "stripe" && (
+                    <div>
+                      <h3 className="font-medium mb-4">Email Address</h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div>
+                          <Label htmlFor="email">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your.email@example.com"
+                            className="mt-1"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
+                          <p className="text-sm text-gray-500 mt-1">
+                            You'll enter your shipping details on the Stripe checkout page.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex items-center text-sm text-gray-500 mt-4">
                     <Lock size={16} className="mr-2" />
