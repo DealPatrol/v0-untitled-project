@@ -73,6 +73,9 @@ export default function PricingPage() {
                   <span className="text-gray-500 ml-2">one-time</span>
                 </div>
                 <p className="text-gray-600">Perfect for a simple memorial tribute.</p>
+                <Button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white" asChild>
+                  <Link href="/checkout?plan=premium&action=buy">Buy Now</Link>
+                </Button>
               </div>
               <div className="p-6 space-y-4">
                 <div className="flex items-start">
@@ -127,6 +130,9 @@ export default function PricingPage() {
                   <span className="text-gray-500 ml-2">one-time</span>
                 </div>
                 <p className="text-gray-600">Our most popular comprehensive memorial package.</p>
+                <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" asChild>
+                  <Link href="/checkout?plan=deluxe&action=buy">Buy Now</Link>
+                </Button>
               </div>
               <div className="p-6 space-y-4">
                 <div className="flex items-start">
@@ -182,6 +188,9 @@ export default function PricingPage() {
                   <span className="text-gray-500 ml-2">one-time</span>
                 </div>
                 <p className="text-gray-600">The ultimate memorial experience for your loved one.</p>
+                <Button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white" asChild>
+                  <Link href="/checkout?plan=legacy&action=buy">Buy Now</Link>
+                </Button>
               </div>
               <div className="p-6 space-y-4">
                 <div className="flex items-start">

@@ -1,74 +1,14 @@
 "use client"
-
-import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { StarRating } from "@/components/star-rating"
 import { CheckCircle } from "lucide-react"
-import { MobileNav } from "@/components/mobile-nav"
-import { CartButton } from "@/components/cart-button"
 
 export default function Home() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen((prev) => !prev)
-  }
-
   return (
     <div className="bg-rose-600 min-h-screen">
-      <MobileNav isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
-
-      {/* Header - Keep your existing navigation links */}
-      <header className="bg-rose-700 text-white py-6 border-b border-rose-500 shadow-lg">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <button className="lg:hidden" onClick={toggleMobileMenu} aria-label="Toggle menu">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
-          <div className="text-center flex-grow lg:flex-grow-0">
-            <Link href="/" className="text-2xl font-serif flex items-center justify-center">
-              Memorial QR
-              <span className="text-yellow-400 ml-1">★</span>
-            </Link>
-          </div>
-          {/* IMPORTANT: Replace these with your actual navigation links */}
-          <div className="hidden lg:flex space-x-6 flex-grow justify-center">
-            <Link href="/memorials" className="hover:text-rose-200 transition-colors">
-              Memorials
-            </Link>
-            <Link href="/how-it-works" className="hover:text-rose-200 transition-colors">
-              How It Works
-            </Link>
-            <Link href="/pricing" className="hover:text-rose-200 transition-colors">
-              Pricing
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            {/* Keep your existing authentication links */}
-            <Link href="/login" className="text-rose-100 hover:text-white transition-colors">
-              Login
-            </Link>
-            <CartButton />
-          </div>
-        </div>
-      </header>
-
       {/* Main Product Section */}
       <main className="container mx-auto py-12 px-4">
         <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 border-2 border-rose-300">
@@ -306,23 +246,18 @@ export default function Home() {
             <h4 className="font-bold mb-4 text-rose-100">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/memorials" className="text-rose-300 hover:text-white transition-colors">
-                  Memorials
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="text-rose-300 hover:text-white transition-colors">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="text-rose-300 hover:text-white transition-colors">
-                  Pricing
-                </Link>
-              </li>
-              <li>
                 <Link href="/faq" className="text-rose-300 hover:text-white transition-colors">
                   FAQ
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-rose-300 hover:text-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard" className="text-rose-300 hover:text-white transition-colors">
+                  Dashboard
                 </Link>
               </li>
             </ul>

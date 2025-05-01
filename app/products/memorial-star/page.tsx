@@ -198,6 +198,9 @@ export default function MemorialStarPage() {
                   </div>
                   <div className="font-bold">$49.99</div>
                   <div className="text-gray-500 line-through text-sm">$99.99</div>
+                  <Button className="w-full mt-2 text-xs" size="sm" variant="outline" asChild>
+                    <Link href="/checkout?plan=premium&quantity=1&action=buy">Buy Now</Link>
+                  </Button>
                 </Card>
 
                 <Card className="p-4 border-2 border-blue-500 rounded-lg text-center relative">
@@ -211,6 +214,9 @@ export default function MemorialStarPage() {
                   <div className="font-bold">$79.98</div>
                   <div className="text-gray-500 line-through text-sm">$199.98</div>
                   <div className="bg-gray-800 text-white text-xs rounded-full py-1 px-2 mt-1">Save 20%</div>
+                  <Button className="w-full mt-2 text-xs bg-blue-500 hover:bg-blue-600 text-white" size="sm" asChild>
+                    <Link href="/checkout?plan=deluxe&quantity=2&action=buy">Buy Now</Link>
+                  </Button>
                 </Card>
 
                 <Card className="p-4 border-2 border-gray-300 rounded-lg text-center">
@@ -221,6 +227,9 @@ export default function MemorialStarPage() {
                   <div className="font-bold">$112.48</div>
                   <div className="text-gray-500 line-through text-sm">$299.97</div>
                   <div className="bg-gray-800 text-white text-xs rounded-full py-1 px-2 mt-1">Save 25%</div>
+                  <Button className="w-full mt-2 text-xs" size="sm" variant="outline" asChild>
+                    <Link href="/checkout?plan=legacy&quantity=3&action=buy">Buy Now</Link>
+                  </Button>
                 </Card>
               </div>
             </div>
@@ -229,7 +238,12 @@ export default function MemorialStarPage() {
               *Each Memorial Star can be used to create a new memorial page or to link to an existing one.
             </div>
 
-            <Button className="w-full bg-gray-800 hover:bg-gray-700 text-white py-3 text-lg">ADD TO CART</Button>
+            <div className="flex gap-4">
+              <Button className="w-1/2 bg-gray-800 hover:bg-gray-700 text-white py-3 text-lg">ADD TO CART</Button>
+              <Button className="w-1/2 bg-blue-600 hover:bg-blue-500 text-white py-3 text-lg" asChild>
+                <Link href="/checkout?plan=premium&action=buy">BUY NOW</Link>
+              </Button>
+            </div>
 
             <div className="flex items-center justify-center mt-4 text-gray-600">
               <svg
