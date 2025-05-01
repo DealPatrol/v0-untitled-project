@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { QRCodeGenerator } from "@/components/qr-code"
 
 export default function HowItWorksPage() {
   return (
@@ -84,8 +85,11 @@ export default function HowItWorksPage() {
       <section className="py-16">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
-            <div className="relative aspect-square rounded-lg overflow-hidden">
-              <Image src="/images/qr-code-sample.png" alt="Choose your Memorial QR" fill className="object-cover" />
+            <div className="relative aspect-square rounded-lg overflow-hidden flex items-center justify-center bg-white shadow-lg p-8">
+              <div className="w-full max-w-xs">
+                <QRCodeGenerator value="https://memorialqr.com/sample/memorial" size={300} level="H" />
+                <p className="text-center mt-4 text-gray-500">Sample Memorial QR Code</p>
+              </div>
             </div>
             <div>
               <div className="inline-block bg-gray-900 text-white text-4xl font-bold rounded-full w-12 h-12 flex items-center justify-center mb-4">
@@ -193,8 +197,17 @@ export default function HowItWorksPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="relative aspect-square rounded-lg overflow-hidden">
-              <Image src="/images/memorial-3.jpg" alt="Share and Remember" fill className="object-cover" />
+            <div className="relative aspect-square rounded-lg overflow-hidden flex items-center justify-center bg-white shadow-lg p-8">
+              <div className="w-full max-w-xs">
+                <div className="mb-6">
+                  <QRCodeGenerator value="https://memorialqr.com/sample/robert-johnson" size={250} level="H" />
+                </div>
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-medium mb-1">Robert Johnson</h3>
+                  <p className="text-sm text-gray-500">1945 - 2023</p>
+                  <p className="text-xs mt-2">Scan to view memorial</p>
+                </div>
+              </div>
             </div>
             <div>
               <div className="inline-block bg-gray-900 text-white text-4xl font-bold rounded-full w-12 h-12 flex items-center justify-center mb-4">

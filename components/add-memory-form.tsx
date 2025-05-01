@@ -1,14 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { MessageCirclePlus } from "lucide-react"
+import { Card } from "@/components/ui/card"
 
 interface AddMemoryFormProps {
   memorialId: string
@@ -77,56 +75,45 @@ export default function AddMemoryForm({ memorialId }: AddMemoryFormProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageCirclePlus className="h-5 w-5" />
-          Share a Memory
-        </CardTitle>
-      </CardHeader>
+    <Card className="p-6 bg-white">
       {isSuccess ? (
-        <CardContent>
-          <div className="bg-green-50 text-green-700 p-4 rounded-md">
-            <p className="font-medium">Thank you for your tribute</p>
-            <p>
-              Your memory has been submitted and will be reviewed shortly. It will appear on this page once approved.
-            </p>
-          </div>
-        </CardContent>
+        <div className="bg-green-50 text-green-700 p-4 rounded-md">
+          <p className="font-medium">Thank you for your tribute</p>
+          <p>Your memory has been submitted and will be reviewed shortly. It will appear on this page once approved.</p>
+        </div>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div>
-              <label htmlFor="authorName" className="block text-sm font-medium mb-1">
-                Your Name
-              </label>
-              <Input
-                id="authorName"
-                value={authorName}
-                onChange={(e) => setAuthorName(e.target.value)}
-                placeholder="Enter your name"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="content" className="block text-sm font-medium mb-1">
-                Your Memory or Tribute
-              </label>
-              <Textarea
-                id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Share your memory, story, or tribute..."
-                rows={4}
-                required
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit Memory"}
-            </Button>
-          </CardFooter>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <h3 className="text-lg font-semibold">Add Your Memory</h3>
+          <div>
+            <label htmlFor="authorName" className="block text-sm font-medium mb-1">
+              Your Name
+            </label>
+            <Input
+              id="authorName"
+              value={authorName}
+              onChange={(e) => setAuthorName(e.target.value)}
+              placeholder="Enter your name"
+              required
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="content" className="block text-sm font-medium mb-1">
+              Your Memory or Tribute
+            </label>
+            <Textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Share your memory, story, or tribute..."
+              rows={4}
+              required
+              className="w-full"
+            />
+          </div>
+          <Button type="submit" disabled={isSubmitting} className="bg-navy-blue hover:bg-navy-blue/90 text-white">
+            {isSubmitting ? "Submitting..." : "Submit Memory"}
+          </Button>
         </form>
       )}
     </Card>

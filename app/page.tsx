@@ -1,306 +1,245 @@
 "use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { StarRating } from "@/components/star-rating"
-import { CheckCircle } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="bg-rose-600 min-h-screen">
-      {/* Main Product Section */}
-      <main className="container mx-auto py-12 px-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 border-2 border-rose-300">
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Product Video */}
-            <div className="bg-rose-50 rounded-lg p-8 relative border border-rose-200">
-              <div className="absolute top-4 right-4 bg-yellow-400 text-rose-900 font-bold py-1 px-3 rounded-full z-10 border-2 border-rose-500">
-                50% OFF TODAY!
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="relative h-[80vh] overflow-hidden">
+        {/* Background Image - Using your own image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/memorial-1.jpg" // Using your existing image
+            alt="Memorial garden"
+            fill
+            className="object-cover"
+            priority
+            quality={100}
+          />
+          <div className="absolute inset-0 bg-black/50"></div> {/* Darkened overlay for better contrast */}
+        </div>
+
+        {/* Center Content - Your own branding */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <div className="flex items-center justify-center mb-4">
+            <h1 className="text-5xl md:text-7xl font-serif text-white tracking-wider">
+              MEMORIAL
+              <span className="text-yellow-400 mx-2">★</span>
+              QR
+            </h1>
+          </div>
+          <p className="text-xl md:text-2xl text-white font-light mb-12">Preserving memories for generations</p>
+
+          {/* Highlighted container for buttons */}
+          <div className="bg-black/30 p-6 rounded-lg mb-8 max-w-2xl w-full">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Link
+                href="/memorials"
+                className="bg-white hover:bg-gray-100 text-rose-900 text-xl font-bold py-6 px-8 rounded-lg shadow-lg border-4 border-yellow-400 transition-transform hover:scale-105 flex-1 text-center"
+              >
+                Browse Memorials
+              </Link>
+              <Link
+                href="/pricing"
+                className="bg-white hover:bg-gray-100 text-rose-900 text-xl font-bold py-6 px-8 rounded-lg shadow-lg border-4 border-yellow-400 transition-transform hover:scale-105 flex-1 text-center"
+              >
+                Our Products
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Testimonial and Product Section - Using your own testimonials */}
+      <div className="container mx-auto py-16 px-4">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          {/* Testimonial - Original content */}
+          <div className="text-center md:text-left">
+            <blockquote className="text-xl md:text-2xl italic text-gray-700 mb-6">
+              "Creating a memorial for my grandmother was a healing experience. The QR code on her headstone allows
+              visitors to see her photos and read stories about her remarkable life. It's like she's still with us."
+            </blockquote>
+            <p className="font-bold text-xl mb-4">Michael R. - Verified Customer</p>
+            <div className="flex justify-center md:justify-start mb-2">
+              <StarRating rating={4.8} />
+            </div>
+            <p className="text-gray-600">Based on our customer feedback</p>
+          </div>
+
+          {/* Product Image - Your own product */}
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-md bg-white p-8 rounded-lg shadow-xl">
+              <div className="flex justify-center mb-6">
+                <Image
+                  src="/images/memorial-star.jpg"
+                  alt="Memorial QR Product"
+                  width={250}
+                  height={250}
+                  className="rounded-lg"
+                />
               </div>
-              <div className="flex justify-center items-center">
-                <div className="w-full max-w-lg bg-white rounded-lg shadow-md overflow-hidden border border-rose-200">
-                  <video
-                    className="w-full aspect-video object-cover"
-                    style={{ minHeight: "350px" }}
-                    controls
-                    playsInline
-                    preload="auto"
-                    poster="/images/qr-code-gravestone.png"
-                  >
-                    <source src="/videos/revolutionizing-remembrance.mp4" type="video/mp4" />
-                    <source src="/videos/memorial-qr-demo.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              </div>
-              <div className="mt-8 text-center">
-                <Button variant="rose-outline" className="w-full">
-                  100% MONEY-BACK GUARANTEE
-                </Button>
+              <h3 className="text-2xl font-bold text-center text-rose-900 mb-4">Memorial QR Code</h3>
+              <p className="text-gray-700 text-center mb-6">Preserve memories that last generations</p>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/products/memorial-star"
+                  className="bg-rose-600 hover:bg-rose-700 text-white text-center py-3 font-medium rounded-md"
+                >
+                  Learn About Memorial Star
+                </Link>
+                <Link
+                  href="/how-it-works"
+                  className="bg-rose-600 hover:bg-rose-700 text-white text-center py-3 font-medium rounded-md"
+                >
+                  How It Works
+                </Link>
+                <Link
+                  href="/checkout"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-rose-900 text-center py-3 font-medium rounded-md"
+                >
+                  Buy Now
+                </Link>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Product Details */}
-            <div>
-              <div className="flex items-center mb-2">
-                <StarRating rating={4.9} />
-                <span className="ml-2 text-rose-800">2,500+ Reviews</span>
-              </div>
-              <h1 className="text-3xl font-serif mb-4 text-rose-900">The Memorial Star</h1>
-              <div className="bg-rose-50 p-4 rounded-lg mb-6 italic text-rose-700 border-l-4 border-rose-400">
-                "I wasn't sure if I really needed this, but wow... The moment I held it, I knew it was something
-                special. The quality is amazing, and every time I see it, I feel connected. So glad I got this!" –
-                Caroline
-              </div>
-
-              <div className="flex items-baseline mb-6">
-                <span className="text-2xl font-bold mr-2 text-rose-900">$49.99</span>
-                <span className="text-rose-500 line-through">$99.99</span>
-                <span className="ml-4 border border-rose-400 text-rose-700 px-3 py-1 rounded-full text-sm bg-rose-50">
-                  One Time Payment
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-rose-500 mr-2" />
-                  <span className="text-rose-900">Keep their memory alive</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-rose-500 mr-2" />
-                  <span className="text-rose-900">Weather Proof</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-rose-500 mr-2" />
-                  <span className="text-rose-900">Unlimited storage</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-rose-500 mr-2" />
-                  <span className="text-rose-900">Private & Public Mode</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-rose-500 mr-2" />
-                  <span className="text-rose-900">Lifetime Access</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-rose-500 mr-2" />
-                  <span className="text-rose-900">Easy customization</span>
-                </div>
-              </div>
-
-              <div className="mb-8">
-                <h3 className="font-medium mb-4 text-rose-900">Choose Quantity:</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <Card className="p-4 border-2 border-rose-200 rounded-lg text-center hover:border-rose-400 transition-colors">
-                    <div className="font-bold mb-2 text-rose-800">BUY 1</div>
-                    <div className="relative w-full h-16 mb-2">
-                      <Image
-                        src="/images/qr-code-gravestone.png"
-                        alt="QR Code on Gravestone"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="font-bold text-rose-900">$49.99</div>
-                    <div className="text-rose-500 line-through text-sm">$99.99</div>
-                  </Card>
-
-                  <Card className="p-4 border-2 border-rose-400 rounded-lg text-center relative bg-rose-50">
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-xs px-2 py-1 rounded-full border border-rose-500 text-rose-900">
-                      POPULAR
-                    </div>
-                    <div className="font-bold mb-2 text-rose-800">BUY 2</div>
-                    <div className="relative w-full h-16 mb-2">
-                      <Image
-                        src="/images/qr-code-gravestone.png"
-                        alt="QR Code on Gravestone"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="font-bold text-rose-900">$79.98</div>
-                    <div className="text-rose-500 line-through text-sm">$199.98</div>
-                    <div className="bg-rose-700 text-white text-xs rounded-full py-1 px-2 mt-1">Save 20%</div>
-                  </Card>
-
-                  <Card className="p-4 border-2 border-rose-200 rounded-lg text-center hover:border-rose-400 transition-colors">
-                    <div className="font-bold mb-2 text-rose-800">BUY 3</div>
-                    <div className="relative w-full h-16 mb-2">
-                      <Image
-                        src="/images/qr-code-gravestone.png"
-                        alt="QR Code on Gravestone"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="font-bold text-rose-900">$112.48</div>
-                    <div className="text-rose-500 line-through text-sm">$299.97</div>
-                    <div className="bg-rose-700 text-white text-xs rounded-full py-1 px-2 mt-1">Save 25%</div>
-                  </Card>
-                </div>
-              </div>
-
-              <div className="border border-rose-200 bg-rose-50 rounded-lg p-4 mb-8 text-center text-rose-700">
-                *Each Memorial Star can be used to create a new memorial page or to link to an existing one.
-              </div>
-
-              <Button className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 text-lg" asChild>
-                <Link href="/checkout">BUY NOW</Link>
-              </Button>
-
-              <div className="flex items-center justify-center mt-4 text-rose-700">
+      {/* Features Section - Your own features */}
+      <div className="bg-gray-100 py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-serif text-center mb-12">Why Choose Memorial QR?</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-md text-center">
+              <div className="w-16 h-16 bg-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="mr-2"
+                  className="text-white"
                 >
-                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                 </svg>
-                Get it between <strong className="text-rose-900">Apr 21st</strong> and{" "}
-                <strong className="text-rose-900">Apr 23rd</strong>
               </div>
-
-              <div className="mt-8 border-t border-rose-200 pt-4">
-                <details className="cursor-pointer group">
-                  <summary className="font-medium flex justify-between items-center text-rose-800 hover:text-rose-900">
-                    How to set it up?
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-rose-500 group-hover:text-rose-700"
-                    >
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </summary>
-                  <div className="mt-2 text-rose-700 bg-rose-50 p-4 rounded-lg border-l-4 border-rose-300">
-                    <p>Setting up your Memorial QR is simple:</p>
-                    <ol className="list-decimal pl-5 mt-2 space-y-2">
-                      <li>Purchase your Memorial Star QR code</li>
-                      <li>Create your memorial page with photos, videos, and stories</li>
-                      <li>Place the weather-resistant QR code on the headstone or memorial</li>
-                      <li>Share the unique link with family and friends</li>
-                    </ol>
-                  </div>
-                </details>
+              <h3 className="text-xl font-bold mb-2">One-Time Payment</h3>
+              <p className="text-gray-600">
+                No subscriptions or hidden fees. Your memorial page is hosted for a lifetime.
+              </p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md text-center">
+              <div className="w-16 h-16 bg-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-white"
+                >
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
               </div>
+              <h3 className="text-xl font-bold mb-2">Weather-Resistant</h3>
+              <p className="text-gray-600">Our QR codes are designed to withstand the elements for decades to come.</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md text-center">
+              <div className="w-16 h-16 bg-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-white"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Family Tree</h3>
+              <p className="text-gray-600">
+                Create a digital family tree to preserve your family's history and connections.
+              </p>
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
-      {/* Testimonials Section */}
-      <section className="bg-rose-500 py-16 text-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-serif text-center mb-12">What Our Customers Say</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                className="p-6 bg-white text-gray-800 border-2 border-rose-300 hover:border-rose-400 transition-colors"
-              >
-                <div className="flex items-center mb-4">
-                  <StarRating rating={5} />
-                  <span className="ml-2 text-rose-500 font-medium">Verified Purchase</span>
-                </div>
-                <p className="my-4 italic text-rose-900 border-l-4 border-rose-300 pl-4">
-                  "The Memorial QR code has been such a meaningful way to preserve my father's memory. Visitors to his
-                  grave can scan the code and see photos, videos, and read stories about his life. It's like his legacy
-                  lives on in a digital space."
-                </p>
-                <div className="font-medium text-rose-800">
-                  - Sarah {i === 1 ? "Johnson" : i === 2 ? "Miller" : "Thompson"}
-                </div>
-                <div className="mt-4 text-sm text-rose-600">
-                  Purchased {i === 1 ? "2" : i === 2 ? "3" : "1"} months ago
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* How It Works Section */}
+      <div className="container mx-auto py-16 px-4">
+        <h2 className="text-3xl md:text-4xl font-serif text-center mb-12">How Memorial QR Works</h2>
 
-      {/* Footer */}
-      <footer className="bg-rose-800 text-white py-12 border-t border-rose-700">
-        <div className="container mx-auto grid md:grid-cols-4 gap-8 px-4">
-          <div>
-            <h3 className="text-xl font-serif mb-4 text-rose-100">Memorial QR</h3>
-            <p className="text-rose-200">Preserving memories for generations to come with innovative QR technology.</p>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4 text-rose-100">Quick Links</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/faq" className="text-rose-300 hover:text-white transition-colors">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-rose-300 hover:text-white transition-colors">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard" className="text-rose-300 hover:text-white transition-colors">
-                  Dashboard
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4 text-rose-100">Customer Support</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/contact" className="text-rose-300 hover:text-white transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy-policy" className="text-rose-300 hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms-of-service" className="text-rose-300 hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4 text-rose-100">Newsletter</h4>
-            <p className="text-rose-200 mb-4">Subscribe to receive updates and special offers.</p>
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="px-4 py-2 w-full rounded-l-md focus:outline-none text-gray-900 border-2 border-rose-300 focus:border-rose-400"
-              />
-              <Button className="rounded-l-none bg-rose-600 hover:bg-rose-700 border-2 border-rose-300">
-                Subscribe
-              </Button>
+        <div className="grid md:grid-cols-4 gap-8">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">
+              1
             </div>
+            <h3 className="text-xl font-bold mb-2">Purchase</h3>
+            <p className="text-gray-600">Select a Memorial QR package that fits your needs.</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">
+              2
+            </div>
+            <h3 className="text-xl font-bold mb-2">Customize</h3>
+            <p className="text-gray-600">Add photos, videos, stories, and create a family tree.</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">
+              3
+            </div>
+            <h3 className="text-xl font-bold mb-2">Install</h3>
+            <p className="text-gray-600">Place your durable QR code on the memorial or headstone.</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">
+              4
+            </div>
+            <h3 className="text-xl font-bold mb-2">Connect</h3>
+            <p className="text-gray-600">Visitors scan the code to view and add to the memorial.</p>
           </div>
         </div>
-        <div className="container mx-auto mt-8 pt-8 border-t border-rose-700 text-center text-rose-300">
-          <p>&copy; {new Date().getFullYear()} Memorial QR. All rights reserved.</p>
+        <div className="text-center mt-12">
+          <Button className="bg-rose-600 hover:bg-rose-700 text-white px-8 py-3 text-lg" asChild>
+            <Link href="/how-it-works">See Detailed Guide</Link>
+          </Button>
         </div>
-      </footer>
+      </div>
+
+      {/* CTA Section - Your own call to action */}
+      <div className="bg-rose-600 py-16 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-serif mb-6">Create a Lasting Digital Memorial</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Our Memorial QR codes help you preserve memories, share stories, and connect generations.
+          </p>
+          <Button
+            className="bg-white hover:bg-gray-100 text-rose-900 border-2 border-yellow-500 px-8 py-3 text-lg font-bold"
+            asChild
+          >
+            <Link href="/checkout">Get Your Memorial QR</Link>
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

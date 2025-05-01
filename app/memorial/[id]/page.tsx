@@ -3,17 +3,16 @@ import Image from "next/image"
 import { notFound } from "next/navigation"
 import { createServerSupabaseClient } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card } from "@/components/ui/card"
 import AddMemoryForm from "@/components/add-memory-form"
 import { QRImage } from "@/components/qr-image"
 import { FamilyTree } from "@/components/family-tree/family-tree"
 import { format } from "date-fns"
-import { MessageCircle, Share2, Calendar, Heart } from "lucide-react"
+import { MessageCircle, Users, ImageIcon, BookOpen } from "lucide-react"
 
 // Helper function to get base URL that works in all environments
 function getBaseUrl() {
-  // For server-side rendering, we can't rely on window.location
-  // So we use the environment variable if available, or a default URL
   return process.env.NEXT_PUBLIC_SITE_URL || "https://memorial-qr-website.vercel.app"
 }
 
@@ -75,180 +74,184 @@ export default async function MemorialPage({ params }: PageProps) {
   // Format dates for display
   const formattedBirthDate = memorial.birth_date ? format(new Date(memorial.birth_date), "MMMM d, yyyy") : null
   const formattedDeathDate = memorial.death_date ? format(new Date(memorial.death_date), "MMMM d, yyyy") : null
+  const birthLocation = "Location information" // This would come from your database if available
+  const deathLocation = "Location information" // This would come from your database if available
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Memorial Header */}
-          <div className="relative h-64 md:h-96 rounded-lg overflow-hidden mb-8">
-            <Image
-              src={memorial.cover_image_url || `/placeholder.svg?height=400&width=800&text=${memorial.name}`}
-              alt={memorial.name}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end">
-              <div className="p-6 text-white">
-                <h1 className="text-3xl md:text-4xl font-bold">{memorial.name}</h1>
-                {(formattedBirthDate || formattedDeathDate) && (
-                  <p className="text-xl opacity-90">
-                    {formattedBirthDate && formattedDeathDate
-                      ? `${formattedBirthDate} - ${formattedDeathDate}`
-                      : formattedBirthDate || formattedDeathDate}
-                  </p>
-                )}
-              </div>
-            </div>
+    <div className="min-h-screen bg-white">
+      {/* Hero Section with Photo */}
+      <div className="relative w-full h-64 md:h-80 bg-gray-200 flex items-center justify-center">
+        {memorial.cover_image_url ? (
+          <Image
+            src={memorial.cover_image_url || "/placeholder.svg"}
+            alt={memorial.name}
+            fill
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div className="text-4xl text-gray-400 font-light">NO PHOTO</div>
+        )}
+      </div>
+
+      {/* Birth/Death Info and Profile Photo */}
+      <div className="relative px-4 md:px-8 max-w-5xl mx-auto">
+        {/* Birth/Death Info */}
+        <div className="flex justify-between text-center py-4 text-sm">
+          <div className="w-1/2 pr-2">
+            <div className="font-bold uppercase">BORN</div>
+            <div>{formattedBirthDate || "Unknown"}</div>
+            <div>{birthLocation}</div>
           </div>
+          <div className="w-1/2 pl-2">
+            <div className="font-bold uppercase">DIED</div>
+            <div>{formattedDeathDate || "Unknown"}</div>
+            <div>{deathLocation}</div>
+          </div>
+        </div>
 
-          {/* Memorial Content */}
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-8">
-              {/* Bio */}
-              {memorial.bio && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Heart className="h-5 w-5" />
-                      Life Story
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="whitespace-pre-line">{memorial.bio}</p>
-                  </CardContent>
-                </Card>
-              )}
+        {/* Profile Photo */}
+        <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white bg-gray-200">
+            {media && media[0] ? (
+              <Image
+                src={media[0].url || "/placeholder.svg"}
+                alt={memorial.name}
+                width={128}
+                height={128}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-gray-400">Photo</span>
+              </div>
+            )}
+          </div>
+        </div>
 
-              {/* Family Tree Section */}
-              <FamilyTree memorialId={params.id} />
+        {/* Name */}
+        <div className="text-center mt-16 mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">{memorial.name}</h1>
+        </div>
 
-              {/* Photo Gallery */}
-              {media && media.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
-                      Photo Gallery
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {media.map((item) => (
-                        <div key={item.id} className="relative aspect-square rounded-md overflow-hidden">
-                          <Image
-                            src={item.url || "/placeholder.svg"}
-                            alt={item.caption || "Memorial image"}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+        {/* Tabs Navigation */}
+        <Tabs defaultValue="biography" className="w-full">
+          <TabsList className="grid grid-cols-4 mb-8">
+            <TabsTrigger value="biography" className="data-[state=active]:bg-gray-100">
+              <BookOpen className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Biography</span>
+              <span className="sm:hidden">Bio</span>
+            </TabsTrigger>
+            <TabsTrigger value="gallery" className="data-[state=active]:bg-gray-100">
+              <ImageIcon className="h-4 w-4 mr-2" />
+              Gallery
+            </TabsTrigger>
+            <TabsTrigger value="family" className="data-[state=active]:bg-gray-100">
+              <Users className="h-4 w-4 mr-2" />
+              Family
+            </TabsTrigger>
+            <TabsTrigger value="guestbook" className="data-[state=active]:bg-gray-100">
+              <MessageCircle className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Guest Book</span>
+              <span className="sm:hidden">Book</span>
+            </TabsTrigger>
+          </TabsList>
 
-              {/* Stories/Memories */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5" />
-                    Tributes & Memories
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {stories && stories.length > 0 ? (
-                    <div className="space-y-6">
-                      {stories.map((story) => (
-                        <div key={story.id} className="border-b pb-6 last:border-0">
-                          <p className="italic mb-3 text-gray-700">"{story.content}"</p>
-                          <div className="flex justify-between items-center">
-                            <p className="font-medium text-gray-900">— {story.author_name}</p>
-                            <p className="text-sm text-gray-500">
-                              {format(new Date(story.created_at), "MMMM d, yyyy")}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-center py-4 text-gray-500">No tributes have been shared yet.</p>
-                  )}
-                </CardContent>
+          {/* Biography Tab */}
+          <TabsContent value="biography" className="space-y-6">
+            {memorial.bio ? (
+              <Card className="p-6">
+                <div className="prose max-w-none">
+                  <p className="whitespace-pre-line">{memorial.bio}</p>
+                </div>
               </Card>
+            ) : (
+              <Card className="p-6 text-center">
+                <p className="text-gray-500">No biography has been added yet.</p>
+              </Card>
+            )}
+          </TabsContent>
 
-              {/* Add Memory Form */}
-              <AddMemoryForm memorialId={params.id} />
+          {/* Gallery Tab */}
+          <TabsContent value="gallery" className="space-y-6">
+            {media && media.length > 0 ? (
+              <Card className="p-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {media.map((item) => (
+                    <div key={item.id} className="aspect-square rounded-md overflow-hidden bg-gray-100">
+                      <Image
+                        src={item.url || "/placeholder.svg"}
+                        alt={item.caption || "Memorial image"}
+                        width={300}
+                        height={300}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ) : (
+              <Card className="p-6 text-center">
+                <p className="text-gray-500">No photos have been added yet.</p>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Family Tab */}
+          <TabsContent value="family" className="space-y-6">
+            <FamilyTree memorialId={params.id} />
+          </TabsContent>
+
+          {/* Guest Book Tab */}
+          <TabsContent value="guestbook" className="space-y-6">
+            <div className="text-center mb-6">
+              <Button className="bg-navy-blue hover:bg-navy-blue/90 text-white">Submit Guestbook Entry</Button>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* QR Code */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-center">Memorial QR Code</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col items-center">
-                  {qrCode ? (
-                    <QRImage value={`${baseUrl}/qr/${qrCode.unique_code}`} size={200} />
-                  ) : (
-                    <p>QR code not available</p>
-                  )}
-                  <p className="text-sm text-center mt-4">
-                    Scan this code to visit this memorial page or share with others
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Memorial Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Memorial Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {formattedBirthDate && (
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Born</h4>
-                      <p>{formattedBirthDate}</p>
+            {stories && stories.length > 0 ? (
+              <div className="space-y-6">
+                {stories.map((story) => (
+                  <Card key={story.id} className="p-6 bg-cream">
+                    <div className="mb-2">
+                      <strong>{story.author_name}</strong>
+                      <span className="text-sm text-gray-500 ml-2">
+                        {format(new Date(story.created_at), "yyyy-MM-dd")}
+                      </span>
                     </div>
-                  )}
-                  {formattedDeathDate && (
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Passed</h4>
-                      <p>{formattedDeathDate}</p>
-                    </div>
-                  )}
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500">Tributes</h4>
-                    <p>{stories?.length || 0} memories shared</p>
-                  </div>
-                </CardContent>
+                    <p className="whitespace-pre-line">{story.content}</p>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-6 text-center">
+                <p className="text-gray-500">No guestbook entries have been added yet.</p>
               </Card>
+            )}
 
-              {/* Share Buttons */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 justify-center">
-                    <Share2 className="h-5 w-5" />
-                    Share This Memorial
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-center gap-4">
-                    <Button variant="outline" size="sm">
-                      Facebook
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Twitter
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Email
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <AddMemoryForm memorialId={params.id} />
+          </TabsContent>
+        </Tabs>
+
+        {/* QR Code and Share Section */}
+        <div className="mt-12 mb-16 text-center">
+          <h3 className="text-xl font-semibold mb-4">Share This Memorial</h3>
+          <div className="flex justify-center mb-4">
+            {qrCode && (
+              <div className="p-2 bg-white border rounded-md">
+                <QRImage value={`${baseUrl}/qr/${qrCode.unique_code}`} size={150} />
+              </div>
+            )}
+          </div>
+          <div className="flex justify-center gap-4">
+            <Button variant="outline" size="sm">
+              Facebook
+            </Button>
+            <Button variant="outline" size="sm">
+              Twitter
+            </Button>
+            <Button variant="outline" size="sm">
+              Email
+            </Button>
           </div>
         </div>
       </div>
