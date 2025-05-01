@@ -62,7 +62,8 @@
     "nanoid": "latest",
     "qrcode": "latest",
     "react-error-boundary": "latest",
-    "stripe": "latest"
+    "stripe": "latest",
+    "uuid": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

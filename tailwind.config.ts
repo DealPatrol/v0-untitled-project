@@ -58,6 +58,8 @@ const config = {
           800: "#1a365d",
           900: "#0f2a4a",
         },
+        "navy-blue": "#003366",
+        cream: "#f8f5f0",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -3,10 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { Card } from "@/components/ui/card"
 
 interface AddMemoryFormProps {
   memorialId: string
@@ -75,7 +72,7 @@ export default function AddMemoryForm({ memorialId }: AddMemoryFormProps) {
   }
 
   return (
-    <Card className="p-6 bg-white">
+    <div className="bg-white p-6 rounded-md shadow-sm">
       {isSuccess ? (
         <div className="bg-green-50 text-green-700 p-4 rounded-md">
           <p className="font-medium">Thank you for your tribute</p>
@@ -88,27 +85,27 @@ export default function AddMemoryForm({ memorialId }: AddMemoryFormProps) {
             <label htmlFor="authorName" className="block text-sm font-medium mb-1">
               Your Name
             </label>
-            <Input
+            <input
               id="authorName"
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
               placeholder="Enter your name"
               required
-              className="w-full"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
           <div>
             <label htmlFor="content" className="block text-sm font-medium mb-1">
               Your Memory or Tribute
             </label>
-            <Textarea
+            <textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Share your memory, story, or tribute..."
               rows={4}
               required
-              className="w-full"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
           <Button type="submit" disabled={isSubmitting} className="bg-navy-blue hover:bg-navy-blue/90 text-white">
@@ -116,6 +113,6 @@ export default function AddMemoryForm({ memorialId }: AddMemoryFormProps) {
           </Button>
         </form>
       )}
-    </Card>
+    </div>
   )
 }
