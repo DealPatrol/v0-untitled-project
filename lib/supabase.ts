@@ -1,6 +1,9 @@
 import { createClient } from "@supabase/supabase-js"
 import type { Database } from "@/types/supabase"
 
+// Re-export createClient so it can be imported from this module
+export { createClient }
+
 // For server-side usage (Edge Functions)
 export const createServerSupabaseClient = () => {
   const supabaseUrl = process.env.SUPABASE_URL!

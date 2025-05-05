@@ -4,9 +4,28 @@ import { createServerSupabaseClient } from "@/lib/supabase"
 import { v4 as uuidv4 } from "uuid"
 import { revalidatePath } from "next/cache"
 
+const BUCKET_NAME = "memorial-images"
+
 export async function createMemorial(formData: FormData) {
   try {
     const supabase = createServerSupabaseClient()
+
+    // Check if the bucket exists and create it if it doesn't
+    const { data: buckets } = await supabase.storage.listBuckets()
+    const bucketExists = buckets?.some((bucket) => bucket.name === BUCKET_NAME)
+
+    if (!bucketExists) {
+      console.log(`Bucket "${BUCKET_NAME}" not found. Creating it...`)
+      const { error: createBucketError } = await supabase.storage.createBucket(BUCKET_NAME, {
+        public: true, // Make the bucket public so files can be accessed without authentication
+      })
+
+      if (createBucketError) {
+        console.error("Error creating bucket:", createBucketError)
+        return { error: `Failed to create storage bucket: ${createBucketError.message}` }
+      }
+      console.log(`Bucket "${BUCKET_NAME}" created successfully`)
+    }
 
     // Get the current user
     const {
@@ -57,15 +76,13 @@ export async function createMemorial(formData: FormData) {
       const coverImageExt = coverImage.name.split(".").pop()
       const coverImagePath = `memorials/${memorialId}/cover.${coverImageExt}`
 
-      const { error: coverUploadError } = await supabase.storage
-        .from("memorial-images")
-        .upload(coverImagePath, coverImage)
+      const { error: coverUploadError } = await supabase.storage.from(BUCKET_NAME).upload(coverImagePath, coverImage)
 
       if (coverUploadError) {
         console.error("Error uploading cover image:", coverUploadError)
       } else {
         // Get the public URL
-        const { data: coverImageUrl } = supabase.storage.from("memorial-images").getPublicUrl(coverImagePath)
+        const { data: coverImageUrl } = supabase.storage.from(BUCKET_NAME).getPublicUrl(coverImagePath)
 
         // Update the memorial with the cover image URL
         await supabase.from("memorials").update({ cover_image_url: coverImageUrl.publicUrl }).eq("id", memorialId)
@@ -78,14 +95,14 @@ export async function createMemorial(formData: FormData) {
       const profileImagePath = `memorials/${memorialId}/profile.${profileImageExt}`
 
       const { error: profileUploadError } = await supabase.storage
-        .from("memorial-images")
+        .from(BUCKET_NAME)
         .upload(profileImagePath, profileImage)
 
       if (profileUploadError) {
         console.error("Error uploading profile image:", profileUploadError)
       } else {
         // Get the public URL
-        const { data: profileImageUrl } = supabase.storage.from("memorial-images").getPublicUrl(profileImagePath)
+        const { data: profileImageUrl } = supabase.storage.from(BUCKET_NAME).getPublicUrl(profileImagePath)
 
         // Update the memorial with the profile image URL
         await supabase.from("memorials").update({ profile_image_url: profileImageUrl.publicUrl }).eq("id", memorialId)
@@ -102,7 +119,7 @@ export async function createMemorial(formData: FormData) {
         const photoExt = photo.name.split(".").pop()
         const photoPath = `memorials/${memorialId}/photos/${uuidv4()}.${photoExt}`
 
-        const { error: photoUploadError } = await supabase.storage.from("memorial-images").upload(photoPath, photo)
+        const { error: photoUploadError } = await supabase.storage.from(BUCKET_NAME).upload(photoPath, photo)
 
         if (photoUploadError) {
           console.error(`Error uploading photo ${key}:`, photoUploadError)
@@ -110,15 +127,46 @@ export async function createMemorial(formData: FormData) {
         }
 
         // Get the public URL
-        const { data: photoUrl } = supabase.storage.from("memorial-images").getPublicUrl(photoPath)
+        const { data: photoUrl } = supabase.storage.from(BUCKET_NAME).getPublicUrl(photoPath)
 
         // Add to media table
         await supabase.from("media").insert({
           memorial_id: memorialId,
+          media_type: "image",
           url: photoUrl.publicUrl,
-          type: "image",
           caption: `Photo ${Number.parseInt(key.split("_").pop() || "0") + 1}`,
           display_order: Number.parseInt(key.split("_").pop() || "0") + 1,
+        })
+      }
+    }
+
+    // Process videos
+    const videoKeys = Array.from(formData.keys()).filter((key) => key.startsWith("videos_"))
+
+    for (const key of videoKeys) {
+      const video = formData.get(key) as File
+
+      if (video && video.size > 0) {
+        const videoExt = video.name.split(".").pop()
+        const videoPath = `memorials/${memorialId}/videos/${uuidv4()}.${videoExt}`
+
+        const { error: videoUploadError } = await supabase.storage.from(BUCKET_NAME).upload(videoPath, video)
+
+        if (videoUploadError) {
+          console.error(`Error uploading video ${key}:`, videoUploadError)
+          continue
+        }
+
+        // Get the public URL
+        const { data: videoUrl } = supabase.storage.from(BUCKET_NAME).getPublicUrl(videoPath)
+
+        // Add to media table
+        await supabase.from("media").insert({
+          memorial_id: memorialId,
+          media_type: "video",
+          url: videoUrl.publicUrl,
+          caption: `Video ${Number.parseInt(key.split("_").pop() || "0") + 1}`,
+          display_order: 1000 + Number.parseInt(key.split("_").pop() || "0"), // Put videos after images
         })
       }
     }
@@ -157,9 +205,7 @@ export async function createMemorial(formData: FormData) {
               const photoExt = photoFile.name.split(".").pop()
               const photoPath = `memorials/${memorialId}/family/${familyMember.id}.${photoExt}`
 
-              const { error: photoUploadError } = await supabase.storage
-                .from("memorial-images")
-                .upload(photoPath, photoFile)
+              const { error: photoUploadError } = await supabase.storage.from(BUCKET_NAME).upload(photoPath, photoFile)
 
               if (photoUploadError) {
                 console.error(`Error uploading family member photo:`, photoUploadError)
@@ -167,7 +213,7 @@ export async function createMemorial(formData: FormData) {
               }
 
               // Get the public URL
-              const { data: photoUrl } = supabase.storage.from("memorial-images").getPublicUrl(photoPath)
+              const { data: photoUrl } = supabase.storage.from(BUCKET_NAME).getPublicUrl(photoPath)
 
               // Update family member with photo URL
               await supabase.from("family_members").update({ photo_url: photoUrl.publicUrl }).eq("id", familyMember.id)

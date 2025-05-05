@@ -15,7 +15,7 @@ import { toast } from "@/components/ui/use-toast"
 const STEPS = [
   { id: "basic-info", title: "Basic Information" },
   { id: "biography", title: "Life Story" },
-  { id: "photos", title: "Photos" },
+  { id: "photos", title: "Photos & Videos" },
   { id: "family", title: "Family Members" },
   { id: "review", title: "Review & Create" },
 ]
@@ -31,6 +31,7 @@ export type MemorialFormData = {
   cover_image: File | null
   profile_image: File | null
   additional_photos: File[]
+  videos: File[]
   family_members: {
     id: string
     name: string
@@ -52,6 +53,7 @@ const initialFormData: MemorialFormData = {
   cover_image: null,
   profile_image: null,
   additional_photos: [],
+  videos: [],
   family_members: [],
 }
 
@@ -108,6 +110,11 @@ export function CreateMemorialFlow() {
       // Add additional photos
       formData.additional_photos.forEach((photo, index) => {
         formDataToSubmit.append(`additional_photos_${index}`, photo)
+      })
+
+      // Add videos
+      formData.videos.forEach((video, index) => {
+        formDataToSubmit.append(`videos_${index}`, video)
       })
 
       // Add family members

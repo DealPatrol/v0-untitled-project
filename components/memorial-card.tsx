@@ -1,7 +1,7 @@
-import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { SafeImage } from "@/components/safe-image"
 import type { Database } from "@/types/supabase"
 
 type Memorial = Database["public"]["Tables"]["memorials"]["Row"]
@@ -19,11 +19,12 @@ export function MemorialCard({ memorial }: MemorialCardProps) {
     <Card className="overflow-hidden border-rose-200 hover:border-rose-300 transition-colors">
       <div className="relative h-48">
         <div className="absolute inset-0 bg-gradient-to-t from-rose-500/20 to-transparent z-10" />
-        <Image
+        <SafeImage
           src={memorial.cover_image_url || "/images/memorial-1.jpg"}
           alt={memorial.name}
           fill
           className="object-cover"
+          fallbackSrc={`/placeholder.svg?height=400&width=600&text=${encodeURIComponent(memorial.name)}`}
         />
       </div>
       <CardHeader className="border-b border-rose-100">

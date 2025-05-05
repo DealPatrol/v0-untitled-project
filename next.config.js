@@ -2,8 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["localhost", "placehold.co", "via.placeholder.com"],
+    domains: ["localhost", "placehold.co", "via.placeholder.com", "memorial-qr-website.vercel.app"],
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
   experimental: {
     missingSuspenseWithCSRBailout: false,

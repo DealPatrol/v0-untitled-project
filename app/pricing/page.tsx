@@ -64,12 +64,12 @@ export default function PricingPage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Basic Plan - Now Premium */}
+            {/* Premium Plan */}
             <Card className="border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6 border-b">
                 <h2 className="text-2xl font-serif mb-2">Premium</h2>
                 <div className="flex items-baseline mb-4">
-                  <span className="text-4xl font-bold">$49.99</span>
+                  <span className="text-4xl font-bold">$79.99</span>
                   <span className="text-gray-500 ml-2">one-time</span>
                 </div>
                 <p className="text-gray-600">Perfect for a simple memorial tribute.</p>
@@ -116,9 +116,23 @@ export default function PricingPage() {
                   <Link href="/checkout?plan=premium">Choose Premium</Link>
                 </Button>
               </div>
+
+              {/* Buy Now Box */}
+              <div className="bg-gray-100 p-6 border-t border-gray-200">
+                <div className="bg-white rounded-lg p-4 shadow-md border-2 border-gray-300">
+                  <div className="text-center mb-3">
+                    <span className="text-2xl font-bold">$79.99</span>
+                    <span className="text-gray-500 ml-1">one-time payment</span>
+                  </div>
+                  <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white" size="lg" asChild>
+                    <Link href="/checkout?plan=premium&action=buy">Buy Now</Link>
+                  </Button>
+                  <p className="text-xs text-center mt-2 text-gray-500">Secure payment • Instant delivery</p>
+                </div>
+              </div>
             </Card>
 
-            {/* Standard Plan - Now Deluxe */}
+            {/* Deluxe Plan */}
             <Card className="border-2 border-blue-500 rounded-xl overflow-hidden shadow-lg relative">
               <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
                 MOST POPULAR
@@ -126,7 +140,7 @@ export default function PricingPage() {
               <div className="p-6 border-b bg-blue-50">
                 <h2 className="text-2xl font-serif mb-2">Deluxe</h2>
                 <div className="flex items-baseline mb-4">
-                  <span className="text-4xl font-bold">$79.99</span>
+                  <span className="text-4xl font-bold">$99.99</span>
                   <span className="text-gray-500 ml-2">one-time</span>
                 </div>
                 <p className="text-gray-600">Our most popular comprehensive memorial package.</p>
@@ -177,17 +191,31 @@ export default function PricingPage() {
                   <Link href="/checkout?plan=deluxe">Choose Deluxe</Link>
                 </Button>
               </div>
+
+              {/* Buy Now Box */}
+              <div className="bg-blue-50 p-6 border-t border-blue-200">
+                <div className="bg-white rounded-lg p-4 shadow-md border-2 border-blue-400">
+                  <div className="text-center mb-3">
+                    <span className="text-2xl font-bold">$99.99</span>
+                    <span className="text-gray-500 ml-1">one-time payment</span>
+                  </div>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="lg" asChild>
+                    <Link href="/checkout?plan=deluxe&action=buy">Buy Now</Link>
+                  </Button>
+                  <p className="text-xs text-center mt-2 text-gray-500">Secure payment • Instant delivery</p>
+                </div>
+              </div>
             </Card>
 
-            {/* Premium Plan */}
+            {/* Legacy Plan */}
             <Card className="border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="p-6 border-b">
+              <div className="p-6 border-b bg-rose-50">
                 <h2 className="text-2xl font-serif mb-2">Legacy</h2>
                 <div className="flex items-baseline mb-4">
-                  <span className="text-4xl font-bold">$99.99</span>
+                  <span className="text-4xl font-bold">$249.99</span>
                   <span className="text-gray-500 ml-2">one-time</span>
                 </div>
-                <p className="text-gray-600">The ultimate memorial experience for your loved one.</p>
+                <p className="text-gray-600">Full-service memorial creation by our team.</p>
                 <Button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white" asChild>
                   <Link href="/checkout?plan=legacy&action=buy">Buy Now</Link>
                 </Button>
@@ -195,23 +223,19 @@ export default function PricingPage() {
               <div className="p-6 space-y-4">
                 <div className="flex items-start">
                   <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <span>We create the memorial page for you</span>
+                </div>
+                <div className="flex items-start">
+                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <span>Simply email us your photos and information</span>
+                </div>
+                <div className="flex items-start">
+                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                   <span>3 Premium QR codes (different designs)</span>
                 </div>
                 <div className="flex items-start">
                   <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Deluxe memorial page</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Unlimited photos & videos</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Audio tributes & voice messages</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Interactive family tree</span>
+                  <span>Professional biography writing</span>
                 </div>
                 <div className="flex items-start">
                   <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
@@ -234,6 +258,20 @@ export default function PricingPage() {
                 <Button variant="outline" className="w-full" asChild>
                   <Link href="/checkout?plan=legacy">Choose Legacy</Link>
                 </Button>
+              </div>
+
+              {/* Buy Now Box */}
+              <div className="bg-rose-50 p-6 border-t border-rose-100">
+                <div className="bg-white rounded-lg p-4 shadow-md border-2 border-rose-300">
+                  <div className="text-center mb-3">
+                    <span className="text-2xl font-bold">$249.99</span>
+                    <span className="text-gray-500 ml-1">one-time payment</span>
+                  </div>
+                  <Button className="w-full bg-rose-600 hover:bg-rose-700 text-white" size="lg" asChild>
+                    <Link href="/checkout?plan=legacy&action=buy">Buy Now</Link>
+                  </Button>
+                  <p className="text-xs text-center mt-2 text-gray-500">Secure payment • Premium service</p>
+                </div>
               </div>
             </Card>
           </div>
@@ -262,9 +300,9 @@ export default function PricingPage() {
               </summary>
               <div className="mt-4 text-gray-600">
                 <p>
-                  The Essential plan includes 5 years of hosting, while both Premium and Legacy plans include lifetime
-                  hosting. After the initial period for the Essential plan, you can renew for a small fee to maintain
-                  your memorial page.
+                  The Premium plan includes 5 years of hosting, while both Deluxe and Legacy plans include lifetime
+                  hosting. After the initial period for the Premium plan, you can renew for a small fee to maintain your
+                  memorial page.
                 </p>
               </div>
             </details>
@@ -273,7 +311,7 @@ export default function PricingPage() {
               <summary className="font-medium text-lg cursor-pointer">Can I upgrade my plan later?</summary>
               <div className="mt-4 text-gray-600">
                 <p>
-                  Yes, you can upgrade from Essential to Premium or Legacy at any time. You'll only pay the difference
+                  Yes, you can upgrade from Premium to Deluxe or Legacy at any time. You'll only pay the difference
                   between your current plan and the new plan. All your existing content will be preserved during the
                   upgrade.
                 </p>
@@ -285,7 +323,7 @@ export default function PricingPage() {
               <div className="mt-4 text-gray-600">
                 <p>
                   Our QR codes are made with weather-resistant materials designed to withstand outdoor conditions for
-                  years. They're UV-resistant, waterproof, and can handle temperature extremes. The Premium and Legacy
+                  years. They're UV-resistant, waterproof, and can handle temperature extremes. The Deluxe and Legacy
                   plans include our highest quality materials for maximum durability.
                 </p>
               </div>
@@ -298,7 +336,7 @@ export default function PricingPage() {
               <div className="mt-4 text-gray-600">
                 <p>
                   Yes, all plans allow you to invite family members to contribute stories, photos, and memories. The
-                  Premium and Legacy plans offer more advanced permission controls, allowing you to decide who can view
+                  Deluxe and Legacy plans offer more advanced permission controls, allowing you to decide who can view
                   and who can contribute to different sections of the memorial.
                 </p>
               </div>

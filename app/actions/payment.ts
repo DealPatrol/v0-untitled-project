@@ -2,6 +2,7 @@
 
 import { createServerSupabaseClient } from "@/lib/supabase"
 import Stripe from "stripe"
+import { createOrderFulfillment, getOrderFulfillment, updateOrderFulfillment } from "./drop-shipping"
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
@@ -13,6 +14,7 @@ export type CheckoutItem = {
   description: string
   price: number
   quantity: number
+  product_type?: string // Added product_type for drop shipping
 }
 
 export type ShippingInfo = {
@@ -122,6 +124,13 @@ export async function createOrder(
         throw new Error("Failed to create order")
       }
 
+      // For each item, create a fulfillment record
+      for (const item of items) {
+        if (item.product_type) {
+          await createOrderFulfillment(order.id, item.product_type)
+        }
+      }
+
       return {
         orderId: order.id,
         redirectUrl: session.url || "/checkout/confirmation",
@@ -167,6 +176,13 @@ export async function createOrder(
 
       await Promise.all(qrCodePromises)
 
+      // For each item, create a fulfillment record
+      for (const item of items) {
+        if (item.product_type) {
+          await createOrderFulfillment(order.id, item.product_type)
+        }
+      }
+
       return {
         orderId: order.id,
         redirectUrl: `/checkout/confirmation?order_id=${order.id}`,
@@ -183,14 +199,21 @@ export async function createOrder(
 export async function getOrderDetails(orderId: string) {
   try {
     const supabase = createServerSupabaseClient()
-    const { data, error } = await supabase.from("orders").select("*").eq("id", orderId).single()
+    const { data: order, error } = await supabase.from("orders").select("*").eq("id", orderId).single()
 
     if (error) {
       console.error("Error retrieving order:", error)
       throw new Error("Failed to retrieve order")
     }
 
-    return data
+    // Get fulfillment information
+    const { fulfillment, error: fulfillmentError } = await getOrderFulfillment(orderId)
+
+    if (!fulfillmentError && fulfillment) {
+      order.fulfillment = fulfillment
+    }
+
+    return order
   } catch (error) {
     console.error("Error retrieving order:", error)
     throw new Error("Failed to retrieve order")
@@ -205,6 +228,13 @@ export async function getCheckoutSession(sessionId: string) {
     const { data: order, error } = await supabase.from("orders").select("*").eq("stripe_session_id", sessionId).single()
 
     if (order) {
+      // Get fulfillment information
+      const { fulfillment, error: fulfillmentError } = await getOrderFulfillment(order.id)
+
+      if (!fulfillmentError && fulfillment) {
+        order.fulfillment = fulfillment
+      }
+
       return order
     }
 
@@ -234,15 +264,24 @@ export async function getCheckoutSession(sessionId: string) {
       await Promise.all(qrCodePromises)
 
       // Update or create the order in our database
-      await supabase.from("orders").upsert({
-        stripe_session_id: session.id,
-        user_id: session.metadata?.user_id,
-        reference_number: `MQR-${Math.floor(100000 + Math.random() * 900000)}`,
-        payment_method: "stripe",
-        status: session.payment_status === "paid" ? "paid" : "pending",
-        amount: session.amount_total ? session.amount_total / 100 : 0,
-        metadata: session.metadata,
-      })
+      const { data: newOrder } = await supabase
+        .from("orders")
+        .upsert({
+          stripe_session_id: session.id,
+          user_id: session.metadata?.user_id,
+          reference_number: `MQR-${Math.floor(100000 + Math.random() * 900000)}`,
+          payment_method: "stripe",
+          status: session.payment_status === "paid" ? "paid" : "pending",
+          amount: session.amount_total ? session.amount_total / 100 : 0,
+          metadata: session.metadata,
+        })
+        .select()
+        .single()
+
+      // Create fulfillment records for the order
+      if (newOrder && session.metadata?.product_type) {
+        await createOrderFulfillment(newOrder.data.id, session.metadata.product_type)
+      }
     }
 
     return {
@@ -262,6 +301,22 @@ export async function updateOrderWithPaymentStatus(orderId: string, status: stri
   try {
     const supabase = createServerSupabaseClient()
     await supabase.from("orders").update({ status }).eq("id", orderId)
+
+    // If the order is paid, update the fulfillment status
+    if (status === "paid") {
+      const { data: fulfillments } = await supabase
+        .from("order_fulfillments")
+        .select("*")
+        .eq("order_id", orderId)
+        .eq("status", "pending")
+
+      if (fulfillments && fulfillments.length > 0) {
+        for (const fulfillment of fulfillments) {
+          await updateOrderFulfillment(fulfillment.id, { status: "processing" })
+        }
+      }
+    }
+
     return { success: true }
   } catch (error) {
     console.error("Error updating order status:", error)

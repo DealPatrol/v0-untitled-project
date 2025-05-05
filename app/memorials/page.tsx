@@ -1,8 +1,8 @@
-import Image from "next/image"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { MemorialCard } from "@/components/memorial-card"
+import { SafeImage } from "@/components/safe-image"
 
 export const metadata: Metadata = {
   title: "Memorial Examples | Memorial QR",
@@ -42,7 +42,7 @@ const sampleMemorials = [
     birth_date: "1970-04-18",
     death_date: "2023-05-29",
     bio: "Sarah was an accomplished artist and environmental advocate. Her paintings captured the beauty of nature she fought so hard to protect. Her spirit lives on through her artwork and the causes she championed.",
-    cover_image_url: "/placeholder.svg?height=400&width=600&text=Sarah+Collins",
+    cover_image_url: "/images/memorial-4.jpg",
   },
   {
     id: "sample-5",
@@ -50,7 +50,7 @@ const sampleMemorials = [
     birth_date: "1928-09-30",
     death_date: "2020-11-11",
     bio: "Thomas was a World War II veteran who later became a respected doctor in his community. His dedication to helping others and his stories of resilience continue to inspire his family and friends.",
-    cover_image_url: "/placeholder.svg?height=400&width=600&text=Thomas+Miller",
+    cover_image_url: "/images/memorial-5.jpg",
   },
   {
     id: "sample-6",
@@ -58,7 +58,7 @@ const sampleMemorials = [
     birth_date: "1965-12-25",
     death_date: "2022-03-08",
     bio: "Grace was a talented chef and loving mother. Her kitchen was the heart of her home, where she created not just meals but memories. Her recipes and wisdom continue to nourish those she left behind.",
-    cover_image_url: "/placeholder.svg?height=400&width=600&text=Grace+Lee",
+    cover_image_url: "/images/memorial-6.jpg",
   },
 ]
 
@@ -79,7 +79,14 @@ export default function MemorialsPage() {
         <div className="bg-white rounded-xl shadow-md overflow-hidden mb-16">
           <div className="md:flex">
             <div className="md:w-1/2 relative h-64 md:h-auto">
-              <Image src="/images/memorial-1.jpg" alt="Featured Memorial" fill className="object-cover" priority />
+              <SafeImage
+                src="/images/memorial-1.jpg"
+                alt="Featured Memorial"
+                fill
+                className="object-cover"
+                priority
+                fallbackSrc="/placeholder.svg?height=600&width=800&text=Robert+James+Anderson"
+              />
             </div>
             <div className="md:w-1/2 p-8">
               <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Featured Memorial</div>

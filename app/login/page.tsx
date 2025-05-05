@@ -2,28 +2,39 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { getSupabaseBrowserClient } from "@/lib/supabase"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, CheckCircle } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    // Check if user just registered
+    const registered = searchParams.get("registered")
+    if (registered === "true") {
+      setSuccessMessage("Account created successfully! Please sign in with your new credentials.")
+    }
+  }, [searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setSuccessMessage(null)
     setIsLoading(true)
 
     try {
@@ -75,6 +86,12 @@ export default function LoginPage() {
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-start mb-4">
                   <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
                   <span>{error}</span>
+                </div>
+              )}
+              {successMessage && (
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md flex items-start mb-4">
+                  <CheckCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>{successMessage}</span>
                 </div>
               )}
               <form onSubmit={handleLogin} className="space-y-4">

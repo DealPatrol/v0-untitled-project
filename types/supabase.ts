@@ -241,6 +241,161 @@ export interface Database {
           updated_at?: string
         }
       }
+      orders: {
+        Row: {
+          id: string
+          user_id: string | null
+          reference_number: string
+          payment_method: string
+          status: string
+          amount: number
+          stripe_session_id: string | null
+          metadata: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          reference_number: string
+          payment_method: string
+          status: string
+          amount: number
+          stripe_session_id?: string | null
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          reference_number?: string
+          payment_method?: string
+          status?: string
+          amount?: number
+          stripe_session_id?: string | null
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      suppliers: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          website: string | null
+          api_key: string | null
+          api_endpoint: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone?: string | null
+          website?: string | null
+          api_key?: string | null
+          api_endpoint?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          website?: string | null
+          api_key?: string | null
+          api_endpoint?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      product_suppliers: {
+        Row: {
+          id: string
+          product_type: string
+          supplier_id: string
+          supplier_product_id: string | null
+          cost: number
+          processing_time: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_type: string
+          supplier_id: string
+          supplier_product_id?: string | null
+          cost: number
+          processing_time?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_type?: string
+          supplier_id?: string
+          supplier_product_id?: string | null
+          cost?: number
+          processing_time?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      order_fulfillments: {
+        Row: {
+          id: string
+          order_id: string
+          supplier_id: string
+          supplier_order_id: string | null
+          status: string
+          tracking_number: string | null
+          tracking_url: string | null
+          shipping_carrier: string | null
+          estimated_delivery_date: string | null
+          actual_delivery_date: string | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          supplier_id: string
+          supplier_order_id?: string | null
+          status?: string
+          tracking_number?: string | null
+          tracking_url?: string | null
+          shipping_carrier?: string | null
+          estimated_delivery_date?: string | null
+          actual_delivery_date?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          supplier_id?: string
+          supplier_order_id?: string | null
+          status?: string
+          tracking_number?: string | null
+          tracking_url?: string | null
+          shipping_carrier?: string | null
+          estimated_delivery_date?: string | null
+          actual_delivery_date?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -257,3 +412,8 @@ export interface Database {
 // Helper types for the family tree
 export type FamilyMember = Database["public"]["Tables"]["family_members"]["Row"]
 export type FamilyMemberWithChildren = FamilyMember & { children?: FamilyMemberWithChildren[] }
+
+// Helper types for suppliers and drop shipping
+export type Supplier = Database["public"]["Tables"]["suppliers"]["Row"]
+export type ProductSupplier = Database["public"]["Tables"]["product_suppliers"]["Row"]
+export type OrderFulfillment = Database["public"]["Tables"]["order_fulfillments"]["Row"]

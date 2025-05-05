@@ -50,8 +50,8 @@ export default function RegisterPage() {
         throw signUpError
       }
 
-      // Redirect to verification page or login
-      router.push("/register/verification")
+      // Redirect to login page instead of verification or dashboard
+      router.push("/login?registered=true")
     } catch (err: any) {
       setError(err.message || "Failed to create account. Please try again.")
     } finally {

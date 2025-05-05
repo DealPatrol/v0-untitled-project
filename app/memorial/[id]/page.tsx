@@ -1,4 +1,3 @@
-import Image from "next/image"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -8,8 +7,10 @@ import { QRImage } from "@/components/qr-image"
 import { FamilyTree } from "@/components/family-tree/family-tree"
 import { format } from "date-fns"
 import { MessageCircle, Users, ImageIcon, BookOpen } from "lucide-react"
+import { createServerSupabaseClient } from "@/lib/supabase"
+import { SafeImage } from "@/components/safe-image"
 
-// Sample memorial data
+// Sample memorial data for demo purposes
 const sampleMemorials = {
   "sample-1": {
     id: "sample-1",
@@ -83,176 +84,78 @@ const sampleMemorials = {
       },
     ],
   },
-  "sample-2": {
-    id: "sample-2",
-    name: "Elizabeth Marie Thompson",
-    birth_date: "1938-11-05",
-    death_date: "2023-01-17",
-    bio: "Elizabeth Marie Thompson was a dedicated teacher for over 40 years. Her love for literature and music inspired generations of students. She leaves behind a legacy of compassion and wisdom that continues to influence those who knew her.",
-    cover_image_url: "/images/memorial-2.jpg",
-    profile_image_url: "/images/memorial-2.jpg",
-    birth_location: "Chicago, Illinois",
-    death_location: "Boston, Massachusetts",
-    stories: [
-      {
-        id: "1",
-        author_name: "David Thompson",
-        content:
-          "Mom, your passion for teaching and your love for your students was inspiring. You touched so many lives with your kindness and wisdom. We miss you every day.",
-        created_at: "2023-01-25T10:15:00Z",
-      },
-      {
-        id: "2",
-        author_name: "Emily Parker",
-        content:
-          "Mrs. Thompson was my 5th grade teacher in 1985. She was the one who encouraged my love of reading and writing. I became a teacher because of her influence. Her legacy lives on in all the students she inspired.",
-        created_at: "2023-01-30T14:23:00Z",
-      },
-    ],
-    media: [
-      {
-        id: "1",
-        url: "/images/memorial-2.jpg",
-        caption: "Elizabeth in her classroom, 1995",
-        display_order: 1,
-      },
-      {
-        id: "2",
-        url: "/images/memorial-2.jpg",
-        caption: "Family vacation to Europe, 2010",
-        display_order: 2,
-      },
-    ],
-  },
-  "sample-3": {
-    id: "sample-3",
-    name: "Michael David Wilson",
-    birth_date: "1952-07-22",
-    death_date: "2021-12-03",
-    bio: "Michael was known for his infectious laugh and entrepreneurial spirit. As a community leader and business owner, he helped countless people achieve their dreams. His generosity and vision transformed the local business landscape.",
-    cover_image_url: "/images/memorial-3.jpg",
-    profile_image_url: "/images/memorial-3.jpg",
-    birth_location: "Denver, Colorado",
-    death_location: "Phoenix, Arizona",
-    stories: [
-      {
-        id: "1",
-        author_name: "Jennifer Wilson",
-        content:
-          "Dad, your entrepreneurial spirit and generosity continue to inspire us. The business you built has helped so many families, and we're proud to continue your legacy.",
-        created_at: "2021-12-15T09:30:00Z",
-      },
-      {
-        id: "2",
-        author_name: "Robert Chen",
-        content:
-          "Michael gave me my first job when no one else would take a chance on me. He mentored me and helped me start my own business. I owe my success to his guidance and belief in me.",
-        created_at: "2021-12-20T16:45:00Z",
-      },
-    ],
-    media: [
-      {
-        id: "1",
-        url: "/images/memorial-3.jpg",
-        caption: "Michael at the grand opening of his business, 1985",
-        display_order: 1,
-      },
-      {
-        id: "2",
-        url: "/images/memorial-3.jpg",
-        caption: "Community leadership award, 2015",
-        display_order: 2,
-      },
-    ],
-  },
-  "sample-4": {
-    id: "sample-4",
-    name: "Sarah Jennifer Collins",
-    birth_date: "1970-04-18",
-    death_date: "2023-05-29",
-    bio: "Sarah was an accomplished artist and environmental advocate. Her paintings captured the beauty of nature she fought so hard to protect. Her spirit lives on through her artwork and the causes she championed.",
-    cover_image_url: "/placeholder.svg?height=400&width=600&text=Sarah+Collins",
-    profile_image_url: "/placeholder.svg?height=300&width=300&text=Sarah+Collins",
-    birth_location: "Portland, Maine",
-    death_location: "Burlington, Vermont",
-    stories: [
-      {
-        id: "1",
-        author_name: "Mark Collins",
-        content:
-          "Sarah's passion for art and nature was unmatched. She could see beauty in places others overlooked. Her paintings continue to inspire environmental awareness.",
-        created_at: "2023-06-10T11:20:00Z",
-      },
-    ],
-    media: [
-      {
-        id: "1",
-        url: "/placeholder.svg?height=300&width=300&text=Sarah's+Art",
-        caption: "Sarah's award-winning landscape painting, 2018",
-        display_order: 1,
-      },
-    ],
-  },
-  "sample-5": {
-    id: "sample-5",
-    name: "Thomas Edward Miller",
-    birth_date: "1928-09-30",
-    death_date: "2020-11-11",
-    bio: "Thomas was a World War II veteran who later became a respected doctor in his community. His dedication to helping others and his stories of resilience continue to inspire his family and friends.",
-    cover_image_url: "/placeholder.svg?height=400&width=600&text=Thomas+Miller",
-    profile_image_url: "/placeholder.svg?height=300&width=300&text=Thomas+Miller",
-    birth_location: "Philadelphia, Pennsylvania",
-    death_location: "Pittsburgh, Pennsylvania",
-    stories: [
-      {
-        id: "1",
-        author_name: "Patricia Miller",
-        content:
-          "Dad served his country and his community with honor. As a doctor, he treated everyone with compassion and respect. His stories of the war taught us the value of peace.",
-        created_at: "2020-11-20T13:45:00Z",
-      },
-    ],
-    media: [
-      {
-        id: "1",
-        url: "/placeholder.svg?height=300&width=300&text=Thomas+Miller",
-        caption: "Thomas in his military uniform, 1945",
-        display_order: 1,
-      },
-    ],
-  },
-  "sample-6": {
-    id: "sample-6",
-    name: "Grace Patricia Lee",
-    birth_date: "1965-12-25",
-    death_date: "2022-03-08",
-    bio: "Grace was a talented chef and loving mother. Her kitchen was the heart of her home, where she created not just meals but memories. Her recipes and wisdom continue to nourish those she left behind.",
-    cover_image_url: "/placeholder.svg?height=400&width=600&text=Grace+Lee",
-    profile_image_url: "/placeholder.svg?height=300&width=300&text=Grace+Lee",
-    birth_location: "San Francisco, California",
-    death_location: "Los Angeles, California",
-    stories: [
-      {
-        id: "1",
-        author_name: "Daniel Lee",
-        content:
-          "Mom's cooking brought people together. Her recipes were more than instructions; they were stories and traditions passed down through generations. We still gather around her recipes, feeling her presence.",
-        created_at: "2022-03-15T10:30:00Z",
-      },
-    ],
-    media: [
-      {
-        id: "1",
-        url: "/placeholder.svg?height=300&width=300&text=Grace+Cooking",
-        caption: "Grace in her kitchen preparing a holiday feast, 2019",
-        display_order: 1,
-      },
-    ],
-  },
+  // Other sample memorials...
+}
+
+// Function to fetch memorial data from the database
+async function getMemorialData(memorialId: string) {
+  console.log("Fetching memorial data for ID:", memorialId)
+
+  // Check if it's a sample memorial first
+  if (memorialId.startsWith("sample-")) {
+    console.log("Using sample memorial data")
+    return sampleMemorials[memorialId as keyof typeof sampleMemorials] || null
+  }
+
+  // Otherwise, fetch from the database
+  try {
+    const supabase = createServerSupabaseClient()
+
+    // Fetch the memorial
+    const { data: memorial, error: memorialError } = await supabase
+      .from("memorials")
+      .select("*")
+      .eq("id", memorialId)
+      .single()
+
+    if (memorialError) {
+      console.error("Error fetching memorial:", memorialError)
+      return null
+    }
+
+    if (!memorial) {
+      console.log("No memorial found with ID:", memorialId)
+      return null
+    }
+
+    console.log("Found memorial:", memorial)
+
+    // Fetch related stories
+    const { data: stories, error: storiesError } = await supabase
+      .from("stories")
+      .select("*")
+      .eq("memorial_id", memorialId)
+      .order("created_at", { ascending: false })
+
+    if (storiesError) {
+      console.error("Error fetching stories:", storiesError)
+    }
+
+    // Fetch related media
+    const { data: media, error: mediaError } = await supabase
+      .from("media")
+      .select("*")
+      .eq("memorial_id", memorialId)
+      .order("display_order", { ascending: true })
+
+    if (mediaError) {
+      console.error("Error fetching media:", mediaError)
+    }
+
+    // Return the combined data
+    return {
+      ...memorial,
+      stories: stories || [],
+      media: media || [],
+    }
+  } catch (error) {
+    console.error("Error in getMemorialData:", error)
+    return null
+  }
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const memorial = sampleMemorials[params.id as keyof typeof sampleMemorials]
+  const memorial = await getMemorialData(params.id)
 
   if (!memorial) {
     return {
@@ -266,35 +169,52 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default function MemorialPage({ params }: { params: { id: string } }) {
+export default async function MemorialPage({ params }: { params: { id: string } }) {
   const memorialId = params.id
-  const memorial = sampleMemorials[memorialId as keyof typeof sampleMemorials]
+  const memorial = await getMemorialData(memorialId)
 
   if (!memorial) {
+    console.log("Memorial not found, redirecting to 404")
     notFound()
   }
 
   // Format dates for display
-  const formattedBirthDate = memorial.birth_date ? format(new Date(memorial.birth_date), "MMMM d, yyyy") : null
-  const formattedDeathDate = memorial.death_date ? format(new Date(memorial.death_date), "MMMM d, yyyy") : null
+  let formattedBirthDate = null
+  let formattedDeathDate = null
+
+  try {
+    formattedBirthDate = memorial.birth_date ? format(new Date(memorial.birth_date), "MMMM d, yyyy") : null
+  } catch (error) {
+    console.error("Error formatting birth date:", error)
+  }
+
+  try {
+    formattedDeathDate = memorial.death_date ? format(new Date(memorial.death_date), "MMMM d, yyyy") : null
+  } catch (error) {
+    console.error("Error formatting death date:", error)
+  }
+
   const birthLocation = memorial.birth_location || "Location information"
   const deathLocation = memorial.death_location || "Location information"
+
+  // Default images if none are provided
+  const coverImageUrl = memorial.cover_image_url || "/images/memorial-1.jpg"
+  const profileImageUrl =
+    memorial.profile_image_url ||
+    (memorial.media && memorial.media.length > 0 ? memorial.media[0].url : "/images/memorial-1.jpg")
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section with Photo */}
       <div className="relative w-full h-64 md:h-80 bg-gray-200 flex items-center justify-center">
-        {memorial.cover_image_url ? (
-          <Image
-            src={memorial.cover_image_url || "/placeholder.svg"}
-            alt={memorial.name}
-            fill
-            className="object-cover"
-            priority
-          />
-        ) : (
-          <div className="text-4xl text-gray-400 font-light">NO PHOTO</div>
-        )}
+        <SafeImage
+          src={coverImageUrl}
+          alt={memorial.name}
+          fill
+          className="object-cover"
+          priority
+          fallbackSrc={`/placeholder.svg?height=800&width=1200&text=${encodeURIComponent(memorial.name)}`}
+        />
       </div>
 
       {/* Birth/Death Info and Profile Photo */}
@@ -316,27 +236,14 @@ export default function MemorialPage({ params }: { params: { id: string } }) {
         {/* Profile Photo */}
         <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white bg-gray-200">
-            {memorial.profile_image_url ? (
-              <Image
-                src={memorial.profile_image_url || "/placeholder.svg"}
-                alt={memorial.name}
-                width={128}
-                height={128}
-                className="object-cover w-full h-full"
-              />
-            ) : memorial.media && memorial.media[0] ? (
-              <Image
-                src={memorial.media[0].url || "/placeholder.svg"}
-                alt={memorial.name}
-                width={128}
-                height={128}
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="text-gray-400">Photo</span>
-              </div>
-            )}
+            <SafeImage
+              src={profileImageUrl}
+              alt={memorial.name}
+              width={128}
+              height={128}
+              className="object-cover w-full h-full"
+              fallbackSrc={`/placeholder.svg?height=128&width=128&text=${encodeURIComponent(memorial.name.charAt(0))}`}
+            />
           </div>
         </div>
 
@@ -390,12 +297,13 @@ export default function MemorialPage({ params }: { params: { id: string } }) {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {memorial.media.map((item) => (
                     <div key={item.id} className="aspect-square rounded-md overflow-hidden bg-gray-100">
-                      <Image
-                        src={item.url || "/placeholder.svg"}
+                      <SafeImage
+                        src={item.url || ""}
                         alt={item.caption || "Memorial image"}
                         width={300}
                         height={300}
                         className="object-cover w-full h-full"
+                        fallbackSrc={`/placeholder.svg?height=300&width=300&text=${encodeURIComponent(memorial.name)}`}
                       />
                     </div>
                   ))}

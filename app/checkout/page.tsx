@@ -22,6 +22,7 @@ export default function CheckoutPage() {
   const [quantity, setQuantity] = useState(1)
   const [selectedPlan, setSelectedPlan] = useState("premium")
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe")
+  const [notification, setNotification] = useState<string | null>(null)
 
   // Form state
   const [firstName, setFirstName] = useState("")
@@ -48,11 +49,33 @@ export default function CheckoutPage() {
     }
   }, [searchParams])
 
+  // Show notification when plan changes
+  useEffect(() => {
+    // Skip initial render
+    const planParam = searchParams.get("plan")
+    if (planParam && planParam !== selectedPlan) {
+      // Plan was changed by the user
+      const planNames = {
+        premium: "Premium",
+        deluxe: "Deluxe",
+        legacy: "Legacy",
+      }
+      setNotification(`Plan changed to ${planNames[selectedPlan as keyof typeof planNames]}`)
+
+      // Clear notification after 3 seconds
+      const timer = setTimeout(() => {
+        setNotification(null)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [selectedPlan])
+
   // Calculate prices based on quantity and plan
   const prices = {
-    premium: 49.99,
-    deluxe: 79.99,
-    legacy: 99.99,
+    premium: 79.99,
+    deluxe: 99.99,
+    legacy: 249.99,
   }
 
   const basePrice = prices[selectedPlan as keyof typeof prices]
@@ -149,7 +172,8 @@ export default function CheckoutPage() {
                 )}
 
                 <div className="mb-8">
-                  <h3 className="font-medium mb-4">Select Your Plan</h3>
+                  <h3 className="text-lg font-semibold mb-2">Select Your Plan</h3>
+                  <p className="text-gray-600 mb-4">You can change your plan here before completing your purchase.</p>
                   <RadioGroup
                     defaultValue="premium"
                     value={selectedPlan}
@@ -167,8 +191,11 @@ export default function CheckoutPage() {
                       <RadioGroupItem value="premium" id="premium" className="sr-only" />
                       <Label htmlFor="premium" className="flex flex-col cursor-pointer">
                         <span className="font-medium">Premium</span>
-                        <span className="text-2xl font-bold mt-1">$49.99</span>
-                        <span className="text-sm text-gray-500 mt-2">Standard memorial page</span>
+                        <span className="text-2xl font-bold mt-1">$79.99</span>
+                        <span className="text-sm text-gray-500 mt-2">
+                          Standard memorial page with basic features
+                          {selectedPlan === "premium" && <span className="block text-rose-500 mt-1">✓ Selected</span>}
+                        </span>
                       </Label>
                     </div>
 
@@ -183,8 +210,11 @@ export default function CheckoutPage() {
                       <RadioGroupItem value="deluxe" id="deluxe" className="sr-only" />
                       <Label htmlFor="deluxe" className="flex flex-col cursor-pointer">
                         <span className="font-medium">Deluxe</span>
-                        <span className="text-2xl font-bold mt-1">$79.99</span>
-                        <span className="text-sm text-gray-500 mt-2">Enhanced memorial page</span>
+                        <span className="text-2xl font-bold mt-1">$99.99</span>
+                        <span className="text-sm text-gray-500 mt-2">
+                          Enhanced memorial page with additional features
+                          {selectedPlan === "deluxe" && <span className="block text-rose-500 mt-1">✓ Selected</span>}
+                        </span>
                       </Label>
                     </div>
 
@@ -194,11 +224,20 @@ export default function CheckoutPage() {
                       <RadioGroupItem value="legacy" id="legacy" className="sr-only" />
                       <Label htmlFor="legacy" className="flex flex-col cursor-pointer">
                         <span className="font-medium">Legacy</span>
-                        <span className="text-2xl font-bold mt-1">$99.99</span>
-                        <span className="text-sm text-gray-500 mt-2">Premium memorial experience</span>
+                        <span className="text-2xl font-bold mt-1">$249.99</span>
+                        <span className="text-sm text-gray-500 mt-2">
+                          Full-service memorial creation by our team
+                          {selectedPlan === "legacy" && <span className="block text-rose-500 mt-1">✓ Selected</span>}
+                        </span>
                       </Label>
                     </div>
                   </RadioGroup>
+                  {notification && (
+                    <div className="mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md flex items-start">
+                      <CheckCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>{notification}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mb-8">

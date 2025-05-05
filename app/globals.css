@@ -100,4 +100,9 @@
   }
 }
 
+/* Add this to ensure sticky header has proper z-index */
+.sticky-header {
+  z-index: 1000;
+}
+
 /* Add any additional custom styles below */

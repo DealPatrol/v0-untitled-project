@@ -22,6 +22,9 @@ export function Header() {
           <Link href="/memorials" className="hover:text-rose-600 transition-colors">
             Memorials
           </Link>
+          <Link href="/ai-tools" className="hover:text-rose-600 transition-colors">
+            AI Tools
+          </Link>
         </nav>
         <div className="flex items-center space-x-4">
           <Link href="/login" className="hover:text-rose-600 transition-colors">
