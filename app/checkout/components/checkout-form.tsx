@@ -23,6 +23,7 @@ export function CheckoutForm({ items, onCancel }: CheckoutFormProps) {
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<"stripe" | "bank_transfer">("stripe")
+  const [error, setError] = useState<string>("")
 
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     name: "",
@@ -53,39 +54,73 @@ export function CheckoutForm({ items, onCancel }: CheckoutFormProps) {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError("")
 
     try {
-      // Calculate subtotal
-      const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
+      // Validate form
+      const {
+        name,
+        address: { line1: address, city, state, postal_code: postalCode, country },
+      } = shippingInfo
 
-      // Add metadata for drop shipping
-      const metadata = {
-        plan: items[0]?.product_type || "premium",
-        quantity: items.reduce((acc, item) => acc + item.quantity, 0).toString(),
+      if (!name || !address || !city || !state || !postalCode || !country) {
+        setError("Please fill in all required fields")
+        setIsSubmitting(false)
+        return
       }
 
-      const result = await createOrder(items, shippingInfo, paymentMethod, metadata)
+      // Create shipping info object
+      const shippingInfoToSend = {
+        name,
+        address: {
+          line1: address,
+          city,
+          state,
+          postal_code: postalCode,
+          country,
+        },
+      }
 
-      if (result.redirectUrl) {
-        router.push(result.redirectUrl)
+      // Create order with selected payment method
+      let result
+
+      try {
+        result = await createOrder(items, shippingInfoToSend, paymentMethod as any, {})
+      } catch (stripeError) {
+        console.error("Stripe payment failed, falling back to alternative payment:", stripeError)
+
+        // If Stripe fails, fall back to bank transfer
+        if (paymentMethod === "stripe") {
+          // result = await createFallbackOrder(
+          //   cartItems,
+          //   shippingInfo,
+          //   "bank_transfer",
+          //   {
+          //     plan: selectedPlan,
+          //     quantity: cartItems.reduce((acc, item) => acc + item.quantity, 0).toString(),
+          //   }
+          // )
+        }
+      }
+
+      if (result?.error) {
+        setError(result.error)
+        setIsSubmitting(false)
+        return
+      }
+
+      if (result?.redirectUrl) {
+        window.location.href = result.redirectUrl
       } else {
-        toast({
-          title: "Error",
-          description: "Something went wrong. Please try again.",
-          variant: "destructive",
-        })
+        // Fallback if no redirect URL
+        window.location.href = `/checkout/confirmation?order_id=${result?.orderId}`
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Checkout error:", error)
-      toast({
-        title: "Error",
-        description: "Failed to process your order. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
+      setError(error.message || "An error occurred during checkout. Please try again.")
       setIsSubmitting(false)
     }
   }

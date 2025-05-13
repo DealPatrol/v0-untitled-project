@@ -4,8 +4,13 @@ import { createServerSupabaseClient } from "@/lib/supabase"
 import Stripe from "stripe"
 import { createOrderFulfillment, getOrderFulfillment, updateOrderFulfillment } from "./drop-shipping"
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+// Initialize Stripe with proper error handling
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+if (!stripeSecretKey) {
+  console.error("Missing STRIPE_SECRET_KEY environment variable")
+}
+
+const stripe = new Stripe(stripeSecretKey || "", {
   apiVersion: "2023-10-16",
 })
 
@@ -58,6 +63,10 @@ export async function createOrder(
 
     // If payment method is Stripe, create a checkout session
     if (paymentMethod === "stripe") {
+      if (!stripeSecretKey) {
+        throw new Error("Stripe is not properly configured. Please contact support.")
+      }
+
       // Create line items for Stripe
       const lineItems = items.map((item) => ({
         price_data: {

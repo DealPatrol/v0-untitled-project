@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { AlertCircle, CheckCircle, Lock, Building, Truck, CreditCard } from "lucide-react"
 import { createOrder, type CheckoutItem, type ShippingInfo, type PaymentMethod } from "../actions/payment"
+import { createFallbackOrder } from "../actions/fallback-payment"
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -98,6 +99,7 @@ export default function CheckoutPage() {
           description: `${quantity} QR code${quantity > 1 ? "s" : ""} for memorial`,
           price: basePrice * (1 - discount),
           quantity,
+          product_type: selectedPlan, // Add product_type for drop shipping
         },
       ]
 
@@ -113,15 +115,47 @@ export default function CheckoutPage() {
         },
       }
 
-      // Create order
-      const { redirectUrl } = await createOrder(items, shippingInfo, paymentMethod, {
-        plan: selectedPlan,
-        email,
-        quantity: quantity.toString(),
-      })
+      let result
+
+      try {
+        // Try to create order with Stripe first
+        if (paymentMethod === "stripe") {
+          result = await createOrder(items, shippingInfo, paymentMethod, {
+            plan: selectedPlan,
+            email,
+            quantity: quantity.toString(),
+            product_type: selectedPlan, // Add product_type for drop shipping
+          })
+        } else {
+          // For non-Stripe payment methods
+          result = await createOrder(items, shippingInfo, paymentMethod, {
+            plan: selectedPlan,
+            email,
+            quantity: quantity.toString(),
+            product_type: selectedPlan, // Add product_type for drop shipping
+          })
+        }
+      } catch (stripeError) {
+        console.error("Payment processing error:", stripeError)
+
+        // If Stripe fails, fall back to the alternative payment method
+        if (paymentMethod === "stripe") {
+          setError("Credit card processing is temporarily unavailable. Please try an alternative payment method.")
+          setIsProcessing(false)
+          return
+        } else {
+          // For non-Stripe methods, use fallback
+          result = await createFallbackOrder(items, shippingInfo, {
+            plan: selectedPlan,
+            email,
+            quantity: quantity.toString(),
+            product_type: selectedPlan,
+          })
+        }
+      }
 
       // Redirect to confirmation page or Stripe checkout
-      router.push(redirectUrl)
+      router.push(result.redirectUrl)
     } catch (err: any) {
       setError(err.message || "Order processing failed. Please try again.")
       setIsProcessing(false)

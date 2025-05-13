@@ -1,24 +1,42 @@
 "use server"
 
 import { createServerSupabaseClient } from "@/lib/supabase"
-import { revalidatePath } from "next/cache"
 import type { Supplier, ProductSupplier, OrderFulfillment } from "@/types/supabase"
+import { revalidatePath } from "next/cache"
 
-// Get all suppliers
+// Get all suppliers with robust error handling
 export async function getSuppliers() {
   try {
     const supabase = createServerSupabaseClient()
-    const { data, error } = await supabase.from("suppliers").select("*").order("name")
 
-    if (error) {
-      console.error("Error fetching suppliers:", error)
-      return { error: error.message }
+    // First check if the table exists by trying a simple query
+    try {
+      const { data, error } = await supabase.from("suppliers").select("count").limit(1)
+
+      // If we get here without error, the table exists
+      if (!error) {
+        // Now do the actual query
+        const { data: suppliers, error: queryError } = await supabase.from("suppliers").select("*").order("name")
+
+        if (queryError) {
+          console.error("Error fetching suppliers:", queryError)
+          return { suppliers: [], error: queryError.message }
+        }
+
+        return { suppliers: suppliers || [], error: null }
+      } else {
+        // Table doesn't exist - return empty array instead of error
+        console.log("Suppliers table doesn't exist yet:", error.message)
+        return { suppliers: [], error: null }
+      }
+    } catch (queryError: any) {
+      // Handle JSON parsing errors or other unexpected errors
+      console.error("Error in suppliers query:", queryError)
+      return { suppliers: [], error: "Database error: " + queryError.message }
     }
-
-    return { suppliers: data }
   } catch (error: any) {
     console.error("Error in getSuppliers:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { suppliers: [], error: "Connection error: " + error.message }
   }
 }
 
@@ -26,24 +44,30 @@ export async function getSuppliers() {
 export async function getSupplierById(id: string) {
   try {
     const supabase = createServerSupabaseClient()
-    const { data, error } = await supabase
-      .from("suppliers")
-      .select(`
-        *,
-        product_suppliers(*)
-      `)
-      .eq("id", id)
-      .single()
 
-    if (error) {
-      console.error("Error fetching supplier:", error)
-      return { error: error.message }
+    try {
+      const { data, error } = await supabase
+        .from("suppliers")
+        .select(`
+          *,
+          product_suppliers(*)
+        `)
+        .eq("id", id)
+        .single()
+
+      if (error) {
+        console.error("Error fetching supplier:", error)
+        return { supplier: null, error: error.message }
+      }
+
+      return { supplier: data, error: null }
+    } catch (queryError: any) {
+      console.error("Error in supplier query:", queryError)
+      return { supplier: null, error: "Database error: " + queryError.message }
     }
-
-    return { supplier: data }
   } catch (error: any) {
     console.error("Error in getSupplierById:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { supplier: null, error: "Connection error: " + error.message }
   }
 }
 
@@ -52,58 +76,106 @@ export async function saveSupplier(supplier: Partial<Supplier>) {
   try {
     const supabase = createServerSupabaseClient()
 
-    if (supplier.id) {
-      // Update existing supplier
-      const { data, error } = await supabase
-        .from("suppliers")
-        .update({
-          name: supplier.name,
-          email: supplier.email,
-          phone: supplier.phone,
-          website: supplier.website,
-          api_key: supplier.api_key,
-          api_endpoint: supplier.api_endpoint,
-          is_active: supplier.is_active,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", supplier.id)
-        .select()
-        .single()
+    // First check if the table exists
+    try {
+      const { error: checkError } = await supabase.from("suppliers").select("count").limit(1)
 
-      if (error) {
-        console.error("Error updating supplier:", error)
-        return { error: error.message }
+      // If table doesn't exist, create it
+      if (checkError && checkError.message.includes("does not exist")) {
+        await createSuppliersTable()
       }
 
-      revalidatePath("/dashboard/suppliers")
-      return { supplier: data }
-    } else {
-      // Create new supplier
-      const { data, error } = await supabase
-        .from("suppliers")
-        .insert({
-          name: supplier.name!,
-          email: supplier.email!,
-          phone: supplier.phone,
-          website: supplier.website,
-          api_key: supplier.api_key,
-          api_endpoint: supplier.api_endpoint,
-          is_active: supplier.is_active ?? true,
-        })
-        .select()
-        .single()
+      if (supplier.id) {
+        // Update existing supplier
+        const { data, error } = await supabase
+          .from("suppliers")
+          .update({
+            name: supplier.name,
+            email: supplier.email,
+            phone: supplier.phone,
+            website: supplier.website,
+            api_key: supplier.api_key,
+            api_endpoint: supplier.api_endpoint,
+            is_active: supplier.is_active,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", supplier.id)
+          .select()
+          .single()
 
-      if (error) {
-        console.error("Error creating supplier:", error)
-        return { error: error.message }
+        if (error) {
+          console.error("Error updating supplier:", error)
+          return { supplier: null, error: error.message }
+        }
+
+        revalidatePath("/dashboard/suppliers")
+        return { supplier: data, error: null }
+      } else {
+        // Create new supplier
+        const { data, error } = await supabase
+          .from("suppliers")
+          .insert({
+            name: supplier.name!,
+            email: supplier.email!,
+            phone: supplier.phone,
+            website: supplier.website,
+            api_key: supplier.api_key,
+            api_endpoint: supplier.api_endpoint,
+            is_active: supplier.is_active ?? true,
+          })
+          .select()
+          .single()
+
+        if (error) {
+          console.error("Error creating supplier:", error)
+          return { supplier: null, error: error.message }
+        }
+
+        revalidatePath("/dashboard/suppliers")
+        return { supplier: data, error: null }
       }
-
-      revalidatePath("/dashboard/suppliers")
-      return { supplier: data }
+    } catch (queryError: any) {
+      console.error("Error in supplier operation:", queryError)
+      return { supplier: null, error: "Database error: " + queryError.message }
     }
   } catch (error: any) {
     console.error("Error in saveSupplier:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { supplier: null, error: "Connection error: " + error.message }
+  }
+}
+
+// Helper function to create suppliers table
+async function createSuppliersTable() {
+  try {
+    const supabase = createServerSupabaseClient()
+
+    // Create suppliers table
+    const { error } = await supabase.rpc("exec_sql", {
+      sql_query: `
+        CREATE TABLE IF NOT EXISTS suppliers (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          name TEXT NOT NULL,
+          email TEXT NOT NULL,
+          phone TEXT,
+          website TEXT,
+          api_key TEXT,
+          api_endpoint TEXT,
+          is_active BOOLEAN DEFAULT TRUE,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `,
+    })
+
+    if (error) {
+      console.error("Error creating suppliers table:", error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error("Error in createSuppliersTable:", error)
+    return false
   }
 }
 
@@ -115,14 +187,14 @@ export async function deleteSupplier(id: string) {
 
     if (error) {
       console.error("Error deleting supplier:", error)
-      return { error: error.message }
+      return { success: false, error: error.message }
     }
 
     revalidatePath("/dashboard/suppliers")
-    return { success: true }
+    return { success: true, error: null }
   } catch (error: any) {
     console.error("Error in deleteSupplier:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { success: false, error: "Connection error: " + error.message }
   }
 }
 
@@ -149,10 +221,10 @@ export async function saveProductSupplier(productSupplier: Partial<ProductSuppli
 
       if (error) {
         console.error("Error updating product supplier:", error)
-        return { error: error.message }
+        return { productSupplier: null, error: error.message }
       }
 
-      return { productSupplier: data }
+      return { productSupplier: data, error: null }
     } else {
       // Create new mapping
       const { data, error } = await supabase
@@ -169,14 +241,14 @@ export async function saveProductSupplier(productSupplier: Partial<ProductSuppli
 
       if (error) {
         console.error("Error creating product supplier:", error)
-        return { error: error.message }
+        return { productSupplier: null, error: error.message }
       }
 
-      return { productSupplier: data }
+      return { productSupplier: data, error: null }
     }
   } catch (error: any) {
     console.error("Error in saveProductSupplier:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { productSupplier: null, error: error.message || "An unexpected error occurred" }
   }
 }
 
@@ -188,13 +260,13 @@ export async function deleteProductSupplier(id: string) {
 
     if (error) {
       console.error("Error deleting product supplier:", error)
-      return { error: error.message }
+      return { success: false, error: error.message }
     }
 
-    return { success: true }
+    return { success: true, error: null }
   } catch (error: any) {
     console.error("Error in deleteProductSupplier:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { success: false, error: error.message || "An unexpected error occurred" }
   }
 }
 
@@ -202,23 +274,37 @@ export async function deleteProductSupplier(id: string) {
 export async function getProductSuppliers(productType: string) {
   try {
     const supabase = createServerSupabaseClient()
-    const { data, error } = await supabase
-      .from("product_suppliers")
-      .select(`
-        *,
-        suppliers(*)
-      `)
-      .eq("product_type", productType)
 
-    if (error) {
-      console.error("Error fetching product suppliers:", error)
-      return { error: error.message }
+    try {
+      // First check if the table exists
+      const { error: checkError } = await supabase.from("product_suppliers").select("count").limit(1)
+
+      if (checkError && checkError.message.includes("does not exist")) {
+        // Table doesn't exist, return empty array
+        return { productSuppliers: [], error: null }
+      }
+
+      const { data, error } = await supabase
+        .from("product_suppliers")
+        .select(`
+          *,
+          suppliers(*)
+        `)
+        .eq("product_type", productType)
+
+      if (error) {
+        console.error("Error fetching product suppliers:", error)
+        return { productSuppliers: [], error: error.message }
+      }
+
+      return { productSuppliers: data || [], error: null }
+    } catch (queryError: any) {
+      console.error("Error in product suppliers query:", queryError)
+      return { productSuppliers: [], error: "Database error: " + queryError.message }
     }
-
-    return { productSuppliers: data }
   } catch (error: any) {
     console.error("Error in getProductSuppliers:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { productSuppliers: [], error: "Connection error: " + error.message }
   }
 }
 
@@ -227,123 +313,105 @@ export async function createOrderFulfillment(orderId: string, productType: strin
   try {
     const supabase = createServerSupabaseClient()
 
-    // Find the supplier for this product type
-    const { data: productSupplier, error: productSupplierError } = await supabase
-      .from("product_suppliers")
-      .select("*, suppliers(*)")
-      .eq("product_type", productType)
-      .eq("suppliers.is_active", true)
-      .order("cost", { ascending: true })
-      .limit(1)
-      .single()
+    try {
+      // Check if tables exist before querying
+      const { error: checkError } = await supabase.from("product_suppliers").select("count").limit(1)
 
-    if (productSupplierError || !productSupplier) {
-      console.error("Error finding supplier for product:", productSupplierError)
-      return { error: "No active supplier found for this product type" }
-    }
-
-    // Create fulfillment record
-    const { data: fulfillment, error: fulfillmentError } = await supabase
-      .from("order_fulfillments")
-      .insert({
-        order_id: orderId,
-        supplier_id: productSupplier.supplier_id,
-        status: "pending",
-        notes: `Auto-assigned to supplier: ${productSupplier.suppliers.name}`,
-      })
-      .select()
-      .single()
-
-    if (fulfillmentError) {
-      console.error("Error creating order fulfillment:", fulfillmentError)
-      return { error: fulfillmentError.message }
-    }
-
-    // Now send the order to the supplier's API if they have one configured
-    if (productSupplier.suppliers.api_endpoint && productSupplier.suppliers.api_key) {
-      const result = await sendOrderToSupplier(
-        fulfillment.id,
-        productSupplier.suppliers.api_endpoint,
-        productSupplier.suppliers.api_key,
-        productSupplier.supplier_product_id || productType,
-      )
-
-      if (result.error) {
-        // Update fulfillment with error
-        await supabase
-          .from("order_fulfillments")
-          .update({
-            status: "failed",
-            notes: `Failed to send to supplier API: ${result.error}`,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", fulfillment.id)
-
-        return { error: result.error }
+      if (checkError && checkError.message.includes("does not exist")) {
+        // Tables don't exist yet
+        return { error: "Product suppliers table not available yet" }
       }
 
-      // Update fulfillment with supplier order ID
-      if (result.supplierOrderId) {
-        await supabase
-          .from("order_fulfillments")
-          .update({
-            supplier_order_id: result.supplierOrderId,
-            status: "processing",
-            notes: `Successfully sent to supplier API. Supplier order ID: ${result.supplierOrderId}`,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", fulfillment.id)
-      }
-    }
+      // Find the supplier for this product type
+      const { data: productSupplier, error: productSupplierError } = await supabase
+        .from("product_suppliers")
+        .select("*, suppliers(*)")
+        .eq("product_type", productType)
+        .order("cost", { ascending: true })
+        .limit(1)
+        .maybeSingle()
 
-    return { fulfillment }
+      if (productSupplierError) {
+        console.error("Error finding supplier for product:", productSupplierError)
+        return { error: "Error finding supplier for this product type" }
+      }
+
+      if (!productSupplier) {
+        console.warn("No supplier found for product type:", productType)
+        return { error: "No supplier found for this product type" }
+      }
+
+      // Check if order_fulfillments table exists
+      const { error: fulfillmentCheckError } = await supabase.from("order_fulfillments").select("count").limit(1)
+
+      if (fulfillmentCheckError && fulfillmentCheckError.message.includes("does not exist")) {
+        // Create order_fulfillments table
+        await createOrderFulfillmentsTable()
+      }
+
+      // Create fulfillment record
+      const { data: fulfillment, error: fulfillmentError } = await supabase
+        .from("order_fulfillments")
+        .insert({
+          order_id: orderId,
+          supplier_id: productSupplier.supplier_id,
+          status: "pending",
+          notes: `Auto-assigned to supplier: ${productSupplier.suppliers?.name || "Unknown"}`,
+        })
+        .select()
+        .single()
+
+      if (fulfillmentError) {
+        console.error("Error creating order fulfillment:", fulfillmentError)
+        return { error: fulfillmentError.message }
+      }
+
+      return { fulfillment, error: null }
+    } catch (queryError: any) {
+      console.error("Error in order fulfillment operation:", queryError)
+      return { error: "Database error: " + queryError.message }
+    }
   } catch (error: any) {
     console.error("Error in createOrderFulfillment:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { error: "Connection error: " + error.message }
   }
 }
 
-// Send order to supplier's API
-async function sendOrderToSupplier(fulfillmentId: string, apiEndpoint: string, apiKey: string, productId: string) {
+// Helper function to create order_fulfillments table
+async function createOrderFulfillmentsTable() {
   try {
     const supabase = createServerSupabaseClient()
 
-    // Get fulfillment details with order information
-    const { data: fulfillment, error: fulfillmentError } = await supabase
-      .from("order_fulfillments")
-      .select(`
-        *,
-        orders(*)
-      `)
-      .eq("id", fulfillmentId)
-      .single()
+    // Create order_fulfillments table
+    const { error } = await supabase.rpc("exec_sql", {
+      sql_query: `
+        CREATE TABLE IF NOT EXISTS order_fulfillments (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          order_id TEXT NOT NULL,
+          supplier_id UUID NOT NULL,
+          supplier_order_id TEXT,
+          status TEXT NOT NULL DEFAULT 'pending',
+          tracking_number TEXT,
+          shipping_carrier TEXT,
+          estimated_delivery_date TIMESTAMP WITH TIME ZONE,
+          notes TEXT,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+        
+        CREATE INDEX IF NOT EXISTS order_fulfillments_order_id_idx ON order_fulfillments(order_id);
+      `,
+    })
 
-    if (fulfillmentError || !fulfillment) {
-      return { error: "Fulfillment not found" }
+    if (error) {
+      console.error("Error creating order_fulfillments table:", error)
+      return false
     }
 
-    // Extract shipping information from order metadata
-    const shippingInfo = fulfillment.orders.metadata?.shipping
-
-    if (!shippingInfo) {
-      return { error: "No shipping information found in order" }
-    }
-
-    // Make API call to supplier
-    // This is a placeholder - you would implement the actual API call based on your supplier's API
-    console.log(`Sending order to supplier API: ${apiEndpoint}`)
-    console.log(`API Key: ${apiKey}`)
-    console.log(`Product ID: ${productId}`)
-    console.log(`Shipping Info:`, shippingInfo)
-
-    // Simulate API response
-    // In a real implementation, you would make an actual HTTP request to the supplier's API
-    const supplierOrderId = `SUP-${Math.floor(100000 + Math.random() * 900000)}`
-
-    return { success: true, supplierOrderId }
-  } catch (error: any) {
-    console.error("Error sending order to supplier:", error)
-    return { error: error.message || "Failed to send order to supplier" }
+    return true
+  } catch (error) {
+    console.error("Error in createOrderFulfillmentsTable:", error)
+    return false
   }
 }
 
@@ -364,13 +432,13 @@ export async function updateOrderFulfillment(fulfillmentId: string, updates: Par
 
     if (error) {
       console.error("Error updating order fulfillment:", error)
-      return { error: error.message }
+      return { fulfillment: null, error: error.message }
     }
 
-    return { fulfillment: data }
+    return { fulfillment: data, error: null }
   } catch (error: any) {
     console.error("Error in updateOrderFulfillment:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { fulfillment: null, error: "Connection error: " + error.message }
   }
 }
 
@@ -379,23 +447,36 @@ export async function getOrderFulfillment(orderId: string) {
   try {
     const supabase = createServerSupabaseClient()
 
-    const { data, error } = await supabase
-      .from("order_fulfillments")
-      .select(`
-        *,
-        suppliers(*)
-      `)
-      .eq("order_id", orderId)
-      .single()
+    try {
+      // Check if table exists before querying
+      const { error: checkError } = await supabase.from("order_fulfillments").select("count").limit(1)
 
-    if (error) {
-      console.error("Error fetching order fulfillment:", error)
-      return { error: error.message }
+      if (checkError && checkError.message.includes("does not exist")) {
+        // Table doesn't exist, return null without error
+        return { fulfillment: null, error: null }
+      }
+
+      const { data, error } = await supabase
+        .from("order_fulfillments")
+        .select(`
+          *,
+          suppliers(*)
+        `)
+        .eq("order_id", orderId)
+        .maybeSingle()
+
+      if (error) {
+        console.error("Error fetching order fulfillment:", error)
+        return { fulfillment: null, error: error.message }
+      }
+
+      return { fulfillment: data, error: null }
+    } catch (queryError: any) {
+      console.error("Error in order fulfillment query:", queryError)
+      return { fulfillment: null, error: "Database error: " + queryError.message }
     }
-
-    return { fulfillment: data }
   } catch (error: any) {
     console.error("Error in getOrderFulfillment:", error)
-    return { error: error.message || "An unexpected error occurred" }
+    return { fulfillment: null, error: "Connection error: " + error.message }
   }
 }

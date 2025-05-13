@@ -1,73 +1,53 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Package, Truck, Calendar, Building, AlertCircle, CreditCard } from "lucide-react"
+import Link from "next/link"
 import { getOrderDetails, getCheckoutSession } from "@/app/actions/payment"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { CheckCircle, AlertCircle } from "lucide-react"
 
 export default function ConfirmationPage() {
   const searchParams = useSearchParams()
-  const orderId = searchParams.get("order_id")
-  const sessionId = searchParams.get("session_id")
-
-  const [orderDetails, setOrderDetails] = useState<any>(null)
-  const [estimatedDelivery, setEstimatedDelivery] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
+  const [order, setOrder] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Calculate estimated delivery date (5-7 business days from now)
-    const today = new Date()
-    const deliveryDate = new Date(today)
-    deliveryDate.setDate(today.getDate() + 7) // 7 days from now
-
-    // Format the date
-    setEstimatedDelivery(
-      deliveryDate.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-      }),
-    )
-
-    // Fetch order details
     async function fetchOrderDetails() {
-      if (!orderId && !sessionId) {
-        setError("No order ID or session ID found. Please try again.")
-        setIsLoading(false)
-        return
-      }
-
       try {
-        // Get order data from database
-        let order
-        if (sessionId) {
-          order = await getCheckoutSession(sessionId)
-        } else if (orderId) {
-          order = await getOrderDetails(orderId)
-        }
+        const sessionId = searchParams.get("session_id")
+        const orderId = searchParams.get("order_id")
 
-        setOrderDetails(order)
-        setIsLoading(false)
-      } catch (err) {
+        if (sessionId) {
+          // Stripe checkout
+          const sessionDetails = await getCheckoutSession(sessionId)
+          setOrder(sessionDetails)
+        } else if (orderId) {
+          // Direct order
+          const orderDetails = await getOrderDetails(orderId)
+          setOrder(orderDetails)
+        } else {
+          setError("No order information found")
+        }
+      } catch (err: any) {
         console.error("Error fetching order details:", err)
-        setError("Failed to load order information. Please contact support.")
-        setIsLoading(false)
+        setError(err.message || "Failed to load order details")
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchOrderDetails()
-  }, [orderId, sessionId])
+  }, [searchParams])
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading order information...</p>
+          <p className="mt-4 text-gray-600">Loading order details...</p>
         </div>
       </div>
     )
@@ -75,289 +55,136 @@ export default function ConfirmationPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>Error</CardTitle>
-            <CardDescription>{error}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <Link href="/">Return to Home</Link>
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container mx-auto px-4">
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader>
+              <CardTitle className="text-red-600 flex items-center">
+                <AlertCircle className="mr-2" /> Error
+              </CardTitle>
+              <CardDescription>We encountered a problem with your order</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700">{error}</p>
+            </CardContent>
+            <CardFooter>
+              <Button asChild>
+                <Link href="/checkout">Return to Checkout</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     )
   }
 
+  const isStripePayment = order?.payment_method === "stripe"
+  const isPaid = order?.status === "paid" || order?.status === "processing"
+  const isAwaitingPayment = order?.status === "awaiting_payment"
+  const orderItems = order?.metadata?.items || []
+  const orderTotal = order?.amount || 0
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b py-4">
-        <div className="container mx-auto px-4">
-          <Link href="/" className="text-2xl font-serif flex items-center justify-center">
-            Memorial QR
-            <span className="text-yellow-400 ml-1">★</span>
-          </Link>
-        </div>
-      </header>
-
-      {/* Checkout Steps */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center">
-            <div className="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center">
-              <CheckCircle size={16} />
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="container mx-auto px-4">
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-green-100 rounded-full p-3">
+                <CheckCircle className="h-12 w-12 text-green-600" />
+              </div>
             </div>
-            <div className="text-gray-900 font-medium ml-2">Payment</div>
-            <div className="w-16 h-1 bg-green-500 mx-2"></div>
-            <div className="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center">
-              <CheckCircle size={16} />
+            <CardTitle className="text-center text-2xl">Thank You for Your Order!</CardTitle>
+            <CardDescription className="text-center">
+              {isPaid
+                ? "Your payment has been processed successfully."
+                : isAwaitingPayment
+                  ? "We've received your order and are waiting for payment."
+                  : "Your order has been received and is being processed."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="font-medium mb-2">Order Information</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="text-gray-600">Order Reference:</div>
+                <div className="font-medium">{order?.reference_number || "N/A"}</div>
+                <div className="text-gray-600">Payment Method:</div>
+                <div className="font-medium capitalize">{order?.payment_method?.replace("_", " ") || "N/A"}</div>
+                <div className="text-gray-600">Status:</div>
+                <div className="font-medium capitalize">{order?.status?.replace("_", " ") || "N/A"}</div>
+                <div className="text-gray-600">Total Amount:</div>
+                <div className="font-medium">${orderTotal.toFixed(2)}</div>
+              </div>
             </div>
-            <div className="text-gray-900 font-medium ml-2">Account</div>
-            <div className="w-16 h-1 bg-gray-900 mx-2"></div>
-            <div className="bg-gray-900 text-white w-8 h-8 rounded-full flex items-center justify-center">3</div>
-            <div className="text-gray-900 font-medium ml-2">Confirmation</div>
-          </div>
-        </div>
 
-        <div className="max-w-3xl mx-auto">
-          <Card className="mb-8">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 bg-green-100 p-3 rounded-full">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+            {isAwaitingPayment && order?.payment_method === "bank_transfer" && (
+              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                <h3 className="font-medium mb-2 text-yellow-800">Payment Instructions</h3>
+                <p className="text-sm text-yellow-800 mb-2">
+                  Please complete your payment using the following bank details:
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-yellow-800">Bank Name:</div>
+                  <div className="font-medium">Memorial Bank</div>
+                  <div className="text-yellow-800">Account Name:</div>
+                  <div className="font-medium">Memorial QR Inc.</div>
+                  <div className="text-yellow-800">Account Number:</div>
+                  <div className="font-medium">XXXX-XXXX-1234</div>
+                  <div className="text-yellow-800">Reference:</div>
+                  <div className="font-medium">{order?.reference_number}</div>
+                </div>
+                <p className="text-sm text-yellow-800 mt-2">
+                  <strong>Important:</strong> Please include your order reference number in the payment reference.
+                </p>
               </div>
-              <CardTitle className="text-2xl font-serif">Order Confirmed!</CardTitle>
-              <CardDescription>
-                Thank you for your purchase. Your order #
-                {orderDetails?.id?.substring(0, 8) || orderDetails?.stripe_session_id?.substring(0, 8)} has been
-                confirmed.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {orderDetails?.payment_method === "stripe" && (
-                <div className="bg-blue-50 p-6 rounded-lg mb-6 border border-blue-100">
-                  <div className="flex items-center mb-4">
-                    <CreditCard className="h-5 w-5 text-blue-600 mr-2" />
-                    <h3 className="font-medium text-blue-800">Payment Successful</h3>
-                  </div>
-                  <p className="text-gray-700 mb-4">
-                    Your payment of <strong>${Number.parseFloat(orderDetails?.amount).toFixed(2)}</strong> has been
-                    processed successfully.
-                  </p>
-                  <div className="bg-green-50 p-3 rounded-lg border border-green-200 flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-green-800">A receipt has been sent to your email address.</p>
-                  </div>
-                </div>
-              )}
+            )}
 
-              {orderDetails?.payment_method === "bank_transfer" && (
-                <div className="bg-blue-50 p-6 rounded-lg mb-6 border border-blue-100">
-                  <div className="flex items-center mb-4">
-                    <Building className="h-5 w-5 text-blue-600 mr-2" />
-                    <h3 className="font-medium text-blue-800">Bank Transfer Information</h3>
-                  </div>
-                  <p className="text-gray-700 mb-4">
-                    Please transfer the total amount of{" "}
-                    <strong>${Number.parseFloat(orderDetails?.amount).toFixed(2)}</strong> to our bank account using the
-                    reference number below.
-                  </p>
-                  <div className="bg-white p-4 rounded border border-blue-200 mb-4">
-                    <p className="font-medium">Bank: Memorial QR Bank</p>
-                    <p>Account Number: 1234567890</p>
-                    <p>Routing Number: 987654321</p>
-                    <p>Reference: {orderDetails?.reference_number}</p>
-                  </div>
-                  <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200 flex items-start">
-                    <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-yellow-800">
-                      Your order will be processed once we confirm your payment. Please include your reference number in
-                      the payment description.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {orderDetails?.payment_method === "pay_on_delivery" && (
-                <div className="bg-green-50 p-6 rounded-lg mb-6 border border-green-100">
-                  <div className="flex items-center mb-4">
-                    <Truck className="h-5 w-5 text-green-600 mr-2" />
-                    <h3 className="font-medium text-green-800">Pay on Delivery</h3>
-                  </div>
-                  <p className="text-gray-700 mb-4">
-                    You've selected to pay on delivery. Please have{" "}
-                    <strong>${Number.parseFloat(orderDetails?.amount).toFixed(2)}</strong> ready when your package
-                    arrives.
-                  </p>
-                  <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200 flex items-start">
-                    <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-yellow-800">
-                      Our delivery person will accept cash or card payment upon delivery of your QR code.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <div className="bg-gray-50 p-6 rounded-lg mb-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center">
-                    <Package className="h-5 w-5 text-gray-600 mr-2" />
-                    <span className="font-medium">Order Processing</span>
-                  </div>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    In Progress
-                  </span>
-                </div>
-
-                <div className="relative">
-                  <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="font-medium mb-2">Order Summary</h3>
+              <div className="border rounded-lg divide-y">
+                {orderItems.map((item: any, index: number) => (
+                  <div key={index} className="p-3 flex justify-between">
                     <div>
-                      <div className="bg-green-500 w-6 h-6 rounded-full flex items-center justify-center">
-                        <CheckCircle className="h-4 w-4 text-white" />
+                      <div className="font-medium">{item.name}</div>
+                      <div className="text-sm text-gray-600">
+                        {item.quantity} x ${item.price.toFixed(2)}
                       </div>
                     </div>
-                    <div className="flex-1 mx-4">
-                      <div className="h-1 bg-green-500"></div>
-                    </div>
-                    <div>
-                      <div className="bg-blue-500 w-6 h-6 rounded-full flex items-center justify-center">
-                        <div className="h-2 w-2 bg-white rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="flex-1 mx-4">
-                      <div className="h-1 bg-gray-300"></div>
-                    </div>
-                    <div>
-                      <div className="bg-gray-300 w-6 h-6 rounded-full flex items-center justify-center">
-                        <div className="h-2 w-2 bg-white rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="flex-1 mx-4">
-                      <div className="h-1 bg-gray-300"></div>
-                    </div>
-                    <div>
-                      <div className="bg-gray-300 w-6 h-6 rounded-full flex items-center justify-center">
-                        <div className="h-2 w-2 bg-white rounded-full"></div>
-                      </div>
-                    </div>
+                    <div className="font-medium">${(item.price * item.quantity).toFixed(2)}</div>
                   </div>
-
-                  <div className="flex justify-between text-xs text-gray-600">
-                    <div className="text-center w-16">
-                      <p>Order Placed</p>
-                    </div>
-                    <div className="text-center w-16">
-                      <p>Processing</p>
-                    </div>
-                    <div className="text-center w-16">
-                      <p>Shipped</p>
-                    </div>
-                    <div className="text-center w-16">
-                      <p>Delivered</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <Truck className="h-5 w-5 text-gray-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium">Shipping Information</p>
-                    <p className="text-gray-600 text-sm">
-                      Your QR code will be shipped to the address you provided during checkout.
-                    </p>
-                    <p className="text-gray-600 text-sm mt-1">
-                      Estimated delivery: <span className="font-medium">{estimatedDelivery}</span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <Calendar className="h-5 w-5 text-gray-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium">Next Steps</p>
-                    <p className="text-gray-600 text-sm">
-                      While your QR code is being prepared, you can start setting up your memorial page.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-center mt-8">
-                <Button asChild>
-                  <Link href="/dashboard">Go to Dashboard</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="font-medium text-lg mb-4">What to expect next</h3>
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="bg-gray-900 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                  1
-                </div>
-                <div>
-                  <p className="font-medium">Manufacturing (1-2 days)</p>
-                  <p className="text-gray-600 text-sm">Your weather-resistant QR code is being manufactured</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-gray-900 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                  2
-                </div>
-                <div>
-                  <p className="font-medium">Shipping (3-5 days)</p>
-                  <p className="text-gray-600 text-sm">Your QR code will be shipped via tracked delivery</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-gray-900 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                  3
-                </div>
-                <div>
-                  <p className="font-medium">Delivery</p>
-                  <p className="text-gray-600 text-sm">
-                    You'll receive an email notification when your QR code is delivered
-                  </p>
+                ))}
+                <div className="p-3 flex justify-between bg-gray-50">
+                  <div className="font-medium">Total</div>
+                  <div className="font-bold">${orderTotal.toFixed(2)}</div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 border-t pt-6">
-              <h4 className="font-medium mb-2">Need help?</h4>
-              <p className="text-gray-600 text-sm mb-4">
-                If you have any questions about your order, please contact our customer support team.
+            <div className="text-center text-gray-600 text-sm">
+              <p>
+                We've sent a confirmation email to{" "}
+                <span className="font-medium">{order?.metadata?.email || "your email address"}</span>.
               </p>
-              <Button variant="outline" asChild>
-                <Link href="/contact">Contact Support</Link>
-              </Button>
+              <p className="mt-1">
+                If you have any questions, please contact our{" "}
+                <Link href="/contact" className="text-rose-600 hover:text-rose-800">
+                  customer support
+                </Link>
+                .
+              </p>
             </div>
-          </div>
-        </div>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <Button asChild className="w-full">
+              <Link href="/dashboard">Go to Dashboard</Link>
+            </Button>
+            <Button variant="outline" asChild className="w-full">
+              <Link href="/">Return to Home</Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-white border-t py-6 mt-12">
-        <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} Memorial QR. All rights reserved.</p>
-          <div className="flex justify-center space-x-4 mt-2">
-            <Link href="/privacy" className="hover:text-gray-700">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-gray-700">
-              Terms of Service
-            </Link>
-            <Link href="/contact" className="hover:text-gray-700">
-              Contact Us
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
