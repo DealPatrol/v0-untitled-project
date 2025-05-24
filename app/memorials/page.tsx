@@ -1,8 +1,7 @@
 import Link from "next/link"
 import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
-import { MemorialCard } from "@/components/memorial-card"
-import { SafeImage } from "@/components/safe-image"
+import { MemorialPhoto } from "@/components/memorial-photo"
 
 export const metadata: Metadata = {
   title: "Memorial Examples | Memorial QR",
@@ -10,65 +9,39 @@ export const metadata: Metadata = {
     "Browse our collection of memorial examples to see how Memorial QR can help preserve memories of your loved ones.",
 }
 
-// Sample memorial data
+// Single sample memorial for focused development
 const sampleMemorials = [
   {
     id: "sample-1",
     name: "Robert James Anderson",
-    birth_date: "1945-03-12",
-    death_date: "2022-08-24",
+    gender: "male",
+    birth_date: "1945-03-11",
+    death_date: "2022-08-23",
     bio: "Robert was a beloved father, grandfather, and veteran who served his country with honor. His passion for woodworking and storytelling brought joy to everyone who knew him.",
-    cover_image_url: "/images/memorial-1.jpg",
-  },
-  {
-    id: "sample-2",
-    name: "Elizabeth Marie Thompson",
-    birth_date: "1938-11-05",
-    death_date: "2023-01-17",
-    bio: "Elizabeth was a dedicated teacher for over 40 years. Her love for literature and music inspired generations of students. She leaves behind a legacy of compassion and wisdom.",
-    cover_image_url: "/images/memorial-2.jpg",
-  },
-  {
-    id: "sample-3",
-    name: "Michael David Wilson",
-    birth_date: "1952-07-22",
-    death_date: "2021-12-03",
-    bio: "Michael was known for his infectious laugh and entrepreneurial spirit. As a community leader and business owner, he helped countless people achieve their dreams.",
-    cover_image_url: "/images/memorial-3.jpg",
-  },
-  {
-    id: "sample-4",
-    name: "Sarah Jennifer Collins",
-    birth_date: "1970-04-18",
-    death_date: "2023-05-29",
-    bio: "Sarah was an accomplished artist and environmental advocate. Her paintings captured the beauty of nature she fought so hard to protect. Her spirit lives on through her artwork and the causes she championed.",
-    cover_image_url: "/images/memorial-4.jpg",
-  },
-  {
-    id: "sample-5",
-    name: "Thomas Edward Miller",
-    birth_date: "1928-09-30",
-    death_date: "2020-11-11",
-    bio: "Thomas was a World War II veteran who later became a respected doctor in his community. His dedication to helping others and his stories of resilience continue to inspire his family and friends.",
-    cover_image_url: "/images/memorial-5.jpg",
-  },
-  {
-    id: "sample-6",
-    name: "Grace Patricia Lee",
-    birth_date: "1965-12-25",
-    death_date: "2022-03-08",
-    bio: "Grace was a talented chef and loving mother. Her kitchen was the heart of her home, where she created not just meals but memories. Her recipes and wisdom continue to nourish those she left behind.",
-    cover_image_url: "/images/memorial-6.jpg",
+    cover_image_url: "",
   },
 ]
 
 export default function MemorialsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      {/* Header */}
+      <header className="container mx-auto py-6 flex justify-center items-center border-b bg-white">
+        <Link href="/" className="text-2xl font-serif flex flex-col items-center">
+          <div className="flex items-center">
+            <span className="mr-2">MEMORIAL</span>
+            <span className="text-yellow-400">★</span>
+            <span className="ml-1">QR</span>
+          </div>
+          <span className="text-xs text-rose-600 font-light tracking-wide">Tradition meets innovation</span>
+        </Link>
+      </header>
+
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif mb-4">Memorial Examples</h1>
+          <h1 className="text-4xl font-serif mb-2">Memorial Examples</h1>
+          <p className="text-lg text-rose-600 font-light mb-4">Tradition meets innovation</p>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Browse our collection of memorial examples to see how Memorial QR can help preserve and share the memories
             of your loved ones for generations to come.
@@ -79,14 +52,7 @@ export default function MemorialsPage() {
         <div className="bg-white rounded-xl shadow-md overflow-hidden mb-16">
           <div className="md:flex">
             <div className="md:w-1/2 relative h-64 md:h-auto">
-              <SafeImage
-                src="/images/memorial-1.jpg"
-                alt="Featured Memorial"
-                fill
-                className="object-cover"
-                priority
-                fallbackSrc="/placeholder.svg?height=600&width=800&text=Robert+James+Anderson"
-              />
+              <MemorialPhoto src="/images/robert-wwi-uniform.jpeg" alt="Robert's grandfather in military uniform" />
             </div>
             <div className="md:w-1/2 p-8">
               <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Featured Memorial</div>
@@ -117,7 +83,21 @@ export default function MemorialsPage() {
         {/* Memorial Examples Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {sampleMemorials.map((memorial) => (
-            <MemorialCard key={memorial.id} memorial={memorial} />
+            <div key={memorial.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="relative h-64">
+                <MemorialPhoto src="/images/robert-military-portrait.jpeg" alt="Robert in military uniform" />
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-serif mb-2">{memorial.name}</h3>
+                <p className="text-gray-500 text-sm mb-3">
+                  {new Date(memorial.birth_date).getFullYear()} - {new Date(memorial.death_date).getFullYear()}
+                </p>
+                <p className="text-gray-600 mb-4 line-clamp-3">{memorial.bio}</p>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href={`/memorial/${memorial.id}`}>View Memorial</Link>
+                </Button>
+              </div>
+            </div>
           ))}
         </div>
 

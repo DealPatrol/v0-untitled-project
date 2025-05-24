@@ -1,25 +1,13 @@
 "use server"
 
 import { createServerSupabaseClient } from "@/lib/supabase"
-import Stripe from "stripe"
-import { createOrderFulfillment, getOrderFulfillment, updateOrderFulfillment } from "./drop-shipping"
-
-// Initialize Stripe with proper error handling
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY
-if (!stripeSecretKey) {
-  console.error("Missing STRIPE_SECRET_KEY environment variable")
-}
-
-const stripe = new Stripe(stripeSecretKey || "", {
-  apiVersion: "2023-10-16",
-})
 
 export type CheckoutItem = {
   name: string
   description: string
   price: number
   quantity: number
-  product_type?: string // Added product_type for drop shipping
+  product_type?: string
 }
 
 export type ShippingInfo = {
@@ -36,7 +24,7 @@ export type ShippingInfo = {
 
 export type PaymentMethod = "stripe" | "bank_transfer" | "pay_on_delivery"
 
-// Create a new order in the database
+// Create a new order in the database (without Stripe server-side operations)
 export async function createOrder(
   items: CheckoutItem[],
   shipping: ShippingInfo,
@@ -46,12 +34,10 @@ export async function createOrder(
   try {
     // Calculate total amount
     const amount = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
-
-    // Add shipping cost
     const shippingCost = 4.99
     const totalAmount = amount + shippingCost
 
-    // Generate a unique reference number for bank transfers
+    // Generate a unique reference number
     const referenceNumber = `MQR-${Math.floor(100000 + Math.random() * 900000)}`
 
     const supabase = createServerSupabaseClient()
@@ -61,146 +47,66 @@ export async function createOrder(
       data: { user },
     } = await supabase.auth.getUser()
 
-    // If payment method is Stripe, create a checkout session
-    if (paymentMethod === "stripe") {
-      if (!stripeSecretKey) {
-        throw new Error("Stripe is not properly configured. Please contact support.")
-      }
+    // For now, we'll handle all payments as alternative methods due to Stripe configuration issues
+    const finalPaymentMethod = paymentMethod === "stripe" ? "bank_transfer" : paymentMethod
+    const orderStatus = finalPaymentMethod === "bank_transfer" ? "awaiting_payment" : "pending"
 
-      // Create line items for Stripe
-      const lineItems = items.map((item) => ({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: item.name,
-            description: item.description,
-          },
-          unit_amount: Math.round(item.price * 100), // Stripe uses cents
-        },
-        quantity: item.quantity,
-      }))
-
-      // Add shipping cost as a line item
-      lineItems.push({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: "Shipping",
-            description: "Standard shipping",
-          },
-          unit_amount: Math.round(shippingCost * 100), // Stripe uses cents
-        },
-        quantity: 1,
-      })
-
-      // Create a Stripe checkout session
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: lineItems,
-        mode: "payment",
-        success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/confirmation?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout?canceled=true`,
-        shipping_address_collection: {
-          allowed_countries: ["US", "CA", "GB", "AU"],
-        },
+    // Create the order in the database
+    const { data: order, error } = await supabase
+      .from("orders")
+      .insert({
+        user_id: user?.id,
+        reference_number: referenceNumber,
+        payment_method: finalPaymentMethod,
+        status: orderStatus,
+        amount: totalAmount,
         metadata: {
+          items,
+          shipping,
           ...metadata,
-          user_id: user?.id || "anonymous",
+          original_payment_method: paymentMethod,
+          stripe_fallback: paymentMethod === "stripe" ? true : false,
         },
       })
+      .select()
+      .single()
 
-      // Create the order in the database
-      const { data: order, error } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user?.id,
-          reference_number: referenceNumber,
-          payment_method: paymentMethod,
-          status: "pending",
-          amount: totalAmount,
-          stripe_session_id: session.id,
-          metadata: {
-            items,
-            shipping,
-            ...metadata,
-          },
-        })
-        .select()
-        .single()
-
-      if (error) {
-        console.error("Error creating order:", error)
-        throw new Error("Failed to create order")
-      }
-
-      // For each item, create a fulfillment record
-      for (const item of items) {
-        if (item.product_type) {
-          await createOrderFulfillment(order.id, item.product_type)
-        }
-      }
-
-      return {
-        orderId: order.id,
-        redirectUrl: session.url || "/checkout/confirmation",
-        orderDetails: order,
-      }
-    } else {
-      // Create the order for non-Stripe payment methods
-      const { data: order, error } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user?.id,
-          reference_number: referenceNumber,
-          payment_method: paymentMethod,
-          status: paymentMethod === "bank_transfer" ? "awaiting_payment" : "pending",
-          amount: totalAmount,
-          metadata: {
-            items,
-            shipping,
-            ...metadata,
-          },
-        })
-        .select()
-        .single()
-
-      if (error) {
-        console.error("Error creating order:", error)
-        throw new Error("Failed to create order")
-      }
-
-      // Create QR codes for each item in the order
-      const qrCodePromises = []
-      for (let i = 0; i < items.reduce((acc, item) => acc + item.quantity, 0); i++) {
-        const uniqueCode = `QR-${Math.floor(100000 + Math.random() * 900000)}`
-        qrCodePromises.push(
-          supabase.from("qr_codes").insert({
-            order_id: order.id,
-            unique_code: uniqueCode,
-            design_type: metadata.plan || "premium",
-            status: "pending",
-          }),
-        )
-      }
-
-      await Promise.all(qrCodePromises)
-
-      // For each item, create a fulfillment record
-      for (const item of items) {
-        if (item.product_type) {
-          await createOrderFulfillment(order.id, item.product_type)
-        }
-      }
-
-      return {
-        orderId: order.id,
-        redirectUrl: `/checkout/confirmation?order_id=${order.id}`,
-        orderDetails: order,
-      }
+    if (error) {
+      console.error("Error creating order:", error)
+      throw new Error("Failed to create order")
     }
-  } catch (error) {
+
+    // Create QR codes for each item in the order
+    const qrCodePromises = []
+    const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0)
+
+    for (let i = 0; i < totalQuantity; i++) {
+      const uniqueCode = `QR-${Math.floor(100000 + Math.random() * 900000)}`
+      qrCodePromises.push(
+        supabase.from("qr_codes").insert({
+          order_id: order.id,
+          unique_code: uniqueCode,
+          design_type: metadata.plan || "premium",
+          status: "pending",
+        }),
+      )
+    }
+
+    try {
+      await Promise.all(qrCodePromises)
+    } catch (qrError) {
+      console.error("Error creating QR codes:", qrError)
+      // Continue even if QR code creation fails
+    }
+
+    return {
+      orderId: order.id,
+      redirectUrl: `/checkout/confirmation?order_id=${order.id}&payment_method=${finalPaymentMethod}`,
+      orderDetails: order,
+    }
+  } catch (error: any) {
     console.error("Error creating order:", error)
-    throw new Error("Failed to create order")
+    throw new Error(error.message || "Failed to create order")
   }
 }
 
@@ -215,13 +121,6 @@ export async function getOrderDetails(orderId: string) {
       throw new Error("Failed to retrieve order")
     }
 
-    // Get fulfillment information
-    const { fulfillment, error: fulfillmentError } = await getOrderFulfillment(orderId)
-
-    if (!fulfillmentError && fulfillment) {
-      order.fulfillment = fulfillment
-    }
-
     return order
   } catch (error) {
     console.error("Error retrieving order:", error)
@@ -229,75 +128,42 @@ export async function getOrderDetails(orderId: string) {
   }
 }
 
-// Get Stripe checkout session
+// Get checkout session (simplified version without Stripe dependency)
 export async function getCheckoutSession(sessionId: string) {
   try {
-    // First check if we have this session in our database
     const supabase = createServerSupabaseClient()
-    const { data: order, error } = await supabase.from("orders").select("*").eq("stripe_session_id", sessionId).single()
+
+    // Try to find order by session ID or reference number
+    const { data: order, error } = await supabase
+      .from("orders")
+      .select("*")
+      .or(`stripe_session_id.eq.${sessionId},reference_number.eq.${sessionId}`)
+      .single()
+
+    if (error) {
+      console.error("Error retrieving checkout session:", error)
+      throw new Error("Failed to retrieve checkout session")
+    }
 
     if (order) {
-      // Get fulfillment information
-      const { fulfillment, error: fulfillmentError } = await getOrderFulfillment(order.id)
-
-      if (!fulfillmentError && fulfillment) {
-        order.fulfillment = fulfillment
-      }
-
-      return order
-    }
-
-    // If not in database, get from Stripe directly
-    const session = await stripe.checkout.sessions.retrieve(sessionId)
-
-    // Create QR codes for the order if it was successful
-    if (session.payment_status === "paid") {
-      // Get metadata from the session
-      const plan = session.metadata?.plan || "premium"
-      const quantity = Number.parseInt(session.metadata?.quantity || "1")
-
-      // Create QR codes
-      const qrCodePromises = []
-      for (let i = 0; i < quantity; i++) {
-        const uniqueCode = `QR-${Math.floor(100000 + Math.random() * 900000)}`
-        qrCodePromises.push(
-          supabase.from("qr_codes").insert({
-            order_id: session.id,
-            unique_code: uniqueCode,
-            design_type: plan,
-            status: "pending",
-          }),
-        )
-      }
-
-      await Promise.all(qrCodePromises)
-
-      // Update or create the order in our database
-      const { data: newOrder } = await supabase
-        .from("orders")
-        .upsert({
-          stripe_session_id: session.id,
-          user_id: session.metadata?.user_id,
-          reference_number: `MQR-${Math.floor(100000 + Math.random() * 900000)}`,
-          payment_method: "stripe",
-          status: session.payment_status === "paid" ? "paid" : "pending",
-          amount: session.amount_total ? session.amount_total / 100 : 0,
-          metadata: session.metadata,
-        })
-        .select()
-        .single()
-
-      // Create fulfillment records for the order
-      if (newOrder && session.metadata?.product_type) {
-        await createOrderFulfillment(newOrder.data.id, session.metadata.product_type)
+      return {
+        id: order.id,
+        status: order.status,
+        amount: order.amount,
+        metadata: order.metadata,
+        reference_number: order.reference_number,
+        payment_method: order.payment_method,
       }
     }
 
+    // If no order found, return a default response
     return {
-      id: session.id,
-      status: session.payment_status,
-      amount: session.amount_total ? session.amount_total / 100 : 0,
-      metadata: session.metadata,
+      id: sessionId,
+      status: "not_found",
+      amount: 0,
+      metadata: {},
+      reference_number: sessionId,
+      payment_method: "unknown",
     }
   } catch (error) {
     console.error("Error retrieving checkout session:", error)
@@ -309,26 +175,37 @@ export async function getCheckoutSession(sessionId: string) {
 export async function updateOrderWithPaymentStatus(orderId: string, status: string) {
   try {
     const supabase = createServerSupabaseClient()
-    await supabase.from("orders").update({ status }).eq("id", orderId)
+    const { error } = await supabase.from("orders").update({ status }).eq("id", orderId)
 
-    // If the order is paid, update the fulfillment status
-    if (status === "paid") {
-      const { data: fulfillments } = await supabase
-        .from("order_fulfillments")
-        .select("*")
-        .eq("order_id", orderId)
-        .eq("status", "pending")
-
-      if (fulfillments && fulfillments.length > 0) {
-        for (const fulfillment of fulfillments) {
-          await updateOrderFulfillment(fulfillment.id, { status: "processing" })
-        }
-      }
+    if (error) {
+      console.error("Error updating order status:", error)
+      throw new Error("Failed to update order status")
     }
 
     return { success: true }
   } catch (error) {
     console.error("Error updating order status:", error)
     throw new Error("Failed to update order status")
+  }
+}
+
+// Create a simple checkout session for client-side Stripe (if needed later)
+export async function createCheckoutSession(items: CheckoutItem[]) {
+  try {
+    // For now, return the items for client-side processing
+    const amount = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
+    const shippingCost = 4.99
+    const totalAmount = amount + shippingCost
+
+    return {
+      items,
+      amount: totalAmount,
+      currency: "usd",
+      // This would be used for client-side Stripe integration
+      publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    }
+  } catch (error) {
+    console.error("Error creating checkout session:", error)
+    throw new Error("Failed to create checkout session")
   }
 }

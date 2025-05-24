@@ -8,18 +8,20 @@ import { FamilyTree } from "@/components/family-tree/family-tree"
 import { format } from "date-fns"
 import { MessageCircle, Users, ImageIcon, BookOpen } from "lucide-react"
 import { createServerSupabaseClient } from "@/lib/supabase"
-import { SafeImage } from "@/components/safe-image"
+import { PersonImage } from "@/components/person-image"
+import Image from "next/image"
 
-// Sample memorial data for demo purposes
+// Single sample memorial for focused development
 const sampleMemorials = {
   "sample-1": {
     id: "sample-1",
     name: "Robert James Anderson",
-    birth_date: "1945-03-12",
-    death_date: "2022-08-24",
-    bio: "Robert James Anderson was born on March 12, 1945, in Portland, Oregon. He was the second of four children born to James and Mary Anderson.\n\nAfter graduating high school in 1963, Robert joined the United States Army where he served with distinction for 8 years, including a tour in Vietnam. Upon returning home, he used his GI Bill to attend college, earning a degree in Engineering from Oregon State University.\n\nRobert worked for Pacific Northwest Engineering for over 30 years, where he was known for his problem-solving abilities and mentorship of younger engineers. In his spare time, he was an avid woodworker, creating beautiful furniture pieces that are still cherished by his family.\n\nHe married the love of his life, Margaret, in 1970, and together they raised three children: James, Sarah, and Michael. Robert was a devoted grandfather to his seven grandchildren, always ready with a story or a new wooden toy he had crafted.\n\nRobert was known for his infectious laugh, his unwavering integrity, and his willingness to help anyone in need. He was active in his local veterans' organization and volunteered regularly at the community woodshop, teaching classes to at-risk youth.\n\nHe passed peacefully on August 24, 2022, surrounded by his loving family. His legacy lives on through the many lives he touched and the values he instilled in his children and grandchildren.",
-    cover_image_url: "/images/robert-cover.jpg",
-    profile_image_url: "/images/robert-portrait.jpg",
+    gender: "male",
+    birth_date: "1945-03-11",
+    death_date: "2022-08-23",
+    bio: "Robert James Anderson was born on March 11, 1945, in Portland, Oregon. He was the second of four children born to James and Mary Anderson.\n\nAfter graduating high school in 1963, Robert joined the United States Army where he served with distinction for 8 years, including a tour in Vietnam. Upon returning home, he used his GI Bill to attend college, earning a degree in Engineering from Oregon State University.\n\nRobert worked for Pacific Northwest Engineering for over 30 years, where he was known for his problem-solving abilities and mentorship of younger engineers. In his spare time, he was an avid woodworker, creating beautiful furniture pieces that are still cherished by his family.\n\nHe married the love of his life, Margaret, in 1970, and together they raised three children: James, Sarah, and Michael. Robert was a devoted grandfather to his seven grandchildren, always ready with a story or a new wooden toy he had crafted.\n\nRobert was known for his infectious laugh, his unwavering integrity, and his willingness to help anyone in need. He was active in his local veterans' organization and volunteered regularly at the community woodshop, teaching classes to at-risk youth.\n\nHe passed peacefully on August 23, 2022, surrounded by his loving family. His legacy lives on through the many lives he touched and the values he instilled in his children and grandchildren.",
+    cover_image_url: "/images/robert-ocean-view.png",
+    profile_image_url: "/images/robert-vintage-uniform.jpeg",
     birth_location: "Portland, Oregon",
     death_location: "Seattle, Washington",
     stories: [
@@ -48,43 +50,54 @@ const sampleMemorials = {
     media: [
       {
         id: "1",
-        url: "/images/robert-portrait.jpg",
-        caption: "Robert at his 70th birthday celebration",
+        url: "/images/robert-vintage-uniform.jpeg",
+        caption: "Robert's grandfather in military uniform during World War I, 1918",
         display_order: 1,
       },
       {
         id: "2",
-        url: "/images/robert-fishing.jpg",
-        caption: "Fishing trip with the grandchildren, summer 2019",
+        url: "/images/robert-military-portrait.jpeg",
+        caption: "Robert following in his grandfather's footsteps, in his military uniform, 1963",
         display_order: 2,
       },
       {
         id: "3",
-        url: "/images/robert-anniversary.jpg",
-        caption: "Robert and Margaret's 50th anniversary",
+        url: "/images/robert-with-daisies.jpeg",
+        caption: "Robert enjoying a peaceful moment in the daisy field, 1975",
         display_order: 3,
       },
       {
         id: "4",
-        url: "/images/robert-workshop.jpg",
-        caption: "In his workshop crafting furniture",
+        url: "/images/robert-graduation.png",
+        caption: "Robert's college graduation from Oregon State University, 1971",
         display_order: 4,
       },
       {
         id: "5",
-        url: "/images/robert-family.jpg",
-        caption: "Family reunion, 2020",
+        url: "/images/robert-wedding.png",
+        caption: "Robert and Margaret on their wedding day, 1970",
         display_order: 5,
       },
       {
         id: "6",
-        url: "/images/robert-military.jpg",
-        caption: "Military service photo, 1965",
+        url: "/images/robert-ocean-view.png",
+        caption: "Robert's favorite view from his coastal vacation home, 2010",
         display_order: 6,
+      },
+      {
+        id: "7",
+        url: "/images/robert-fishing.png",
+        caption: "Fishing trip with the grandchildren, 2015",
+        display_order: 7,
+      },
+      {
+        id: "8",
+        url: "/images/robert-woodworking.png",
+        caption: "Robert in his workshop crafting furniture, 2018",
+        display_order: 8,
       },
     ],
   },
-  // Other sample memorials...
 }
 
 // Function to fetch memorial data from the database
@@ -197,24 +210,37 @@ export default async function MemorialPage({ params }: { params: { id: string } 
   const birthLocation = memorial.birth_location || "Location information"
   const deathLocation = memorial.death_location || "Location information"
 
-  // Default images if none are provided
-  const coverImageUrl = memorial.cover_image_url || "/images/memorial-1.jpg"
-  const profileImageUrl =
-    memorial.profile_image_url ||
-    (memorial.media && memorial.media.length > 0 ? memorial.media[0].url : "/images/memorial-1.jpg")
+  // Determine gender for the image
+  const gender = (memorial.gender as "male" | "female" | "neutral") || "neutral"
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section with Photo */}
       <div className="relative w-full h-64 md:h-80 bg-gray-200 flex items-center justify-center">
-        <SafeImage
-          src={coverImageUrl}
-          alt={memorial.name}
-          fill
-          className="object-cover"
-          priority
-          fallbackSrc={`/placeholder.svg?height=800&width=1200&text=${encodeURIComponent(memorial.name)}`}
-        />
+        <div className="absolute inset-0 overflow-hidden">
+          {memorial.cover_image_url ? (
+            <Image
+              src={memorial.cover_image_url || "/placeholder.svg"}
+              alt={`${memorial.name} memorial cover`}
+              fill
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <PersonImage
+              name={memorial.name}
+              gender={gender}
+              className="w-full h-full object-cover"
+              seed={`${memorial.id}-cover`}
+              alt={`${memorial.name} memorial cover`}
+              type="cover"
+            />
+          )}
+        </div>
+        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+        <div className="relative z-10 text-white text-center px-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-md">In Loving Memory</h1>
+        </div>
       </div>
 
       {/* Birth/Death Info and Profile Photo */}
@@ -236,20 +262,34 @@ export default async function MemorialPage({ params }: { params: { id: string } 
         {/* Profile Photo */}
         <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white bg-gray-200">
-            <SafeImage
-              src={profileImageUrl}
-              alt={memorial.name}
-              width={128}
-              height={128}
-              className="object-cover w-full h-full"
-              fallbackSrc={`/placeholder.svg?height=128&width=128&text=${encodeURIComponent(memorial.name.charAt(0))}`}
-            />
+            {memorial.profile_image_url ? (
+              <Image
+                src={memorial.profile_image_url || "/placeholder.svg"}
+                alt={`${memorial.name} profile`}
+                width={128}
+                height={128}
+                className="w-full h-full object-cover"
+                priority
+              />
+            ) : (
+              <PersonImage
+                name={memorial.name}
+                gender={gender}
+                className="w-full h-full object-cover"
+                seed={`${memorial.id}-profile`}
+                alt={`${memorial.name} profile`}
+                type="profile"
+              />
+            )}
           </div>
         </div>
 
         {/* Name */}
         <div className="text-center mt-16 mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800">{memorial.name}</h1>
+          <p className="text-gray-500 mt-2">
+            {formattedBirthDate} - {formattedDeathDate}
+          </p>
         </div>
 
         {/* Tabs Navigation */}
@@ -294,17 +334,30 @@ export default async function MemorialPage({ params }: { params: { id: string } 
           <TabsContent value="gallery" className="space-y-6">
             {memorial.media && memorial.media.length > 0 ? (
               <Card className="p-6">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {memorial.media.map((item) => (
-                    <div key={item.id} className="aspect-square rounded-md overflow-hidden bg-gray-100">
-                      <SafeImage
-                        src={item.url || ""}
-                        alt={item.caption || "Memorial image"}
-                        width={300}
-                        height={300}
-                        className="object-cover w-full h-full"
-                        fallbackSrc={`/placeholder.svg?height=300&width=300&text=${encodeURIComponent(memorial.name)}`}
-                      />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {memorial.media.map((item, index) => (
+                    <div key={item.id} className="space-y-2">
+                      <div className="aspect-square rounded-md overflow-hidden bg-gray-100">
+                        {item.url ? (
+                          <Image
+                            src={item.url || "/placeholder.svg"}
+                            alt={item.caption || `Memorial image ${index + 1}`}
+                            width={400}
+                            height={400}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <PersonImage
+                            name={item.caption || `Memorial image ${index + 1}`}
+                            gender={gender}
+                            className="w-full h-full object-cover"
+                            seed={`${memorial.id}-gallery-${index}`}
+                            alt={item.caption || `Memorial image ${index + 1}`}
+                            type="gallery"
+                          />
+                        )}
+                      </div>
+                      {item.caption && <p className="text-sm text-gray-600 text-center">{item.caption}</p>}
                     </div>
                   ))}
                 </div>

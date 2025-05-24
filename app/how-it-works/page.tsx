@@ -27,9 +27,12 @@ export default function HowItWorksPage() {
           </svg>
         </button>
         <div className="text-center flex-grow lg:flex-grow-0">
-          <Link href="/" className="text-2xl font-serif flex items-center justify-center">
-            Memorial QR
-            <span className="text-yellow-400 ml-1">★</span>
+          <Link href="/" className="text-2xl font-serif flex flex-col items-center justify-center">
+            <div className="flex items-center">
+              Memorial QR
+              <span className="text-yellow-400 ml-1">★</span>
+            </div>
+            <span className="text-xs text-rose-600 font-light tracking-wide">Tradition meets innovation</span>
           </Link>
         </div>
         <div className="hidden lg:flex space-x-6 flex-grow justify-center">
@@ -73,7 +76,8 @@ export default function HowItWorksPage() {
       {/* Hero Section */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto text-center">
-          <h1 className="text-4xl font-serif mb-6">How Memorial QR Works</h1>
+          <h1 className="text-4xl font-serif mb-2">How Memorial QR Works</h1>
+          <p className="text-lg text-rose-600 font-light mb-4">Tradition meets innovation</p>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Our innovative QR code technology connects physical memorials with digital memories, creating a lasting
             tribute that can be accessed for generations to come.
@@ -482,7 +486,10 @@ export default function HowItWorksPage() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto grid md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-serif mb-4">Memorial QR</h3>
+            <div className="flex flex-col items-start mb-4">
+              <h3 className="text-xl font-serif">Memorial QR</h3>
+              <span className="text-xs text-gray-400 font-light">Tradition meets innovation</span>
+            </div>
             <p className="text-gray-400">Preserving memories for generations to come with innovative QR technology.</p>
           </div>
           <div>

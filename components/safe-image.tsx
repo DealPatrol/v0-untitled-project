@@ -29,23 +29,26 @@ export function SafeImage({
 }: SafeImageProps) {
   const [error, setError] = useState(false)
 
-  // Clean up the src URL if needed
-  const cleanSrc = src?.startsWith("//") ? `https:${src}` : src
+  // Handle empty or invalid src
+  const validSrc = src && typeof src === "string" && src.trim() !== "" ? src : fallbackSrc
 
-  // Use fallback if there's an error or no src
-  const imageSrc = error || !cleanSrc ? fallbackSrc : cleanSrc
+  // Use static import for common image formats
+  const imgSrc = error ? fallbackSrc : validSrc
 
   return (
-    <Image
-      src={imageSrc || "/placeholder.svg"}
-      alt={alt}
-      width={!fill ? width : undefined}
-      height={!fill ? height : undefined}
-      fill={fill}
-      className={cn(className)}
-      priority={priority}
-      quality={quality}
-      onError={() => setError(true)}
-    />
+    <div className={cn("relative overflow-hidden", fill ? "w-full h-full" : "")}>
+      <Image
+        src={imgSrc || "/placeholder.svg"}
+        alt={alt}
+        width={!fill ? width || 300 : undefined}
+        height={!fill ? height || 300 : undefined}
+        fill={fill}
+        className={cn("object-cover", className)}
+        priority={priority}
+        quality={quality}
+        onError={() => setError(true)}
+        unoptimized={true} // This helps with Safari compatibility
+      />
+    </div>
   )
 }

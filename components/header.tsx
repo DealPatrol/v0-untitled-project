@@ -6,10 +6,13 @@ export function Header() {
     <header className="bg-white text-rose-800 shadow-sm py-4">
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link href="/" className="text-2xl font-serif flex items-center">
-            <span className="mr-2">MEMORIAL</span>
-            <span className="text-yellow-400">★</span>
-            <span className="ml-1">QR</span>
+          <Link href="/" className="text-2xl font-serif flex flex-col items-center">
+            <div className="flex items-center">
+              <span className="mr-2">MEMORIAL</span>
+              <span className="text-yellow-400">★</span>
+              <span className="ml-1">QR</span>
+            </div>
+            <span className="text-xs text-rose-600 font-light tracking-wide">Tradition meets innovation</span>
           </Link>
         </div>
         <nav className="hidden md:flex space-x-6">

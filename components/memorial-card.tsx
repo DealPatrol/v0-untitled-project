@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { SafeImage } from "@/components/safe-image"
+import { PersonImage } from "@/components/person-image"
 import type { Database } from "@/types/supabase"
 
 type Memorial = Database["public"]["Tables"]["memorials"]["Row"]
@@ -15,17 +15,23 @@ export function MemorialCard({ memorial }: MemorialCardProps) {
   const deathYear = memorial.death_date ? new Date(memorial.death_date).getFullYear() : null
   const yearsText = birthYear && deathYear ? `${birthYear} - ${deathYear}` : ""
 
+  // Determine gender for the image
+  const gender = (memorial.gender as "male" | "female" | "neutral") || "neutral"
+
   return (
     <Card className="overflow-hidden border-rose-200 hover:border-rose-300 transition-colors">
       <div className="relative h-48">
         <div className="absolute inset-0 bg-gradient-to-t from-rose-500/20 to-transparent z-10" />
-        <SafeImage
-          src={memorial.cover_image_url || "/images/memorial-1.jpg"}
-          alt={memorial.name}
-          fill
-          className="object-cover"
-          fallbackSrc={`/placeholder.svg?height=400&width=600&text=${encodeURIComponent(memorial.name)}`}
-        />
+        <div className="absolute inset-0">
+          <PersonImage
+            name={memorial.name}
+            gender={gender}
+            className="w-full h-full object-cover"
+            seed={`${memorial.id}-card`}
+            alt={`${memorial.name} memorial card`}
+            type="cover"
+          />
+        </div>
       </div>
       <CardHeader className="border-b border-rose-100">
         <CardTitle className="text-rose-900">{memorial.name}</CardTitle>

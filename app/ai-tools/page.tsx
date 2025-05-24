@@ -25,6 +25,7 @@ export default function AIToolsPage() {
       <div className="container mx-auto py-8 px-4">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-serif mb-2">Memorial QR AI Tools</h1>
+          <p className="text-lg text-rose-600 font-light mb-2">Tradition meets innovation</p>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Our AI-powered tools help you create meaningful memorials, enhance photos, and find support during difficult
             times.
