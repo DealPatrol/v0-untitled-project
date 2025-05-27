@@ -27,17 +27,30 @@ export default function TestStripePage() {
     setIsProcessing(true)
 
     try {
+      console.log("Starting payment test...")
+
+      // Validate inputs
+      if (!email || !amount) {
+        throw new Error("Please fill in all required fields")
+      }
+
+      const numAmount = Number.parseFloat(amount)
+      if (isNaN(numAmount) || numAmount < 0.5) {
+        throw new Error("Amount must be at least $0.50")
+      }
+
       // Create test item
       const items: CheckoutItem[] = [
         {
           name: `Test Product (${testMode})`,
           description: `This is a test product for Stripe integration testing`,
-          price: Number.parseFloat(amount),
+          price: numAmount,
           quantity: 1,
+          product_type: "test",
         },
       ]
 
-      // Dummy shipping info (not used for Stripe checkout)
+      // Dummy shipping info
       const shippingInfo: ShippingInfo = {
         name: "Test User",
         address: {
@@ -49,15 +62,26 @@ export default function TestStripePage() {
         },
       }
 
+      console.log("Creating order with items:", items)
+
       // Create order with Stripe payment method
-      const { redirectUrl } = await createOrder(items, shippingInfo, "stripe", {
+      const result = await createOrder(items, shippingInfo, "stripe", {
         test_mode: testMode,
         email,
+        plan: "premium",
+        quantity: "1",
       })
 
+      console.log("Order created successfully:", result)
+
       // Redirect to Stripe checkout
-      router.push(redirectUrl)
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl
+      } else {
+        throw new Error("No redirect URL received from payment processor")
+      }
     } catch (err: any) {
+      console.error("Payment test error:", err)
       setError(err.message || "Test payment processing failed. Please try again.")
       setIsProcessing(false)
     }

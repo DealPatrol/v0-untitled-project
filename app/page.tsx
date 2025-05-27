@@ -2,7 +2,8 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Heart, Users, Shield } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Check, Heart, Users, Shield, Star, Quote } from "lucide-react"
 import { LazyVideo } from "@/components/lazy-video"
 import Link from "next/link"
 
@@ -161,6 +162,163 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">What Families Are Saying</h2>
+            <p className="text-xl text-gray-600">
+              Over 10,000 families have trusted us to preserve their loved ones' memories
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Testimonial 1 - 2024 */}
+            <Card className="relative">
+              <Quote className="absolute top-4 right-4 h-8 w-8 text-rose-200" />
+              <CardContent className="pt-6">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4">
+                  "The QR code on my father's headstone has brought our family together in ways I never imagined.
+                  Relatives from across the country can now share memories and photos. It's like having a living
+                  memorial."
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">Sarah Chen</p>
+                  <p className="text-sm text-gray-500">San Francisco, CA • March 2024</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 2 - 2023 */}
+            <Card className="relative">
+              <Quote className="absolute top-4 right-4 h-8 w-8 text-rose-200" />
+              <CardContent className="pt-6">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4">
+                  "As a funeral director, I've recommended Memorial QR to dozens of families. The technology is
+                  seamless, and the emotional impact is profound. It's the future of memorialization."
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">Michael Rodriguez</p>
+                  <p className="text-sm text-gray-500">Austin, TX • September 2023</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 3 - 2023 */}
+            <Card className="relative">
+              <Quote className="absolute top-4 right-4 h-8 w-8 text-rose-200" />
+              <CardContent className="pt-6">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4">
+                  "My grandmother's memorial page has over 200 photos and stories now. Her great-grandchildren who never
+                  met her can learn about her life. It's a beautiful way to keep her spirit alive."
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">Jennifer Walsh</p>
+                  <p className="text-sm text-gray-500">Boston, MA • June 2023</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 4 - 2022 */}
+            <Card className="relative">
+              <Quote className="absolute top-4 right-4 h-8 w-8 text-rose-200" />
+              <CardContent className="pt-6">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4">
+                  "The weatherproof QR code has survived two harsh winters perfectly. The quality is exceptional, and
+                  the customer service team helped us every step of the way. Highly recommend!"
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">Robert Thompson</p>
+                  <p className="text-sm text-gray-500">Minneapolis, MN • November 2022</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 5 - 2021 */}
+            <Card className="relative">
+              <Quote className="absolute top-4 right-4 h-8 w-8 text-rose-200" />
+              <CardContent className="pt-6">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4">
+                  "During COVID when we couldn't gather for the funeral, the QR memorial allowed everyone to participate
+                  virtually. It was a blessing during such a difficult time."
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">Maria Gonzalez</p>
+                  <p className="text-sm text-gray-500">Phoenix, AZ • April 2021</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 6 - 2020 */}
+            <Card className="relative">
+              <Quote className="absolute top-4 right-4 h-8 w-8 text-rose-200" />
+              <CardContent className="pt-6">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4">
+                  "We were early adopters of Memorial QR, and it's been incredible to watch the technology evolve. Our
+                  son's memorial has become a place where his friends still visit and share memories."
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">David & Linda Park</p>
+                  <p className="text-sm text-gray-500">Seattle, WA • August 2020</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="mt-12 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              <div>
+                <div className="text-3xl font-bold text-rose-600">10,000+</div>
+                <div className="text-gray-600">Families Served</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-rose-600">4.9/5</div>
+                <div className="text-gray-600">Average Rating</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-rose-600">99.8%</div>
+                <div className="text-gray-600">Uptime</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-rose-600">5 Years</div>
+                <div className="text-gray-600">Durability Guarantee</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -197,29 +355,116 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-rose-600">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white mb-4">Start Creating Your Memorial Today</h2>
-          <p className="text-xl text-rose-100 mb-8">Honor your loved one's memory with a beautiful digital memorial</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/checkout">
-              <Button size="lg" className="bg-white text-rose-600 hover:bg-gray-100">
-                Get Started Now
-              </Button>
-            </Link>
-            <Link href="/how-it-works">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-rose-600"
-              >
-                Learn More
-              </Button>
-            </Link>
+      {/* Updated Footer with CTA and Links */}
+      <footer className="bg-slate-800 text-white">
+        {/* CTA Section */}
+        <div className="py-16">
+          <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-white mb-4">Ready to Create a Lasting Memorial?</h2>
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+              Honor your loved one with a digital memorial that preserves their memory for generations to come.
+            </p>
+            <div className="flex justify-center">
+              <Link href="/checkout">
+                <Button size="lg" className="bg-white text-slate-800 hover:bg-gray-100 px-8 py-3 text-lg">
+                  Get Started Today
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
-      </section>
+
+        {/* Footer Links */}
+        <div className="border-t border-slate-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {/* Memorial QR */}
+              <div>
+                <h3 className="text-xl font-bold text-white mb-4">Memorial QR</h3>
+                <p className="text-gray-400 mb-4">Tradition meets innovation</p>
+                <p className="text-gray-400 text-sm">
+                  Preserving memories for generations to come with innovative QR technology.
+                </p>
+              </div>
+
+              {/* Quick Links */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
+                      Products
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/how-it-works" className="text-gray-400 hover:text-white transition-colors">
+                      How It Works
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="#testimonials" className="text-gray-400 hover:text-white transition-colors">
+                      Testimonials
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/faq" className="text-gray-400 hover:text-white transition-colors">
+                      FAQ
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Customer Support */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Customer Support</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+                      Contact Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/shipping-policy" className="text-gray-400 hover:text-white transition-colors">
+                      Shipping Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/returns" className="text-gray-400 hover:text-white transition-colors">
+                      Returns & Refunds
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
+                      Privacy Policy
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Newsletter */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Newsletter</h3>
+                <p className="text-gray-400 text-sm mb-4">Subscribe to receive updates and special offers.</p>
+                <div className="flex">
+                  <Input
+                    type="email"
+                    placeholder="Your email"
+                    className="bg-slate-700 border-slate-600 text-white placeholder-gray-400 rounded-r-none"
+                  />
+                  <Button className="bg-white text-slate-800 hover:bg-gray-100 rounded-l-none">Subscribe</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="border-t border-slate-700 py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p className="text-center text-gray-400 text-sm">© 2025 Memorial QR. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

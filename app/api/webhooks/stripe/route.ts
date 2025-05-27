@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         const customerName = session.customer_details?.name || ""
 
         // Update order status in database
-        const { error: updateError } = await supabase
+        const { data: order, error: updateError } = await supabase
           .from("orders")
           .update({
             status: "paid",
@@ -50,37 +50,54 @@ export async function POST(req: NextRequest) {
             payment_date: new Date().toISOString(),
           })
           .eq("stripe_session_id", session.id)
+          .select()
+          .single()
 
         if (updateError) {
           console.error(`❌ Error updating order: ${updateError.message}`)
           return NextResponse.json({ error: "Error updating order" }, { status: 500 })
         }
 
-        // Create QR codes for the order
-        const plan = session.metadata?.plan || "premium"
-        const quantity = Number.parseInt(session.metadata?.quantity || "1")
-        const orderId = session.metadata?.order_id
+        if (order) {
+          // Create QR codes for the order
+          const plan = session.metadata?.plan || "premium"
+          const quantity = Number.parseInt(session.metadata?.quantity || "1")
 
-        // Check if QR codes already exist for this order
-        const { data: existingQrCodes } = await supabase.from("qr_codes").select("id").eq("order_id", orderId)
+          // Check if QR codes already exist for this order
+          const { data: existingQrCodes } = await supabase.from("qr_codes").select("id").eq("order_id", order.id)
 
-        // Only create QR codes if they don't exist yet
-        if (!existingQrCodes || existingQrCodes.length === 0) {
-          const qrCodePromises = []
-          for (let i = 0; i < quantity; i++) {
-            const uniqueCode = `QR-${Math.floor(100000 + Math.random() * 900000)}`
-            qrCodePromises.push(
-              supabase.from("qr_codes").insert({
-                order_id: orderId,
-                unique_code: uniqueCode,
-                design_type: plan,
-                status: "pending",
-              }),
-            )
+          // Only create QR codes if they don't exist yet
+          if (!existingQrCodes || existingQrCodes.length === 0) {
+            const qrCodePromises = []
+            for (let i = 0; i < quantity; i++) {
+              const uniqueCode = `QR-${Math.floor(100000 + Math.random() * 900000)}`
+              qrCodePromises.push(
+                supabase.from("qr_codes").insert({
+                  order_id: order.id,
+                  unique_code: uniqueCode,
+                  design_type: plan,
+                  status: "active",
+                }),
+              )
+            }
+
+            await Promise.all(qrCodePromises)
+            console.log(`✅ Created ${quantity} QR codes for order ${order.id}`)
           }
 
-          await Promise.all(qrCodePromises)
-          console.log(`✅ Created ${quantity} QR codes for order ${orderId}`)
+          // Create fulfillment record for drop shipping
+          if (order.metadata?.product_type) {
+            const { error: fulfillmentError } = await supabase.from("order_fulfillments").insert({
+              order_id: order.id,
+              supplier_id: "default-supplier-id", // You'll need to set this up
+              status: "pending",
+              notes: `Order for ${quantity} ${plan} QR codes`,
+            })
+
+            if (fulfillmentError) {
+              console.error("Error creating fulfillment:", fulfillmentError)
+            }
+          }
         }
 
         break
@@ -133,10 +150,4 @@ export async function POST(req: NextRequest) {
     console.error(`❌ Error handling webhook: ${error.message}`)
     return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 })
   }
-}
-
-export const config = {
-  api: {
-    bodyParser: false, // Don't parse the body, we need the raw body for signature verification
-  },
 }

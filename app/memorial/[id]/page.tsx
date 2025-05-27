@@ -6,11 +6,11 @@ import { Card } from "@/components/ui/card"
 import { QRImage } from "@/components/qr-image"
 import { FamilyTree } from "@/components/family-tree/family-tree"
 import { format } from "date-fns"
-import { MessageCircle, Users, ImageIcon, BookOpen } from "lucide-react"
+import { MessageCircle, Users, ImageIcon, BookOpen, Video } from "lucide-react"
 import { createServerSupabaseClient } from "@/lib/supabase"
 import { PersonImage } from "@/components/person-image"
-import Image from "next/image"
-
+import { ReliableImage } from "@/components/reliable-image"
+import { ReliableVideo } from "@/components/reliable-video"
 // Single sample memorial for focused development
 const sampleMemorials = {
   "sample-1": {
@@ -53,48 +53,60 @@ const sampleMemorials = {
         url: "/images/robert-vintage-uniform.jpeg",
         caption: "Robert's grandfather in military uniform during World War I, 1918",
         display_order: 1,
+        media_type: "image",
       },
       {
         id: "2",
         url: "/images/robert-military-portrait.jpeg",
         caption: "Robert following in his grandfather's footsteps, in his military uniform, 1963",
         display_order: 2,
+        media_type: "image",
       },
       {
         id: "3",
-        url: "/images/robert-with-daisies.jpeg",
-        caption: "Robert enjoying a peaceful moment in the daisy field, 1975",
+        url: "/images/robert-graduation.png",
+        caption: "Robert's college graduation from Oregon State University, 1971",
         display_order: 3,
+        media_type: "image",
       },
       {
         id: "4",
-        url: "/images/robert-graduation.png",
-        caption: "Robert's college graduation from Oregon State University, 1971",
+        url: "/images/robert-wedding.png",
+        caption: "Robert and Margaret on their wedding day, 1970",
         display_order: 4,
+        media_type: "image",
       },
       {
         id: "5",
-        url: "/images/robert-wedding.png",
-        caption: "Robert and Margaret on their wedding day, 1970",
+        url: "/images/robert-fishing.png",
+        caption: "Fishing trip with the grandchildren, 2015",
         display_order: 5,
+        media_type: "image",
       },
       {
         id: "6",
-        url: "/images/robert-ocean-view.png",
-        caption: "Robert's favorite view from his coastal vacation home, 2010",
-        display_order: 6,
-      },
-      {
-        id: "7",
-        url: "/images/robert-fishing.png",
-        caption: "Fishing trip with the grandchildren, 2015",
-        display_order: 7,
-      },
-      {
-        id: "8",
         url: "/images/robert-woodworking.png",
         caption: "Robert in his workshop crafting furniture, 2018",
-        display_order: 8,
+        display_order: 6,
+        media_type: "image",
+      },
+    ],
+    videos: [
+      {
+        id: "v1",
+        url: "/videos/revolutionizing-remembrance-qr.mov",
+        caption: "Robert sharing stories about his woodworking passion, 2020",
+        description: "A heartwarming video of Robert in his workshop, demonstrating his woodworking techniques.",
+        display_order: 1,
+        media_type: "video",
+      },
+      {
+        id: "v2",
+        url: "/videos/memorial-qr-demo.mp4",
+        caption: "Family gathering at Robert's 75th birthday celebration, 2020",
+        description: "A joyful family celebration with Robert surrounded by his children and grandchildren.",
+        display_order: 2,
+        media_type: "video",
       },
     ],
   },
@@ -144,7 +156,7 @@ async function getMemorialData(memorialId: string) {
       console.error("Error fetching stories:", storiesError)
     }
 
-    // Fetch related media
+    // Fetch related media (both images and videos)
     const { data: media, error: mediaError } = await supabase
       .from("media")
       .select("*")
@@ -155,11 +167,16 @@ async function getMemorialData(memorialId: string) {
       console.error("Error fetching media:", mediaError)
     }
 
+    // Separate images and videos
+    const images = media?.filter((item) => item.media_type === "image") || []
+    const videos = media?.filter((item) => item.media_type === "video") || []
+
     // Return the combined data
     return {
       ...memorial,
       stories: stories || [],
-      media: media || [],
+      media: images,
+      videos: videos,
     }
   } catch (error) {
     console.error("Error in getMemorialData:", error)
@@ -219,12 +236,14 @@ export default async function MemorialPage({ params }: { params: { id: string } 
       <div className="relative w-full h-64 md:h-80 bg-gray-200 flex items-center justify-center">
         <div className="absolute inset-0 overflow-hidden">
           {memorial.cover_image_url ? (
-            <Image
-              src={memorial.cover_image_url || "/placeholder.svg"}
+            <ReliableImage
+              src={memorial.cover_image_url || "/images/cemetery-hero.png"}
               alt={`${memorial.name} memorial cover`}
-              fill
-              className="object-cover"
+              width={800}
+              height={320}
+              className="w-full h-full object-cover"
               priority
+              fallbackText="Memorial Cover"
             />
           ) : (
             <PersonImage
@@ -263,13 +282,14 @@ export default async function MemorialPage({ params }: { params: { id: string } 
         <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white bg-gray-200">
             {memorial.profile_image_url ? (
-              <Image
-                src={memorial.profile_image_url || "/placeholder.svg"}
+              <ReliableImage
+                src={memorial.profile_image_url || "/images/male-memorial-portrait.png"}
                 alt={`${memorial.name} profile`}
                 width={128}
                 height={128}
                 className="w-full h-full object-cover"
                 priority
+                fallbackText={memorial.name}
               />
             ) : (
               <PersonImage
@@ -294,7 +314,7 @@ export default async function MemorialPage({ params }: { params: { id: string } 
 
         {/* Tabs Navigation */}
         <Tabs defaultValue="biography" className="w-full">
-          <TabsList className="grid grid-cols-4 mb-8">
+          <TabsList className="grid grid-cols-5 mb-8">
             <TabsTrigger value="biography" className="data-[state=active]:bg-gray-100">
               <BookOpen className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Biography</span>
@@ -302,7 +322,12 @@ export default async function MemorialPage({ params }: { params: { id: string } 
             </TabsTrigger>
             <TabsTrigger value="gallery" className="data-[state=active]:bg-gray-100">
               <ImageIcon className="h-4 w-4 mr-2" />
-              Gallery
+              <span className="hidden sm:inline">Gallery</span>
+              <span className="sm:hidden">Photos</span>
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="data-[state=active]:bg-gray-100">
+              <Video className="h-4 w-4 mr-2" />
+              Videos
             </TabsTrigger>
             <TabsTrigger value="family" className="data-[state=active]:bg-gray-100">
               <Users className="h-4 w-4 mr-2" />
@@ -338,24 +363,14 @@ export default async function MemorialPage({ params }: { params: { id: string } 
                   {memorial.media.map((item, index) => (
                     <div key={item.id} className="space-y-2">
                       <div className="aspect-square rounded-md overflow-hidden bg-gray-100">
-                        {item.url ? (
-                          <Image
-                            src={item.url || "/placeholder.svg"}
-                            alt={item.caption || `Memorial image ${index + 1}`}
-                            width={400}
-                            height={400}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <PersonImage
-                            name={item.caption || `Memorial image ${index + 1}`}
-                            gender={gender}
-                            className="w-full h-full object-cover"
-                            seed={`${memorial.id}-gallery-${index}`}
-                            alt={item.caption || `Memorial image ${index + 1}`}
-                            type="gallery"
-                          />
-                        )}
+                        <ReliableImage
+                          src={item.url}
+                          alt={item.caption || `Memorial image ${index + 1}`}
+                          width={400}
+                          height={400}
+                          className="w-full h-full object-cover"
+                          fallbackText={item.caption || `Photo ${index + 1}`}
+                        />
                       </div>
                       {item.caption && <p className="text-sm text-gray-600 text-center">{item.caption}</p>}
                     </div>
@@ -365,6 +380,39 @@ export default async function MemorialPage({ params }: { params: { id: string } 
             ) : (
               <Card className="p-6 text-center">
                 <p className="text-gray-500">No photos have been added yet.</p>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Videos Tab */}
+          <TabsContent value="videos" className="space-y-6">
+            {memorial.videos && memorial.videos.length > 0 ? (
+              <div className="space-y-8">
+                {memorial.videos.map((video, index) => (
+                  <Card key={video.id} className="overflow-hidden">
+                    <ReliableVideo
+                      src={video.url}
+                      title={video.caption || `Memorial video ${index + 1}`}
+                      poster={memorial.cover_image_url}
+                      className="w-full"
+                      width={800}
+                      height={450}
+                    />
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-6 text-center">
+                <div className="space-y-4">
+                  <Video className="h-12 w-12 text-gray-400 mx-auto" />
+                  <div>
+                    <p className="text-gray-500 mb-2">No videos have been added yet.</p>
+                    <p className="text-sm text-gray-400">
+                      Videos help preserve precious memories and allow family and friends to hear their loved one's
+                      voice and see them in motion.
+                    </p>
+                  </div>
+                </div>
               </Card>
             )}
           </TabsContent>
