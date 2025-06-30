@@ -1,153 +1,194 @@
 import { type NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import { createServerSupabaseClient } from "@/lib/supabase"
-import { headers } from "next/headers"
 
-// Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-10-16",
 })
 
-// Get webhook secret from environment variables
-const webhookSecret = process.env.strip_webhook_secret || ""
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || process.env.strip_webhook_secret || ""
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await req.text()
-    const headersList = headers()
-    const signature = headersList.get("stripe-signature") || ""
+    const body = await request.text()
+    const signature = request.headers.get("stripe-signature")
+
+    if (!signature) {
+      console.error("No Stripe signature found")
+      return NextResponse.json({ error: "No signature" }, { status: 400 })
+    }
+
+    if (!webhookSecret) {
+      console.error("No webhook secret configured")
+      return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 })
+    }
 
     let event: Stripe.Event
 
     try {
-      // Verify the event came from Stripe
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-      console.log(`✅ Webhook verified: ${event.type}`)
     } catch (err: any) {
-      console.error(`⚠️ Webhook signature verification failed: ${err.message}`)
-      return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
+      console.error("Webhook signature verification failed:", err.message)
+      return NextResponse.json({ error: "Invalid signature" }, { status: 400 })
     }
+
+    console.log("Received Stripe webhook event:", event.type)
 
     const supabase = createServerSupabaseClient()
 
-    // Handle specific event types
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session
-        console.log(`💰 Payment successful for session: ${session.id}`)
 
-        // Retrieve customer information
-        const customerEmail = session.customer_details?.email || ""
-        const customerName = session.customer_details?.name || ""
+        console.log("Checkout session completed:", session.id)
 
-        // Update order status in database
-        const { data: order, error: updateError } = await supabase
+        // Find the order by Stripe session ID
+        const { data: order, error: orderError } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("stripe_session_id", session.id)
+          .single()
+
+        if (orderError || !order) {
+          console.error("Order not found for session:", session.id, orderError)
+          return NextResponse.json({ error: "Order not found" }, { status: 404 })
+        }
+
+        // Update order status to paid
+        const { error: updateError } = await supabase
           .from("orders")
           .update({
             status: "paid",
-            customer_email: customerEmail,
-            customer_name: customerName,
-            payment_date: new Date().toISOString(),
+            paid_at: new Date().toISOString(),
+            customer_email: session.customer_details?.email,
+            customer_name: session.customer_details?.name,
           })
-          .eq("stripe_session_id", session.id)
-          .select()
-          .single()
+          .eq("id", order.id)
 
         if (updateError) {
-          console.error(`❌ Error updating order: ${updateError.message}`)
-          return NextResponse.json({ error: "Error updating order" }, { status: 500 })
+          console.error("Error updating order:", updateError)
+          return NextResponse.json({ error: "Failed to update order" }, { status: 500 })
         }
 
-        if (order) {
-          // Create QR codes for the order
-          const plan = session.metadata?.plan || "premium"
-          const quantity = Number.parseInt(session.metadata?.quantity || "1")
+        // Activate QR codes for this order
+        const { error: qrError } = await supabase.from("qr_codes").update({ status: "active" }).eq("order_id", order.id)
 
-          // Check if QR codes already exist for this order
-          const { data: existingQrCodes } = await supabase.from("qr_codes").select("id").eq("order_id", order.id)
-
-          // Only create QR codes if they don't exist yet
-          if (!existingQrCodes || existingQrCodes.length === 0) {
-            const qrCodePromises = []
-            for (let i = 0; i < quantity; i++) {
-              const uniqueCode = `QR-${Math.floor(100000 + Math.random() * 900000)}`
-              qrCodePromises.push(
-                supabase.from("qr_codes").insert({
-                  order_id: order.id,
-                  unique_code: uniqueCode,
-                  design_type: plan,
-                  status: "active",
-                }),
-              )
-            }
-
-            await Promise.all(qrCodePromises)
-            console.log(`✅ Created ${quantity} QR codes for order ${order.id}`)
-          }
-
-          // Create fulfillment record for drop shipping
-          if (order.metadata?.product_type) {
-            const { error: fulfillmentError } = await supabase.from("order_fulfillments").insert({
-              order_id: order.id,
-              supplier_id: "default-supplier-id", // You'll need to set this up
-              status: "pending",
-              notes: `Order for ${quantity} ${plan} QR codes`,
-            })
-
-            if (fulfillmentError) {
-              console.error("Error creating fulfillment:", fulfillmentError)
-            }
-          }
+        if (qrError) {
+          console.error("Error activating QR codes:", qrError)
         }
 
+        console.log("Order updated successfully:", order.id)
         break
       }
 
-      case "checkout.session.expired": {
-        const session = event.data.object as Stripe.Checkout.Session
-        console.log(`⏰ Checkout session expired: ${session.id}`)
+      case "payment_intent.succeeded": {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent
 
-        // Update order status in database
-        await supabase.from("orders").update({ status: "expired" }).eq("stripe_session_id", session.id)
+        console.log("Payment intent succeeded:", paymentIntent.id)
 
+        // Handle successful payment
+        if (paymentIntent.metadata?.order_id) {
+          const { error: updateError } = await supabase
+            .from("orders")
+            .update({
+              status: "paid",
+              paid_at: new Date().toISOString(),
+              transaction_id: paymentIntent.id,
+            })
+            .eq("id", paymentIntent.metadata.order_id)
+
+          if (updateError) {
+            console.error("Error updating order from payment intent:", updateError)
+          }
+        }
         break
       }
 
       case "payment_intent.payment_failed": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent
-        console.log(`❌ Payment failed: ${paymentIntent.id}`)
 
-        // Update order status in database
-        await supabase.from("orders").update({ status: "failed" }).eq("stripe_payment_intent_id", paymentIntent.id)
+        console.log("Payment intent failed:", paymentIntent.id)
 
-        break
-      }
+        // Handle failed payment
+        if (paymentIntent.metadata?.order_id) {
+          const { error: updateError } = await supabase
+            .from("orders")
+            .update({
+              status: "failed",
+              failure_reason: paymentIntent.last_payment_error?.message || "Payment failed",
+            })
+            .eq("id", paymentIntent.metadata.order_id)
 
-      case "charge.refunded": {
-        const charge = event.data.object as Stripe.Charge
-        console.log(`💸 Payment refunded: ${charge.id}`)
-
-        // Find the order associated with this charge
-        const paymentIntentId = charge.payment_intent as string
-
-        if (paymentIntentId) {
-          // Update order status in database
-          await supabase.from("orders").update({ status: "refunded" }).eq("stripe_payment_intent_id", paymentIntentId)
+          if (updateError) {
+            console.error("Error updating failed order:", updateError)
+          }
         }
-
         break
       }
 
-      // Add more event handlers as needed
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object as Stripe.Invoice
+
+        console.log("Invoice payment succeeded:", invoice.id)
+
+        // Handle subscription payment success if needed
+        break
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice
+
+        console.log("Invoice payment failed:", invoice.id)
+
+        // Handle subscription payment failure if needed
+        break
+      }
+
+      case "customer.subscription.created": {
+        const subscription = event.data.object as Stripe.Subscription
+
+        console.log("Subscription created:", subscription.id)
+
+        // Handle new subscription if needed
+        break
+      }
+
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription
+
+        console.log("Subscription updated:", subscription.id)
+
+        // Handle subscription update if needed
+        break
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription
+
+        console.log("Subscription deleted:", subscription.id)
+
+        // Handle subscription cancellation if needed
+        break
+      }
+
       default:
-        // Unexpected event type
-        console.log(`🤷‍♂️ Unhandled event type: ${event.type}`)
+        console.log("Unhandled event type:", event.type)
     }
 
-    // Return a 200 response to acknowledge receipt of the event
-    return NextResponse.json({ received: true, type: event.type })
-  } catch (error: any) {
-    console.error(`❌ Error handling webhook: ${error.message}`)
-    return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 })
+    return NextResponse.json({ received: true })
+  } catch (error) {
+    console.error("Webhook error:", error)
+    return NextResponse.json(
+      { error: "Webhook handler failed", details: error instanceof Error ? error.message : "Unknown error" },
+      { status: 500 },
+    )
   }
+}
+
+export async function GET() {
+  return NextResponse.json({
+    message: "Stripe webhook endpoint is active",
+    timestamp: new Date().toISOString(),
+    webhook_secret_configured: !!(process.env.STRIPE_WEBHOOK_SECRET || process.env.strip_webhook_secret),
+  })
 }

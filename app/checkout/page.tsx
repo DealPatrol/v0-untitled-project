@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { AlertCircle, CheckCircle, Lock, Building, Truck, CreditCard } from "lucide-react"
-import { createOrder, type CheckoutItem, type ShippingInfo, type PaymentMethod } from "../actions/payment"
 import { createFallbackOrder } from "../actions/fallback-payment"
 
 export default function CheckoutPage() {
@@ -22,7 +21,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [selectedPlan, setSelectedPlan] = useState("premium")
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe")
+  const [paymentMethod, setPaymentMethod] = useState("stripe")
   const [notification, setNotification] = useState<string | null>(null)
 
   // Form state
@@ -86,77 +85,89 @@ export default function CheckoutPage() {
   const total = subtotal - discountAmount
   const shipping = 4.99
 
+  // Stripe payment links for different plans
+  const stripeLinks = {
+    premium: "https://buy.stripe.com/7sIaIb5sydOxgCc144",
+    deluxe: "https://buy.stripe.com/7sIaIb5sydOxgCc144", // You'll need to provide the deluxe link
+    legacy: "https://buy.stripe.com/7sIaIb5sydOxgCc144", // You'll need to provide the legacy link
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setIsProcessing(true)
 
     try {
+      console.log("Starting checkout process...")
+
+      // If credit card payment is selected, redirect to Stripe payment link
+      if (paymentMethod === "stripe") {
+        console.log("Redirecting to Stripe payment link for", selectedPlan)
+
+        // For premium plan, use the provided Stripe link
+        if (selectedPlan === "premium") {
+          window.location.href = stripeLinks.premium
+          return
+        } else {
+          // For other plans, show message that links are not configured yet
+          setError(
+            `Stripe payment link for ${selectedPlan} plan is not configured yet. Please contact support or use an alternative payment method.`,
+          )
+          setIsProcessing(false)
+          return
+        }
+      }
+
+      // Handle alternative payment methods (bank transfer, pay on delivery)
+      if (!firstName || !lastName || !email || !address || !city || !state || !zipCode) {
+        setError("Please fill in all required fields")
+        setIsProcessing(false)
+        return
+      }
+
       // Prepare items for checkout
-      const items: CheckoutItem[] = [
+      const items = [
         {
           name: `${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} Memorial QR`,
           description: `${quantity} QR code${quantity > 1 ? "s" : ""} for memorial`,
           price: basePrice * (1 - discount),
           quantity,
-          product_type: selectedPlan, // Add product_type for drop shipping
+          product_type: selectedPlan,
         },
       ]
 
       // Prepare shipping info
-      const shippingInfo: ShippingInfo = {
-        name: `${firstName} ${lastName}`,
+      const shippingInfo = {
+        name: `${firstName} ${lastName}`.trim(),
         address: {
           line1: address,
-          city,
-          state,
+          city: city,
+          state: state,
           postal_code: zipCode,
-          country,
+          country: country,
         },
       }
 
-      let result
-
-      try {
-        // Try to create order with Stripe first
-        if (paymentMethod === "stripe") {
-          result = await createOrder(items, shippingInfo, paymentMethod, {
-            plan: selectedPlan,
-            email,
-            quantity: quantity.toString(),
-            product_type: selectedPlan, // Add product_type for drop shipping
-          })
-        } else {
-          // For non-Stripe payment methods
-          result = await createOrder(items, shippingInfo, paymentMethod, {
-            plan: selectedPlan,
-            email,
-            quantity: quantity.toString(),
-            product_type: selectedPlan, // Add product_type for drop shipping
-          })
-        }
-      } catch (stripeError) {
-        console.error("Payment processing error:", stripeError)
-
-        // If Stripe fails, fall back to the alternative payment method
-        if (paymentMethod === "stripe") {
-          setError("Credit card processing is temporarily unavailable. Please try an alternative payment method.")
-          setIsProcessing(false)
-          return
-        } else {
-          // For non-Stripe methods, use fallback
-          result = await createFallbackOrder(items, shippingInfo, {
-            plan: selectedPlan,
-            email,
-            quantity: quantity.toString(),
-            product_type: selectedPlan,
-          })
-        }
+      // Prepare metadata
+      const orderMetadata = {
+        plan: selectedPlan,
+        email: email,
+        quantity: quantity.toString(),
+        product_type: selectedPlan,
       }
 
-      // Redirect to confirmation page or Stripe checkout
+      console.log("Creating fallback order with:", { items, shippingInfo, paymentMethod, orderMetadata })
+
+      const result = await createFallbackOrder(items, shippingInfo, orderMetadata)
+
+      if (!result || !result.redirectUrl) {
+        throw new Error("Order was created but no redirect URL was provided")
+      }
+
+      console.log("Redirecting to:", result.redirectUrl)
       router.push(result.redirectUrl)
     } catch (err: any) {
+      console.error("Checkout error:", err)
       setError(err.message || "Order processing failed. Please try again.")
       setIsProcessing(false)
     }
@@ -310,7 +321,7 @@ export default function CheckoutPage() {
                   <RadioGroup
                     defaultValue="stripe"
                     value={paymentMethod}
-                    onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+                    onValueChange={setPaymentMethod}
                     className="space-y-4"
                   >
                     <div
@@ -324,6 +335,12 @@ export default function CheckoutPage() {
                           <p className="text-sm text-gray-500 mt-1">
                             Pay securely with your credit or debit card via Stripe.
                           </p>
+                          {selectedPlan === "premium" && (
+                            <p className="text-sm text-green-600 mt-1">✓ Available for Premium plan</p>
+                          )}
+                          {selectedPlan !== "premium" && (
+                            <p className="text-sm text-orange-600 mt-1">⚠ Payment link not configured for this plan</p>
+                          )}
                         </div>
                       </Label>
                     </div>
@@ -367,7 +384,7 @@ export default function CheckoutPage() {
                       <h3 className="font-medium mb-4">Shipping Information</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="firstName">First Name</Label>
+                          <Label htmlFor="firstName">First Name *</Label>
                           <Input
                             id="firstName"
                             placeholder="John"
@@ -378,7 +395,7 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="lastName">Last Name</Label>
+                          <Label htmlFor="lastName">Last Name *</Label>
                           <Input
                             id="lastName"
                             placeholder="Doe"
@@ -389,7 +406,7 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div className="md:col-span-2">
-                          <Label htmlFor="email">Email</Label>
+                          <Label htmlFor="email">Email *</Label>
                           <Input
                             id="email"
                             type="email"
@@ -401,7 +418,7 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div className="md:col-span-2">
-                          <Label htmlFor="address">Address</Label>
+                          <Label htmlFor="address">Address *</Label>
                           <Input
                             id="address"
                             placeholder="123 Main St"
@@ -412,7 +429,7 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="city">City</Label>
+                          <Label htmlFor="city">City *</Label>
                           <Input
                             id="city"
                             placeholder="New York"
@@ -423,7 +440,7 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="zipCode">ZIP Code</Label>
+                          <Label htmlFor="zipCode">ZIP Code *</Label>
                           <Input
                             id="zipCode"
                             placeholder="10001"
@@ -434,7 +451,7 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="state">State</Label>
+                          <Label htmlFor="state">State *</Label>
                           <Input
                             id="state"
                             placeholder="NY"
@@ -445,7 +462,7 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="country">Country</Label>
+                          <Label htmlFor="country">Country *</Label>
                           <Input
                             id="country"
                             placeholder="United States"
@@ -461,22 +478,16 @@ export default function CheckoutPage() {
 
                   {paymentMethod === "stripe" && (
                     <div>
-                      <h3 className="font-medium mb-4">Email Address</h3>
-                      <div className="grid grid-cols-1 gap-4">
-                        <div>
-                          <Label htmlFor="email">Email</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder="your.email@example.com"
-                            className="mt-1"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                          />
-                          <p className="text-sm text-gray-500 mt-1">
-                            You'll enter your shipping details on the Stripe checkout page.
-                          </p>
+                      <h3 className="font-medium mb-4">Credit Card Payment</h3>
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-start">
+                          <CreditCard className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-blue-800">Secure Stripe Checkout</p>
+                            <p className="text-blue-700 text-sm mt-1">
+                              You'll be redirected to Stripe's secure payment page to complete your purchase.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -488,7 +499,16 @@ export default function CheckoutPage() {
                   </div>
 
                   <Button type="submit" className="w-full mt-6" disabled={isProcessing}>
-                    {isProcessing ? "Processing..." : `Complete Order - $${(total + shipping).toFixed(2)}`}
+                    {isProcessing ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Processing...
+                      </div>
+                    ) : paymentMethod === "stripe" ? (
+                      `Continue to Stripe - $${(total + shipping).toFixed(2)}`
+                    ) : (
+                      `Complete Order - $${(total + shipping).toFixed(2)}`
+                    )}
                   </Button>
                 </form>
               </CardContent>
