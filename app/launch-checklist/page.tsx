@@ -227,6 +227,7 @@ export default function LaunchChecklistPage() {
   const [items, setItems] = useState<ChecklistItem[]>(checklistItems)
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [selectedPriority, setSelectedPriority] = useState("all")
+  const [activeTab, setActiveTab] = useState("all")
 
   // Load saved progress from localStorage
   useEffect(() => {
@@ -245,6 +246,16 @@ export default function LaunchChecklistPage() {
       }
     }
   }, [])
+
+  // Handle tab changes
+  useEffect(() => {
+    if (activeTab !== "all") {
+      setSelectedPriority(activeTab)
+      setSelectedCategory("all")
+    } else {
+      setSelectedPriority("all")
+    }
+  }, [activeTab])
 
   // Save progress to localStorage
   const saveProgress = (updatedItems: ChecklistItem[]) => {
@@ -380,7 +391,7 @@ export default function LaunchChecklistPage() {
         </div>
 
         {/* Filters */}
-        <Tabs defaultValue="all" className="mb-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="all">All Items</TabsTrigger>
             <TabsTrigger value="high">High Priority</TabsTrigger>
@@ -408,11 +419,29 @@ export default function LaunchChecklistPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="high">{setSelectedPriority("high")}</TabsContent>
+          <TabsContent value="high">
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Showing {items.filter((item) => item.priority === "high").length} high priority items
+              </p>
+            </div>
+          </TabsContent>
 
-          <TabsContent value="medium">{setSelectedPriority("medium")}</TabsContent>
+          <TabsContent value="medium">
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Showing {items.filter((item) => item.priority === "medium").length} medium priority items
+              </p>
+            </div>
+          </TabsContent>
 
-          <TabsContent value="low">{setSelectedPriority("low")}</TabsContent>
+          <TabsContent value="low">
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Showing {items.filter((item) => item.priority === "low").length} low priority items
+              </p>
+            </div>
+          </TabsContent>
         </Tabs>
 
         {/* Checklist Items */}
