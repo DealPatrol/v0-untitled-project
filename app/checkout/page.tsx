@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { AlertCircle, CheckCircle, Lock, Building, Truck, CreditCard } from "lucide-react"
+import { AlertCircle, CheckCircle, Lock, Building, Truck, CreditCard, ExternalLink } from "lucide-react"
 import { createFallbackOrder } from "../actions/fallback-payment"
 
 export default function CheckoutPage() {
@@ -51,10 +51,8 @@ export default function CheckoutPage() {
 
   // Show notification when plan changes
   useEffect(() => {
-    // Skip initial render
     const planParam = searchParams.get("plan")
     if (planParam && planParam !== selectedPlan) {
-      // Plan was changed by the user
       const planNames = {
         premium: "Premium",
         deluxe: "Deluxe",
@@ -62,14 +60,13 @@ export default function CheckoutPage() {
       }
       setNotification(`Plan changed to ${planNames[selectedPlan as keyof typeof planNames]}`)
 
-      // Clear notification after 3 seconds
       const timer = setTimeout(() => {
         setNotification(null)
       }, 3000)
 
       return () => clearTimeout(timer)
     }
-  }, [selectedPlan])
+  }, [selectedPlan, searchParams])
 
   // Calculate prices based on quantity and plan
   const prices = {
@@ -85,11 +82,11 @@ export default function CheckoutPage() {
   const total = subtotal - discountAmount
   const shipping = 4.99
 
-  // Stripe payment links for different plans
+  // Stripe payment links for each plan
   const stripeLinks = {
     premium: "https://buy.stripe.com/7sIaIb5sydOxgCc144",
-    deluxe: "https://buy.stripe.com/7sIaIb5sydOxgCc144", // You'll need to provide the deluxe link
-    legacy: "https://buy.stripe.com/7sIaIb5sydOxgCc144", // You'll need to provide the legacy link
+    deluxe: "https://buy.stripe.com/test_aFa14geYWep85HAeQC8og00",
+    legacy: "https://buy.stripe.com/test_fZubIUaIG1Cmc5YcIu8og01",
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,20 +96,23 @@ export default function CheckoutPage() {
 
     try {
       console.log("Starting checkout process...")
+      console.log("Selected plan:", selectedPlan)
+      console.log("Payment method:", paymentMethod)
 
-      // If credit card payment is selected, redirect to Stripe payment link
+      // If any plan and credit card payment, redirect to Stripe
       if (paymentMethod === "stripe") {
-        console.log("Redirecting to Stripe payment link for", selectedPlan)
+        const stripeLink = stripeLinks[selectedPlan as keyof typeof stripeLinks]
 
-        // For premium plan, use the provided Stripe link
-        if (selectedPlan === "premium") {
-          window.location.href = stripeLinks.premium
+        if (stripeLink) {
+          console.log("Redirecting to Stripe payment link:", stripeLink)
+
+          // Add a small delay to show processing state
+          setTimeout(() => {
+            window.location.href = stripeLink
+          }, 500)
           return
         } else {
-          // For other plans, show message that links are not configured yet
-          setError(
-            `Stripe payment link for ${selectedPlan} plan is not configured yet. Please contact support or use an alternative payment method.`,
-          )
+          setError("Credit card payment is not available for this plan. Please choose an alternative payment method.")
           setIsProcessing(false)
           return
         }
@@ -154,9 +154,10 @@ export default function CheckoutPage() {
         email: email,
         quantity: quantity.toString(),
         product_type: selectedPlan,
+        payment_method: paymentMethod,
       }
 
-      console.log("Creating fallback order with:", { items, shippingInfo, paymentMethod, orderMetadata })
+      console.log("Creating fallback order with:", { items, shippingInfo, orderMetadata })
 
       const result = await createFallbackOrder(items, shippingInfo, orderMetadata)
 
@@ -172,6 +173,9 @@ export default function CheckoutPage() {
       setIsProcessing(false)
     }
   }
+
+  // All plans now support credit card
+  const isCreditCardAvailable = true
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -264,8 +268,13 @@ export default function CheckoutPage() {
                     </div>
 
                     <div
-                      className={`border-2 ${selectedPlan === "legacy" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4`}
+                      className={`border-2 ${selectedPlan === "legacy" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
                     >
+                      {selectedPlan === "legacy" && (
+                        <div className="absolute -top-3 right-3 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
+                          PREMIUM
+                        </div>
+                      )}
                       <RadioGroupItem value="legacy" id="legacy" className="sr-only" />
                       <Label htmlFor="legacy" className="flex flex-col cursor-pointer">
                         <span className="font-medium">Legacy</span>
@@ -330,18 +339,17 @@ export default function CheckoutPage() {
                       <RadioGroupItem value="stripe" id="stripe" className="sr-only" />
                       <Label htmlFor="stripe" className="flex items-start cursor-pointer">
                         <CreditCard className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
-                        <div>
+                        <div className="flex-1">
                           <span className="font-medium">Credit Card</span>
                           <p className="text-sm text-gray-500 mt-1">
                             Pay securely with your credit or debit card via Stripe.
                           </p>
-                          {selectedPlan === "premium" && (
-                            <p className="text-sm text-green-600 mt-1">✓ Available for Premium plan</p>
-                          )}
-                          {selectedPlan !== "premium" && (
-                            <p className="text-sm text-orange-600 mt-1">⚠ Payment link not configured for this plan</p>
-                          )}
+                          <div className="flex items-center mt-2 text-sm text-green-600">
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Available for all plans - Premium, Deluxe & Legacy
+                          </div>
                         </div>
+                        {paymentMethod === "stripe" && <ExternalLink className="h-4 w-4 text-blue-500 ml-2" />}
                       </Label>
                     </div>
 
@@ -487,6 +495,10 @@ export default function CheckoutPage() {
                             <p className="text-blue-700 text-sm mt-1">
                               You'll be redirected to Stripe's secure payment page to complete your purchase.
                             </p>
+                            <p className="text-blue-700 text-sm mt-2 font-medium">
+                              ✓ Ready to redirect to Stripe payment page for{" "}
+                              {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} plan
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -502,10 +514,13 @@ export default function CheckoutPage() {
                     {isProcessing ? (
                       <div className="flex items-center">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Processing...
+                        {paymentMethod === "stripe" ? "Redirecting to Stripe..." : "Processing..."}
                       </div>
                     ) : paymentMethod === "stripe" ? (
-                      `Continue to Stripe - $${(total + shipping).toFixed(2)}`
+                      <div className="flex items-center">
+                        Continue to Stripe - ${(total + shipping).toFixed(2)}
+                        <ExternalLink className="h-4 w-4 ml-2" />
+                      </div>
                     ) : (
                       `Complete Order - $${(total + shipping).toFixed(2)}`
                     )}
@@ -548,6 +563,21 @@ export default function CheckoutPage() {
                   <span>Total</span>
                   <span>${(total + shipping).toFixed(2)}</span>
                 </div>
+
+                {paymentMethod === "stripe" && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-green-800">Credit Card Payment Available</p>
+                        <p className="text-green-700 text-sm mt-1">
+                          You can pay with credit card for the{" "}
+                          {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} plan.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="bg-gray-50 p-4 rounded-lg mt-6">
                   <div className="flex items-start">

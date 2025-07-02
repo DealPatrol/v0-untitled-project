@@ -1,244 +1,293 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  CheckCircle,
-  AlertTriangle,
-  ExternalLink,
-  Rocket,
-  Settings,
-  Globe,
-  CreditCard,
-  Shield,
-  Users,
-  BarChart3,
-} from "lucide-react"
+import { CheckCircle, Circle, AlertTriangle, Clock, Star, Zap } from "lucide-react"
 
 interface ChecklistItem {
   id: string
   title: string
   description: string
   priority: "high" | "medium" | "low"
-  category: string
-  testUrl?: string
+  category: "technical" | "content" | "marketing" | "legal" | "business"
   completed: boolean
+  estimatedTime: string
 }
 
 const checklistItems: ChecklistItem[] = [
-  // Core Functionality - High Priority
+  // Technical Items
   {
-    id: "stripe-config",
+    id: "stripe-setup",
     title: "Configure Stripe Payment Processing",
-    description: "Set up Stripe API keys and webhook for payment processing",
+    description: "Set up Stripe payment links for all plans and test payment flow",
     priority: "high",
-    category: "payments",
-    testUrl: "/debug/stripe",
+    category: "technical",
     completed: false,
+    estimatedTime: "2 hours",
   },
   {
-    id: "test-checkout",
-    title: "Test Complete Checkout Flow",
-    description: "Complete a full test purchase from start to finish",
+    id: "database-setup",
+    title: "Database Setup and Migration",
+    description: "Ensure all database tables are created and properly configured",
     priority: "high",
-    category: "payments",
-    testUrl: "/checkout",
+    category: "technical",
     completed: false,
+    estimatedTime: "1 hour",
   },
-  {
-    id: "memorial-pages",
-    title: "Verify Memorial Pages Load",
-    description: "Check that all memorial pages display correctly",
-    priority: "high",
-    category: "functionality",
-    testUrl: "/memorials",
-    completed: false,
-  },
-  {
-    id: "qr-codes",
-    title: "Test QR Code Generation",
-    description: "Verify QR codes are generated and scan correctly",
-    priority: "high",
-    category: "functionality",
-    testUrl: "/memorial/sample-1",
-    completed: false,
-  },
-  {
-    id: "mobile-responsive",
-    title: "Test Mobile Responsiveness",
-    description: "Verify site works on phones and tablets",
-    priority: "high",
-    category: "design",
-    completed: false,
-  },
-
-  // Content & Design - Medium Priority
-  {
-    id: "footer-links",
-    title: "Verify All Footer Links",
-    description: "Check privacy policy, terms, contact, and other footer links",
-    priority: "medium",
-    category: "content",
-    testUrl: "/test-footer-links",
-    completed: false,
-  },
-  {
-    id: "contact-forms",
-    title: "Test Contact Forms",
-    description: "Verify contact and support forms work properly",
-    priority: "medium",
-    category: "functionality",
-    testUrl: "/contact",
-    completed: false,
-  },
-  {
-    id: "image-loading",
-    title: "Check Image Loading",
-    description: "Ensure all images load properly across the site",
-    priority: "medium",
-    category: "performance",
-    testUrl: "/debug/images",
-    completed: false,
-  },
-  {
-    id: "video-playback",
-    title: "Test Video Playback",
-    description: "Verify memorial videos play correctly",
-    priority: "medium",
-    category: "functionality",
-    testUrl: "/memorial/sample-1",
-    completed: false,
-  },
-
-  // Technical & Performance - Medium Priority
   {
     id: "ssl-certificate",
-    title: "Verify SSL Certificate",
-    description: "Ensure HTTPS is working properly",
-    priority: "medium",
-    category: "security",
-    completed: false,
-  },
-  {
-    id: "page-speed",
-    title: "Test Page Loading Speed",
-    description: "Check site performance with Google PageSpeed",
-    priority: "medium",
-    category: "performance",
-    testUrl: "https://pagespeed.web.dev/",
-    completed: false,
-  },
-  {
-    id: "cross-browser",
-    title: "Cross-Browser Testing",
-    description: "Test in Chrome, Firefox, Safari, and Edge",
-    priority: "medium",
-    category: "compatibility",
-    completed: false,
-  },
-  {
-    id: "database-backup",
-    title: "Create Database Backup",
-    description: "Back up all data before launch",
+    title: "SSL Certificate Configuration",
+    description: "Ensure HTTPS is properly configured for secure payments",
     priority: "high",
-    category: "security",
+    category: "technical",
     completed: false,
+    estimatedTime: "30 minutes",
+  },
+  {
+    id: "error-pages",
+    title: "Custom Error Pages",
+    description: "Create custom 404, 500, and other error pages",
+    priority: "medium",
+    category: "technical",
+    completed: false,
+    estimatedTime: "1 hour",
+  },
+  {
+    id: "performance-optimization",
+    title: "Performance Optimization",
+    description: "Optimize images, implement caching, and improve load times",
+    priority: "medium",
+    category: "technical",
+    completed: false,
+    estimatedTime: "3 hours",
+  },
+  {
+    id: "mobile-testing",
+    title: "Mobile Responsiveness Testing",
+    description: "Test all pages on various mobile devices and screen sizes",
+    priority: "high",
+    category: "technical",
+    completed: false,
+    estimatedTime: "2 hours",
+  },
+  {
+    id: "browser-testing",
+    title: "Cross-Browser Testing",
+    description: "Test website functionality across Chrome, Firefox, Safari, and Edge",
+    priority: "medium",
+    category: "technical",
+    completed: false,
+    estimatedTime: "1.5 hours",
+  },
+  {
+    id: "backup-system",
+    title: "Backup and Recovery System",
+    description: "Set up automated backups for database and user data",
+    priority: "high",
+    category: "technical",
+    completed: false,
+    estimatedTime: "2 hours",
   },
 
-  // SEO & Analytics - Low Priority
+  // Content Items
   {
-    id: "meta-tags",
-    title: "Check Meta Tags",
-    description: "Verify page titles and descriptions",
-    priority: "low",
-    category: "seo",
+    id: "sample-memorials",
+    title: "Create Sample Memorial Pages",
+    description: "Add 5-10 high-quality sample memorial pages to showcase features",
+    priority: "high",
+    category: "content",
     completed: false,
+    estimatedTime: "4 hours",
   },
   {
-    id: "analytics-setup",
-    title: "Set Up Analytics",
-    description: "Install and verify Google Analytics",
-    priority: "low",
-    category: "analytics",
+    id: "help-documentation",
+    title: "Help Documentation",
+    description: "Create comprehensive help guides and FAQs",
+    priority: "medium",
+    category: "content",
     completed: false,
+    estimatedTime: "3 hours",
   },
   {
-    id: "sitemap",
-    title: "Generate Sitemap",
-    description: "Ensure sitemap.xml is accessible",
-    priority: "low",
-    category: "seo",
-    testUrl: "/sitemap.xml",
+    id: "pricing-page",
+    title: "Pricing Page Content",
+    description: "Finalize pricing page with clear plan comparisons",
+    priority: "high",
+    category: "content",
     completed: false,
+    estimatedTime: "1 hour",
   },
   {
-    id: "search-console",
-    title: "Set Up Search Console",
-    description: "Configure Google Search Console",
-    priority: "low",
-    category: "seo",
-    testUrl: "https://search.google.com/search-console",
+    id: "about-page",
+    title: "About Us Page",
+    description: "Create compelling about page with company story and mission",
+    priority: "medium",
+    category: "content",
     completed: false,
+    estimatedTime: "2 hours",
+  },
+  {
+    id: "testimonials",
+    title: "Customer Testimonials",
+    description: "Collect and display customer testimonials and reviews",
+    priority: "medium",
+    category: "content",
+    completed: false,
+    estimatedTime: "2 hours",
   },
 
-  // Business Operations - Medium Priority
+  // Marketing Items
+  {
+    id: "seo-optimization",
+    title: "SEO Optimization",
+    description: "Optimize meta tags, descriptions, and implement structured data",
+    priority: "high",
+    category: "marketing",
+    completed: false,
+    estimatedTime: "3 hours",
+  },
+  {
+    id: "google-analytics",
+    title: "Google Analytics Setup",
+    description: "Set up Google Analytics and conversion tracking",
+    priority: "high",
+    category: "marketing",
+    completed: false,
+    estimatedTime: "1 hour",
+  },
+  {
+    id: "social-media",
+    title: "Social Media Integration",
+    description: "Add social sharing buttons and create social media accounts",
+    priority: "medium",
+    category: "marketing",
+    completed: false,
+    estimatedTime: "2 hours",
+  },
+  {
+    id: "email-marketing",
+    title: "Email Marketing Setup",
+    description: "Set up email sequences for onboarding and marketing",
+    priority: "medium",
+    category: "marketing",
+    completed: false,
+    estimatedTime: "3 hours",
+  },
+  {
+    id: "launch-announcement",
+    title: "Launch Announcement Strategy",
+    description: "Plan and prepare launch announcement across all channels",
+    priority: "low",
+    category: "marketing",
+    completed: false,
+    estimatedTime: "2 hours",
+  },
+
+  // Legal Items
+  {
+    id: "privacy-policy",
+    title: "Privacy Policy",
+    description: "Create comprehensive privacy policy compliant with GDPR/CCPA",
+    priority: "high",
+    category: "legal",
+    completed: false,
+    estimatedTime: "2 hours",
+  },
+  {
+    id: "terms-of-service",
+    title: "Terms of Service",
+    description: "Draft clear terms of service and user agreements",
+    priority: "high",
+    category: "legal",
+    completed: false,
+    estimatedTime: "2 hours",
+  },
+  {
+    id: "refund-policy",
+    title: "Refund and Return Policy",
+    description: "Create clear refund policy and return procedures",
+    priority: "medium",
+    category: "legal",
+    completed: false,
+    estimatedTime: "1 hour",
+  },
+  {
+    id: "cookie-policy",
+    title: "Cookie Policy and Consent",
+    description: "Implement cookie consent banner and policy",
+    priority: "medium",
+    category: "legal",
+    completed: false,
+    estimatedTime: "1.5 hours",
+  },
+
+  // Business Items
   {
     id: "customer-support",
-    title: "Set Up Customer Support",
-    description: "Configure support channels and responses",
-    priority: "medium",
-    category: "business",
-    completed: false,
-  },
-  {
-    id: "order-fulfillment",
-    title: "Test Order Fulfillment",
-    description: "Verify the complete order processing workflow",
-    priority: "medium",
-    category: "business",
-    testUrl: "/dashboard/orders",
-    completed: false,
-  },
-  {
-    id: "email-notifications",
-    title: "Test Email Notifications",
-    description: "Verify transactional emails are sent",
-    priority: "medium",
-    category: "business",
-    completed: false,
-  },
-  {
-    id: "pricing-accuracy",
-    title: "Verify Pricing",
-    description: "Double-check all pricing is accurate",
+    title: "Customer Support System",
+    description: "Set up customer support channels and response procedures",
     priority: "high",
     category: "business",
-    testUrl: "/pricing",
     completed: false,
+    estimatedTime: "2 hours",
+  },
+  {
+    id: "payment-processing",
+    title: "Payment Processing Verification",
+    description: "Test all payment methods and verify merchant account setup",
+    priority: "high",
+    category: "business",
+    completed: false,
+    estimatedTime: "1 hour",
+  },
+  {
+    id: "inventory-management",
+    title: "Inventory Management System",
+    description: "Set up system to track QR code inventory and fulfillment",
+    priority: "medium",
+    category: "business",
+    completed: false,
+    estimatedTime: "3 hours",
+  },
+  {
+    id: "shipping-logistics",
+    title: "Shipping and Fulfillment",
+    description: "Set up shipping partners and fulfillment processes",
+    priority: "high",
+    category: "business",
+    completed: false,
+    estimatedTime: "2 hours",
+  },
+  {
+    id: "launch-metrics",
+    title: "Launch Success Metrics",
+    description: "Define KPIs and success metrics for launch tracking",
+    priority: "low",
+    category: "business",
+    completed: false,
+    estimatedTime: "1 hour",
   },
 ]
 
 export default function LaunchChecklistPage() {
   const [items, setItems] = useState<ChecklistItem[]>(checklistItems)
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [selectedPriority, setSelectedPriority] = useState("all")
-  const [activeTab, setActiveTab] = useState("all")
+  const [selectedPriority, setSelectedPriority] = useState<string>("all")
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  const [activeTab, setActiveTab] = useState<string>("all")
 
   // Load saved progress from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("launch-checklist-progress")
-    if (saved) {
+    const savedProgress = localStorage.getItem("launch-checklist-progress")
+    if (savedProgress) {
       try {
-        const savedProgress = JSON.parse(saved)
+        const progress = JSON.parse(savedProgress)
         setItems((prevItems) =>
           prevItems.map((item) => ({
             ...item,
-            completed: savedProgress[item.id] || false,
+            completed: progress[item.id] || false,
           })),
         )
       } catch (error) {
@@ -276,116 +325,127 @@ export default function LaunchChecklistPage() {
   }
 
   const filteredItems = items.filter((item) => {
-    const categoryMatch = selectedCategory === "all" || item.category === selectedCategory
     const priorityMatch = selectedPriority === "all" || item.priority === selectedPriority
-    return categoryMatch && priorityMatch
+    const categoryMatch = selectedCategory === "all" || item.category === selectedCategory
+    return priorityMatch && categoryMatch
   })
 
   const completedCount = items.filter((item) => item.completed).length
   const totalCount = items.length
   const progressPercentage = Math.round((completedCount / totalCount) * 100)
 
-  const highPriorityCompleted = items.filter((item) => item.priority === "high" && item.completed).length
-  const highPriorityTotal = items.filter((item) => item.priority === "high").length
+  const priorityStats = {
+    high: items.filter((item) => item.priority === "high"),
+    medium: items.filter((item) => item.priority === "medium"),
+    low: items.filter((item) => item.priority === "low"),
+  }
 
-  const categories = [
-    { id: "all", name: "All Categories", icon: Globe },
-    { id: "payments", name: "Payments", icon: CreditCard },
-    { id: "functionality", name: "Functionality", icon: Settings },
-    { id: "design", name: "Design", icon: Users },
-    { id: "performance", name: "Performance", icon: BarChart3 },
-    { id: "security", name: "Security", icon: Shield },
-    { id: "content", name: "Content", icon: Globe },
-    { id: "seo", name: "SEO", icon: Globe },
-    { id: "analytics", name: "Analytics", icon: BarChart3 },
-    { id: "business", name: "Business", icon: Users },
-    { id: "compatibility", name: "Compatibility", icon: Settings },
-  ]
+  const categoryStats = {
+    technical: items.filter((item) => item.category === "technical"),
+    content: items.filter((item) => item.category === "content"),
+    marketing: items.filter((item) => item.category === "marketing"),
+    legal: items.filter((item) => item.category === "legal"),
+    business: items.filter((item) => item.category === "business"),
+  }
+
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return <AlertTriangle className="h-4 w-4 text-red-500" />
+      case "medium":
+        return <Clock className="h-4 w-4 text-yellow-500" />
+      case "low":
+        return <Star className="h-4 w-4 text-blue-500" />
+      default:
+        return null
+    }
+  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800 border-red-200"
       case "medium":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"
       case "low":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
+    }
+  }
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case "technical":
+        return "bg-purple-100 text-purple-800"
+      case "content":
         return "bg-green-100 text-green-800"
+      case "marketing":
+        return "bg-orange-100 text-orange-800"
+      case "legal":
+        return "bg-gray-100 text-gray-800"
+      case "business":
+        return "bg-indigo-100 text-indigo-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
   }
 
-  const isReadyToLaunch = highPriorityCompleted === highPriorityTotal && progressPercentage >= 80
-
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4 flex items-center">
-            <Rocket className="h-8 w-8 mr-3 text-blue-600" />
-            Launch Readiness Checklist
-          </h1>
-          <p className="text-gray-600">Complete these tasks to ensure your Memorial QR website is ready for launch.</p>
-        </div>
+          <h1 className="text-4xl font-bold mb-4">Website Launch Checklist</h1>
+          <p className="text-xl text-gray-600 mb-6">
+            Complete these tasks to ensure a successful launch of your Memorial QR website.
+          </p>
 
-        {/* Progress Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Overall Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-2xl font-bold">{progressPercentage}%</span>
-                <span className="text-sm text-gray-500">
-                  {completedCount}/{totalCount} completed
-                </span>
-              </div>
-              <Progress value={progressPercentage} className="h-2" />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">High Priority</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-2xl font-bold">
-                  {highPriorityCompleted}/{highPriorityTotal}
-                </span>
-                <Badge variant={highPriorityCompleted === highPriorityTotal ? "default" : "destructive"}>
-                  {highPriorityCompleted === highPriorityTotal ? "Complete" : "Pending"}
+          {/* Progress Overview */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Launch Progress</span>
+                <Badge variant="outline" className="text-lg px-3 py-1">
+                  {completedCount}/{totalCount} Complete
                 </Badge>
-              </div>
-              <Progress value={(highPriorityCompleted / highPriorityTotal) * 100} className="h-2" />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Launch Status</CardTitle>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between mb-2">
-                {isReadyToLaunch ? (
-                  <>
-                    <CheckCircle className="h-8 w-8 text-green-600" />
-                    <Badge className="bg-green-100 text-green-800">Ready to Launch!</Badge>
-                  </>
-                ) : (
-                  <>
-                    <AlertTriangle className="h-8 w-8 text-yellow-600" />
-                    <Badge variant="outline">Not Ready</Badge>
-                  </>
-                )}
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                <div
+                  className="bg-green-500 h-3 rounded-full transition-all duration-300"
+                  style={{ width: `${progressPercentage}%` }}
+                ></div>
               </div>
-              <p className="text-sm text-gray-600">
-                {isReadyToLaunch
-                  ? "All critical tasks completed"
-                  : `${highPriorityTotal - highPriorityCompleted} high priority tasks remaining`}
-              </p>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                <div className="text-center">
+                  <div className="font-semibold text-red-600">
+                    {priorityStats.high.filter((item) => item.completed).length}/{priorityStats.high.length}
+                  </div>
+                  <div className="text-gray-600">High Priority</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-yellow-600">
+                    {priorityStats.medium.filter((item) => item.completed).length}/{priorityStats.medium.length}
+                  </div>
+                  <div className="text-gray-600">Medium Priority</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-blue-600">
+                    {priorityStats.low.filter((item) => item.completed).length}/{priorityStats.low.length}
+                  </div>
+                  <div className="text-gray-600">Low Priority</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-green-600">{progressPercentage}%</div>
+                  <div className="text-gray-600">Complete</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-gray-600">{totalCount - completedCount}</div>
+                  <div className="text-gray-600">Remaining</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -394,28 +454,20 @@ export default function LaunchChecklistPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="all">All Items</TabsTrigger>
-            <TabsTrigger value="high">High Priority</TabsTrigger>
-            <TabsTrigger value="medium">Medium Priority</TabsTrigger>
-            <TabsTrigger value="low">Low Priority</TabsTrigger>
+            <TabsTrigger value="high" className="text-red-600">
+              High Priority
+            </TabsTrigger>
+            <TabsTrigger value="medium" className="text-yellow-600">
+              Medium Priority
+            </TabsTrigger>
+            <TabsTrigger value="low" className="text-blue-600">
+              Low Priority
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="all">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 mb-6">
-              {categories.map((category) => {
-                const Icon = category.icon
-                return (
-                  <Button
-                    key={category.id}
-                    variant={selectedCategory === category.id ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category.id)}
-                    className="justify-start"
-                  >
-                    <Icon className="h-4 w-4 mr-2" />
-                    {category.name}
-                  </Button>
-                )
-              })}
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">Showing all {items.length} checklist items</p>
             </div>
           </TabsContent>
 
@@ -444,51 +496,74 @@ export default function LaunchChecklistPage() {
           </TabsContent>
         </Tabs>
 
+        {/* Category Filter */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={selectedCategory === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory("all")}
+            >
+              All Categories
+            </Button>
+            {Object.entries(categoryStats).map(([category, categoryItems]) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className="capitalize"
+              >
+                {category} ({categoryItems.filter((item) => item.completed).length}/{categoryItems.length})
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Checklist Items */}
         <div className="space-y-4">
           {filteredItems.map((item) => (
-            <Card key={item.id} className={`transition-all ${item.completed ? "bg-green-50 border-green-200" : ""}`}>
+            <Card key={item.id} className={`transition-all duration-200 ${item.completed ? "bg-green-50" : ""}`}>
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <Checkbox
-                    id={item.id}
-                    checked={item.completed}
-                    onCheckedChange={() => toggleItem(item.id)}
-                    className="mt-1"
-                  />
+                  <Button variant="ghost" size="sm" onClick={() => toggleItem(item.id)} className="mt-1 p-0 h-6 w-6">
+                    {item.completed ? (
+                      <CheckCircle className="h-6 w-6 text-green-500" />
+                    ) : (
+                      <Circle className="h-6 w-6 text-gray-400" />
+                    )}
+                  </Button>
+
                   <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className={`font-medium ${item.completed ? "line-through text-gray-500" : ""}`}>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className={`text-lg font-semibold ${item.completed ? "line-through text-gray-500" : ""}`}>
                         {item.title}
                       </h3>
-                      <div className="flex items-center space-x-2">
-                        <Badge className={getPriorityColor(item.priority)}>{item.priority}</Badge>
-                        {item.completed && <CheckCircle className="h-5 w-5 text-green-600" />}
+                      <div className="flex items-center space-x-2 ml-4">
+                        <Badge className={getPriorityColor(item.priority)} variant="outline">
+                          {getPriorityIcon(item.priority)}
+                          <span className="ml-1 capitalize">{item.priority}</span>
+                        </Badge>
+                        <Badge className={getCategoryColor(item.category)} variant="secondary">
+                          {item.category}
+                        </Badge>
                       </div>
                     </div>
+
                     <p className={`text-gray-600 mb-3 ${item.completed ? "line-through" : ""}`}>{item.description}</p>
-                    {item.testUrl && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (item.testUrl?.startsWith("http")) {
-                            window.open(item.testUrl, "_blank")
-                          } else {
-                            window.location.href = item.testUrl
-                          }
-                        }}
-                      >
-                        {item.testUrl.startsWith("http") ? (
-                          <>
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Open External Tool
-                          </>
-                        ) : (
-                          "Test This Feature"
-                        )}
-                      </Button>
-                    )}
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Clock className="h-4 w-4 mr-1" />
+                        Estimated time: {item.estimatedTime}
+                      </div>
+                      {item.completed && (
+                        <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Completed
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -496,19 +571,29 @@ export default function LaunchChecklistPage() {
           ))}
         </div>
 
-        {/* Launch Button */}
-        {isReadyToLaunch && (
-          <Card className="mt-8 bg-green-50 border-green-200">
-            <CardContent className="p-6 text-center">
-              <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-green-800 mb-2">Ready to Launch! 🚀</h2>
+        {filteredItems.length === 0 && (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-gray-500">No items match the current filters.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Launch Readiness */}
+        {progressPercentage >= 80 && (
+          <Card className="mt-8 border-green-200 bg-green-50">
+            <CardHeader>
+              <CardTitle className="text-green-800 flex items-center">
+                <Zap className="h-5 w-5 mr-2" />
+                Ready for Launch!
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               <p className="text-green-700 mb-4">
-                Congratulations! You've completed all critical tasks and your Memorial QR website is ready to go live.
+                Congratulations! You've completed {progressPercentage}% of the launch checklist. Your website is ready
+                to go live!
               </p>
-              <Button size="lg" className="bg-green-600 hover:bg-green-700">
-                <Rocket className="h-5 w-5 mr-2" />
-                Launch Your Website
-              </Button>
+              <Button className="bg-green-600 hover:bg-green-700">Launch Website</Button>
             </CardContent>
           </Card>
         )}

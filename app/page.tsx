@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Check, Heart, Users, Shield, Star, Quote } from "lucide-react"
-import { LazyVideo } from "@/components/lazy-video"
 import Link from "next/link"
 
 export default function HomePage() {
@@ -20,12 +19,22 @@ export default function HomePage() {
             <div className="lg:col-span-1">
               <div className="sticky top-24">
                 <div className="bg-gray-100 rounded-lg p-4 mb-4">
-                  <LazyVideo
-                    src="/videos/revolutionizing-remembrance-qr.mov"
-                    poster="/placeholder.svg?height=200&width=300&text=Memorial+QR+Video"
-                    title="See How It Works"
-                    description="Discover how Memorial QR revolutionizes remembrance"
-                  />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3 text-center">See How Memorial QR Works</h3>
+
+                  {/* YouTube Embed with your video */}
+                  <div className="aspect-video rounded-lg overflow-hidden bg-gray-900 relative">
+                    <iframe
+                      src="https://www.youtube.com/embed/RyGH38lunSM"
+                      title="Memorial QR Demo Video"
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+
+                  <p className="text-sm text-gray-600 mt-3 text-center">
+                    Watch how easy it is to create and share memorial QR codes
+                  </p>
                 </div>
               </div>
             </div>
