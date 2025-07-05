@@ -75,15 +75,15 @@ export default function MediaTestPage() {
     {
       path: "/videos/revolutionizing-remembrance-qr.mov",
       type: "video" as const,
-      alternatives: ["/videos/revolutionizing-remembrance.mp4", "/videos/memorial-qr-demo.mp4"],
+      alternatives: ["https://hebbkx1anhila5yf.public.blob.vercel-storage.com/invideo-ai-1080-Revolutionizing%20Remembrance%20with%20QR%20Code%20Memorials-2025-04-22T01_24_40-QIMzvggQMa7nZRZbC8hm9PKiF8fw3z.mov", "/videos/memorial-qr-demo.mp4"],
     },
     {
       path: "/videos/memorial-qr-demo.mp4",
       type: "video" as const,
-      alternatives: ["/videos/revolutionizing-remembrance.mp4"],
+      alternatives: ["https://hebbkx1anhila5yf.public.blob.vercel-storage.com/invideo-ai-1080-Revolutionizing%20Remembrance%20with%20QR%20Code%20Memorials-2025-04-22T01_24_40-QIMzvggQMa7nZRZbC8hm9PKiF8fw3z.mov"],
     },
     {
-      path: "/videos/revolutionizing-remembrance.mp4",
+      path: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/invideo-ai-1080-Revolutionizing%20Remembrance%20with%20QR%20Code%20Memorials-2025-04-22T01_24_40-QIMzvggQMa7nZRZbC8hm9PKiF8fw3z.mov",
       type: "video" as const,
       alternatives: ["/videos/memorial-qr-demo.mp4"],
     },
