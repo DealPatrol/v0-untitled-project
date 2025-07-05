@@ -4,11 +4,6 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
 import type { MemorialFormData } from "../create-memorial-flow"
 
 interface BasicInfoStepProps {
@@ -19,10 +14,6 @@ interface BasicInfoStepProps {
 
 export function BasicInfoStep({ data, updateData, onNext }: BasicInfoStepProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
-
-  // Convert string dates to Date objects for the calendar
-  const [birthDate, setBirthDate] = useState<Date | undefined>(data.birth_date ? new Date(data.birth_date) : undefined)
-  const [deathDate, setDeathDate] = useState<Date | undefined>(data.death_date ? new Date(data.death_date) : undefined)
 
   // Handle form validation
   const validateForm = () => {
@@ -43,18 +34,6 @@ export function BasicInfoStep({ data, updateData, onNext }: BasicInfoStepProps) 
     if (validateForm()) {
       onNext()
     }
-  }
-
-  // Handle birth date change
-  const handleBirthDateChange = (date: Date | undefined) => {
-    setBirthDate(date)
-    updateData({ birth_date: date ? format(date, "yyyy-MM-dd") : null })
-  }
-
-  // Handle death date change
-  const handleDeathDateChange = (date: Date | undefined) => {
-    setDeathDate(date)
-    updateData({ death_date: date ? format(date, "yyyy-MM-dd") : null })
   }
 
   return (
@@ -83,21 +62,14 @@ export function BasicInfoStep({ data, updateData, onNext }: BasicInfoStepProps) 
         {/* Birth Date */}
         <div className="space-y-2">
           <Label htmlFor="birth-date">Date of Birth</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="birth-date"
-                variant="outline"
-                className={cn("w-full justify-start text-left font-normal", !birthDate && "text-gray-400")}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {birthDate ? format(birthDate, "MMMM d, yyyy") : "Select date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={birthDate} onSelect={handleBirthDateChange} initialFocus />
-            </PopoverContent>
-          </Popover>
+          <Input
+            id="birth-date"
+            type="text"
+            placeholder="e.g., March 15, 1945 or 03/15/1945"
+            value={data.birth_date || ""}
+            onChange={(e) => updateData({ birth_date: e.target.value })}
+          />
+          <p className="text-sm text-gray-500">Enter in any format you prefer (e.g., March 15, 1945)</p>
         </div>
 
         {/* Birth Location */}
@@ -114,21 +86,14 @@ export function BasicInfoStep({ data, updateData, onNext }: BasicInfoStepProps) 
         {/* Death Date */}
         <div className="space-y-2">
           <Label htmlFor="death-date">Date of Death</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="death-date"
-                variant="outline"
-                className={cn("w-full justify-start text-left font-normal", !deathDate && "text-gray-400")}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {deathDate ? format(deathDate, "MMMM d, yyyy") : "Select date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={deathDate} onSelect={handleDeathDateChange} initialFocus />
-            </PopoverContent>
-          </Popover>
+          <Input
+            id="death-date"
+            type="text"
+            placeholder="e.g., January 8, 2024 or 01/08/2024"
+            value={data.death_date || ""}
+            onChange={(e) => updateData({ death_date: e.target.value })}
+          />
+          <p className="text-sm text-gray-500">Enter in any format you prefer (e.g., January 8, 2024)</p>
         </div>
 
         {/* Death Location */}
