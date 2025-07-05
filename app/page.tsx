@@ -44,8 +44,11 @@ export default function HomePage() {
               <div className="text-center mb-8">
                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Memorial QR Packages</h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                  Choose the perfect memorial package to honor your loved one's memory with our innovative QR
-                  technology.
+                  Design and preview your loved one's memorial page before you buy. Create a beautiful tribute with our
+                  easy-to-use tools, then choose your package.
+                  <Link href="/design-guide" className="text-rose-600 hover:text-rose-700 font-medium ml-2">
+                    View our step-by-step guide →
+                  </Link>
                 </p>
               </div>
 
