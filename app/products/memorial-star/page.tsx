@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { StarRating } from "@/components/star-rating"
-import { CheckCircle } from "lucide-react"
+import { CheckCircle } from 'lucide-react'
 
 export default function MemorialStarPage() {
   return (
@@ -147,14 +147,14 @@ export default function MemorialStarPage() {
               <StarRating rating={4.9} />
               <span className="ml-2 text-gray-600">2,500+ Reviews</span>
             </div>
-            <h1 className="text-3xl font-serif mb-4">The Memorial Star</h1>
+            <h1 className="text-3xl font-serif mb-4">Memorial Star QR Code</h1>
             <div className="bg-gray-50 p-4 rounded-lg mb-6 italic text-gray-700">
               "I wasn't sure if I really needed this, but wow... The moment I held it, I knew it was something special.
               The quality is amazing, and every time I see it, I feel connected. So glad I got this!" – Caroline
             </div>
 
             <div className="flex items-baseline mb-6">
-              <span className="text-2xl font-bold mr-2">$49.99</span>
+              <span className="text-2xl font-bold mr-2">$119.99</span>
               <span className="text-gray-500 line-through">$99.99</span>
               <span className="ml-4 border border-blue-500 text-blue-500 px-3 py-1 rounded-full text-sm">
                 One Time Payment
@@ -196,39 +196,10 @@ export default function MemorialStarPage() {
                   <div className="relative w-full h-16 mb-2">
                     <Image src="/images/qr-code-sample.png" alt="QR Code on Gravestone" fill className="object-cover" />
                   </div>
-                  <div className="font-bold">$49.99</div>
+                  <div className="font-bold">$119.99</div>
                   <div className="text-gray-500 line-through text-sm">$99.99</div>
                   <Button className="w-full mt-2 text-xs" size="sm" variant="outline" asChild>
                     <Link href="/checkout?plan=premium&quantity=1&action=buy">Buy Now</Link>
-                  </Button>
-                </Card>
-
-                <Card className="p-4 border-2 border-blue-500 rounded-lg text-center relative">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-xs px-2 py-1 rounded-full">
-                    POPULAR
-                  </div>
-                  <div className="font-bold mb-2">BUY 2</div>
-                  <div className="relative w-full h-16 mb-2">
-                    <Image src="/images/qr-code-sample.png" alt="QR Code on Gravestone" fill className="object-cover" />
-                  </div>
-                  <div className="font-bold">$79.98</div>
-                  <div className="text-gray-500 line-through text-sm">$199.98</div>
-                  <div className="bg-gray-800 text-white text-xs rounded-full py-1 px-2 mt-1">Save 20%</div>
-                  <Button className="w-full mt-2 text-xs bg-blue-500 hover:bg-blue-600 text-white" size="sm" asChild>
-                    <Link href="/checkout?plan=deluxe&quantity=2&action=buy">Buy Now</Link>
-                  </Button>
-                </Card>
-
-                <Card className="p-4 border-2 border-gray-300 rounded-lg text-center">
-                  <div className="font-bold mb-2">BUY 3</div>
-                  <div className="relative w-full h-16 mb-2">
-                    <Image src="/images/qr-code-sample.png" alt="QR Code on Gravestone" fill className="object-cover" />
-                  </div>
-                  <div className="font-bold">$112.48</div>
-                  <div className="text-gray-500 line-through text-sm">$299.97</div>
-                  <div className="bg-gray-800 text-white text-xs rounded-full py-1 px-2 mt-1">Save 25%</div>
-                  <Button className="w-full mt-2 text-xs" size="sm" variant="outline" asChild>
-                    <Link href="/checkout?plan=legacy&quantity=3&action=buy">Buy Now</Link>
                   </Button>
                 </Card>
               </div>

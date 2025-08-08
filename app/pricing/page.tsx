@@ -1,280 +1,282 @@
+"use client"
+
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Check } from "lucide-react"
-import { CartButton } from "@/components/cart-button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Check, Star, Shield, Clock, Heart, Users, Camera, QrCode, ArrowRight, Zap, Award, Infinity } from 'lucide-react'
 
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="container mx-auto py-6 flex justify-between items-center border-b">
-        <button className="lg:hidden">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-        <div className="text-center flex-grow lg:flex-grow-0">
-          <Link href="/" className="text-2xl font-serif flex flex-col items-center justify-center">
-            <div className="flex items-center">
-              Memorial QR
-              <span className="text-yellow-400 ml-1">★</span>
-            </div>
-            <span className="text-xs text-rose-600 font-light tracking-wide">Tradition meets innovation</span>
-          </Link>
-        </div>
-        <div className="hidden lg:flex space-x-6 flex-grow justify-center">
-          <Link href="/memorials" className="hover:text-gray-600">
-            Memorials
-          </Link>
-          <Link href="/how-it-works" className="hover:text-gray-600">
-            How It Works
-          </Link>
-          <Link href="/pricing" className="text-gray-900 font-medium">
-            Pricing
-          </Link>
-          <Link href="/contact" className="hover:text-gray-600">
-            Contact
-          </Link>
-        </div>
-        <CartButton />
-      </header>
-
       {/* Hero Section */}
-      <section className="bg-gray-50 py-16">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl font-serif mb-2">Simple, Transparent Pricing</h1>
-          <p className="text-lg text-rose-600 font-light mb-4">Tradition meets innovation</p>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Choose the perfect plan to preserve and share your loved one's memories for generations to come.
-          </p>
+      <section className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-20 lg:py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <Badge className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-6 py-3 text-sm font-bold rounded-full border border-blue-200">
+              ⭐ LIMITED TIME: Save $80 Today!
+            </Badge>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Create a Lasting
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                Digital Memorial
+              </span>
+            </h1>
+
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Honor your loved one with a beautiful QR code memorial that preserves their memory forever. 
+              One simple price includes everything you need.
+            </p>
+
+            <div className="flex items-center justify-center gap-8 text-sm text-gray-600 mb-12">
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-green-600" />
+                <span className="font-medium">30-Day Guarantee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Infinity className="h-5 w-5 text-blue-600" />
+                <span className="font-medium">Lifetime Hosting</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-purple-600" />
+                <span className="font-medium">Premium Quality</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section className="py-16">
+      {/* Main Pricing Card */}
+      <section className="py-16 lg:py-24 bg-white relative">
         <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <Card className="relative border-0 rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-white to-gray-50">
+              {/* Popular Badge */}
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg">
+                  🏆 MOST POPULAR CHOICE
+                </div>
+              </div>
+
+              {/* Header */}
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 pt-12 text-center border-b">
+                <h3 className="text-3xl font-bold text-gray-900 mb-2">Complete Memorial Package</h3>
+                <p className="text-gray-600 mb-6">Everything included • No hidden fees • Lifetime access</p>
+                
+                {/* Pricing */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-center mb-3">
+                    <span className="text-gray-400 line-through text-2xl mr-4">$199.99</span>
+                    <Badge className="bg-red-500 text-white px-3 py-1 text-sm font-bold">
+                      SAVE $80
+                    </Badge>
+                  </div>
+                  <div className="flex items-baseline justify-center mb-2">
+                    <span className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                      $119
+                    </span>
+                    <span className="text-2xl text-gray-600">.99</span>
+                  </div>
+                  <p className="text-gray-500">One-time payment • No monthly fees</p>
+                </div>
+
+                {/* Primary CTA */}
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 mb-4"
+                  asChild
+                >
+                  <Link href="/create-profile">
+                    🚀 Create Memorial Now - $119.99
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
+                </Button>
+
+                <p className="text-xs text-gray-500">
+                  ✅ Secure payment • 🔒 SSL encrypted • 💳 All major cards accepted
+                </p>
+              </div>
+
+              {/* Features List */}
+              <CardContent className="p-8">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Weather-Resistant QR Plaque</h4>
+                      <p className="text-sm text-gray-600">Laser-engraved, UV-resistant plaque that lasts decades outdoors</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Beautiful Memorial Website</h4>
+                      <p className="text-sm text-gray-600">Professional, mobile-friendly memorial page with custom design</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Unlimited Photos & Videos</h4>
+                      <p className="text-sm text-gray-600">Upload and organize unlimited memories with family collaboration</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Interactive Family Tree</h4>
+                      <p className="text-sm text-gray-600">Build and share your family history with detailed relationships</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Guest Book & Timeline</h4>
+                      <p className="text-sm text-gray-600">Allow visitors to share memories and view life milestones</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Lifetime Hosting Included</h4>
+                      <p className="text-sm text-gray-600">Your memorial stays online forever with no recurring fees</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">24/7 Customer Support</h4>
+                      <p className="text-sm text-gray-600">Get help whenever you need it with our dedicated support team</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">30-Day Money-Back Guarantee</h4>
+                      <p className="text-sm text-gray-600">Not satisfied? Get a full refund within 30 days, no questions asked</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Secondary CTA */}
+                <div className="mt-8 pt-6 border-t border-gray-100">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white py-4 text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    asChild
+                  >
+                    <Link href="/create-profile">
+                      💳 Buy Now - Only $119.99
+                      <Zap className="ml-2 w-5 h-5" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <div className="flex text-yellow-400">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-6 h-6 fill-current" />
+                ))}
+              </div>
+              <span className="text-2xl font-bold text-gray-900">4.9/5</span>
+            </div>
+            <p className="text-xl text-gray-600">Trusted by over 10,000 families worldwide</p>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Premium Plan */}
-            <Card className="border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="p-6 border-b">
-                <h2 className="text-2xl font-serif mb-2">Premium</h2>
-                <div className="flex items-baseline mb-4">
-                  <span className="text-4xl font-bold">$79.99</span>
-                  <span className="text-gray-500 ml-2">one-time</span>
-                </div>
-                <p className="text-gray-600">Perfect for a simple memorial tribute.</p>
-                <Button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white" asChild>
-                  <Link href="/checkout?plan=premium&action=buy">Buy Now</Link>
-                </Button>
+            <Card className="p-6 border-0 shadow-lg">
+              <div className="flex text-yellow-400 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-current" />
+                ))}
               </div>
-              <div className="p-6 space-y-4">
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>1 QR code for headstone or memorial</span>
+              <blockquote className="text-gray-700 mb-4 italic">
+                "Worth every penny of the $119.99. The QR code works perfectly and the memorial website is beautiful. 
+                Our whole family can contribute memories."
+              </blockquote>
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-blue-600 font-semibold text-sm">SM</span>
                 </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Basic memorial page</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Up to 20 photos</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>1 video upload</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Basic visitor guestbook</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>5 years of hosting included</span>
-                </div>
-              </div>
-              <div className="p-6 pt-0">
-                <div className="relative w-full h-32 mb-6">
-                  <Image
-                    src="/images/qr-code-gravestone.png"
-                    alt="QR Code on Gravestone"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href="/checkout?plan=premium">Choose Premium</Link>
-                </Button>
-              </div>
-
-              {/* Buy Now Box */}
-              <div className="bg-gray-100 p-6 border-t border-gray-200">
-                <div className="bg-white rounded-lg p-4 shadow-md border-2 border-gray-300">
-                  <div className="text-center mb-3">
-                    <span className="text-2xl font-bold">$79.99</span>
-                    <span className="text-gray-500 ml-1">one-time payment</span>
-                  </div>
-                  <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white" size="lg" asChild>
-                    <Link href="/checkout?plan=premium&action=buy">Buy Now</Link>
-                  </Button>
-                  <p className="text-xs text-center mt-2 text-gray-500">Secure payment • Instant delivery</p>
+                <div>
+                  <p className="font-semibold text-sm">Sarah Mitchell</p>
+                  <p className="text-xs text-gray-500">Verified Purchase</p>
                 </div>
               </div>
             </Card>
 
-            {/* Deluxe Plan */}
-            <Card className="border-2 border-blue-500 rounded-xl overflow-hidden shadow-lg relative">
-              <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                MOST POPULAR
+            <Card className="p-6 border-0 shadow-lg">
+              <div className="flex text-yellow-400 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-current" />
+                ))}
               </div>
-              <div className="p-6 border-b bg-blue-50">
-                <h2 className="text-2xl font-serif mb-2">Deluxe</h2>
-                <div className="flex items-baseline mb-4">
-                  <span className="text-4xl font-bold">$99.99</span>
-                  <span className="text-gray-500 ml-2">one-time</span>
+              <blockquote className="text-gray-700 mb-4 italic">
+                "The weather-resistant plaque has been on Dad's headstone for 2 years now and still looks brand new. 
+                Amazing quality for $119.99."
+              </blockquote>
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-green-600 font-semibold text-sm">MR</span>
                 </div>
-                <p className="text-gray-600">Our most popular comprehensive memorial package.</p>
-                <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" asChild>
-                  <Link href="/checkout?plan=deluxe&action=buy">Buy Now</Link>
-                </Button>
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>1 Weather-resistant QR code</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Enhanced memorial page</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Unlimited photos</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Up to 5 video uploads</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Interactive timeline</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Family tree feature</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Lifetime hosting included</span>
-                </div>
-              </div>
-              <div className="p-6 pt-0">
-                <div className="relative w-full h-32 mb-6">
-                  <Image
-                    src="/images/qr-code-gravestone.png"
-                    alt="QR Code on Gravestone"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <Button className="w-full bg-blue-500 hover:bg-blue-600" asChild>
-                  <Link href="/checkout?plan=deluxe">Choose Deluxe</Link>
-                </Button>
-              </div>
-
-              {/* Buy Now Box */}
-              <div className="bg-blue-50 p-6 border-t border-blue-200">
-                <div className="bg-white rounded-lg p-4 shadow-md border-2 border-blue-400">
-                  <div className="text-center mb-3">
-                    <span className="text-2xl font-bold">$99.99</span>
-                    <span className="text-gray-500 ml-1">one-time payment</span>
-                  </div>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="lg" asChild>
-                    <Link href="/checkout?plan=deluxe&action=buy">Buy Now</Link>
-                  </Button>
-                  <p className="text-xs text-center mt-2 text-gray-500">Secure payment • Instant delivery</p>
+                <div>
+                  <p className="font-semibold text-sm">Michael Rodriguez</p>
+                  <p className="text-xs text-gray-500">Verified Purchase</p>
                 </div>
               </div>
             </Card>
 
-            {/* Legacy Plan */}
-            <Card className="border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="p-6 border-b bg-rose-50">
-                <h2 className="text-2xl font-serif mb-2">Legacy</h2>
-                <div className="flex items-baseline mb-4">
-                  <span className="text-4xl font-bold">$249.99</span>
-                  <span className="text-gray-500 ml-2">one-time</span>
-                </div>
-                <p className="text-gray-600">Full-service memorial creation by our team.</p>
-                <Button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white" asChild>
-                  <Link href="/checkout?plan=legacy&action=buy">Buy Now</Link>
-                </Button>
+            <Card className="p-6 border-0 shadow-lg">
+              <div className="flex text-yellow-400 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-current" />
+                ))}
               </div>
-              <div className="p-6 space-y-4">
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>We create the memorial page for you</span>
+              <blockquote className="text-gray-700 mb-4 italic">
+                "Setup was so easy and the family tree feature is incredible. Best $119.99 I've ever spent. 
+                Highly recommend to anyone creating a memorial."
+              </blockquote>
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-purple-600 font-semibold text-sm">JL</span>
                 </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Simply email us your photos and information</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>3 Premium QR codes (different designs)</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Professional biography writing</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Custom domain name</span>
-                </div>
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Lifetime hosting & premium support</span>
-                </div>
-              </div>
-              <div className="p-6 pt-0">
-                <div className="relative w-full h-32 mb-6">
-                  <Image
-                    src="/images/qr-code-gravestone.png"
-                    alt="QR Code on Gravestone"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href="/checkout?plan=legacy">Choose Legacy</Link>
-                </Button>
-              </div>
-
-              {/* Buy Now Box */}
-              <div className="bg-rose-50 p-6 border-t border-rose-100">
-                <div className="bg-white rounded-lg p-4 shadow-md border-2 border-rose-300">
-                  <div className="text-center mb-3">
-                    <span className="text-2xl font-bold">$249.99</span>
-                    <span className="text-gray-500 ml-1">one-time payment</span>
-                  </div>
-                  <Button className="w-full bg-rose-600 hover:bg-rose-700 text-white" size="lg" asChild>
-                    <Link href="/checkout?plan=legacy&action=buy">Buy Now</Link>
-                  </Button>
-                  <p className="text-xs text-center mt-2 text-gray-500">Secure payment • Premium service</p>
+                <div>
+                  <p className="font-semibold text-sm">Jennifer Lee</p>
+                  <p className="text-xs text-gray-500">Verified Purchase</p>
                 </div>
               </div>
             </Card>
@@ -283,167 +285,108 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-serif text-center mb-12">Frequently Asked Questions</h2>
-          <div className="max-w-3xl mx-auto space-y-6">
-            <details className="bg-white p-6 rounded-lg shadow-sm">
-              <summary className="font-medium text-lg cursor-pointer">What's included in each plan?</summary>
-              <div className="mt-4 text-gray-600">
-                <p>
-                  Each plan includes a unique QR code that links to a digital memorial page. The differences between
-                  plans are in the number of QR codes, storage capacity, features, and hosting duration. All plans
-                  include our weather-resistant QR code technology.
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Frequently Asked Questions</h2>
+            
+            <div className="space-y-8">
+              <div className="border-b border-gray-200 pb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Why is it only $119.99 when competitors charge $200+?</h3>
+                <p className="text-gray-600">
+                  We believe preserving memories shouldn't be expensive. By focusing on quality and efficiency, 
+                  we can offer premium memorial services at an affordable price. No compromises on quality - 
+                  just better value for families.
                 </p>
               </div>
-            </details>
 
-            <details className="bg-white p-6 rounded-lg shadow-sm">
-              <summary className="font-medium text-lg cursor-pointer">
-                How long will my memorial page be available?
-              </summary>
-              <div className="mt-4 text-gray-600">
-                <p>
-                  The Premium plan includes 5 years of hosting, while both Deluxe and Legacy plans include lifetime
-                  hosting. After the initial period for the Premium plan, you can renew for a small fee to maintain your
-                  memorial page.
+              <div className="border-b border-gray-200 pb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">What's included in the $119.99 price?</h3>
+                <p className="text-gray-600">
+                  Everything! Weather-resistant QR plaque, beautiful memorial website, unlimited photo/video storage, 
+                  family tree, guest book, timeline, lifetime hosting, and 24/7 support. No hidden fees or monthly charges.
                 </p>
               </div>
-            </details>
 
-            <details className="bg-white p-6 rounded-lg shadow-sm">
-              <summary className="font-medium text-lg cursor-pointer">Can I upgrade my plan later?</summary>
-              <div className="mt-4 text-gray-600">
-                <p>
-                  Yes, you can upgrade from Premium to Deluxe or Legacy at any time. You'll only pay the difference
-                  between your current plan and the new plan. All your existing content will be preserved during the
-                  upgrade.
+              <div className="border-b border-gray-200 pb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">How long will the QR code last outdoors?</h3>
+                <p className="text-gray-600">
+                  Our laser-engraved QR plaques are designed to last 20+ years outdoors. They're UV-resistant, 
+                  waterproof, and freeze-proof. We use premium materials specifically chosen for cemetery environments.
                 </p>
               </div>
-            </details>
 
-            <details className="bg-white p-6 rounded-lg shadow-sm">
-              <summary className="font-medium text-lg cursor-pointer">How durable are the QR codes?</summary>
-              <div className="mt-4 text-gray-600">
-                <p>
-                  Our QR codes are made with weather-resistant materials designed to withstand outdoor conditions for
-                  years. They're UV-resistant, waterproof, and can handle temperature extremes. The Deluxe and Legacy
-                  plans include our highest quality materials for maximum durability.
+              <div className="border-b border-gray-200 pb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Is there really no monthly fee?</h3>
+                <p className="text-gray-600">
+                  Absolutely no monthly fees! Your $119.99 payment includes lifetime hosting. Your memorial will 
+                  stay online forever with no additional costs. We believe memories should be preserved permanently, 
+                  not held hostage by subscription fees.
                 </p>
               </div>
-            </details>
 
-            <details className="bg-white p-6 rounded-lg shadow-sm">
-              <summary className="font-medium text-lg cursor-pointer">
-                Can family members add content to the memorial?
-              </summary>
-              <div className="mt-4 text-gray-600">
-                <p>
-                  Yes, all plans allow you to invite family members to contribute stories, photos, and memories. The
-                  Deluxe and Legacy plans offer more advanced permission controls, allowing you to decide who can view
-                  and who can contribute to different sections of the memorial.
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">What if I'm not satisfied?</h3>
+                <p className="text-gray-600">
+                  We offer a 30-day money-back guarantee. If you're not completely satisfied with your memorial, 
+                  contact us within 30 days for a full refund. No questions asked.
                 </p>
               </div>
-            </details>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-gray-900 text-white">
+      {/* Final CTA */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
         <div className="container mx-auto text-center px-4">
-          <h2 className="text-3xl font-serif mb-6">Ready to Create a Lasting Memorial?</h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Choose the plan that's right for you and start preserving memories today.
+          <h2 className="text-4xl font-bold mb-6">Ready to Create Their Memorial?</h2>
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
+            Join thousands of families who have chosen Memorial QR to honor their loved ones. 
+            Start creating a lasting tribute today.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100" asChild>
-              <Link href="/checkout">Get Started Today</Link>
-            </Button>
-            <Button size="lg" variant="outline" className="text-white border-white hover:bg-gray-800">
-              Contact Sales
-            </Button>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-md mx-auto mb-8">
+            <div className="text-center">
+              <p className="text-blue-100 mb-2">Limited Time Offer</p>
+              <div className="flex items-center justify-center mb-4">
+                <span className="text-blue-200 line-through text-2xl mr-3">$199.99</span>
+                <Badge className="bg-red-500 text-white px-3 py-1 text-sm font-bold">
+                  Save $80
+                </Badge>
+              </div>
+              <div className="text-5xl font-bold mb-4">$119.99</div>
+              <p className="text-blue-100 text-sm">One-time payment • Lifetime hosting • No hidden fees</p>
+            </div>
+          </div>
+
+          <Button 
+            size="lg" 
+            className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 mb-6"
+            asChild
+          >
+            <Link href="/create-profile">
+              🚀 Start Creating Now - $119.99
+              <ArrowRight className="ml-2 w-6 h-6" />
+            </Link>
+          </Button>
+          
+          <div className="flex items-center justify-center space-x-6 text-sm text-blue-100">
+            <div className="flex items-center">
+              <Shield className="w-4 h-4 mr-2" />
+              30-Day Guarantee
+            </div>
+            <div className="flex items-center">
+              <Star className="w-4 h-4 mr-2 fill-current" />
+              4.9/5 Rating
+            </div>
+            <div className="flex items-center">
+              <Heart className="w-4 h-4 mr-2" />
+              10,000+ Families
+            </div>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto grid md:grid-cols-4 gap-8 px-4">
-          <div>
-            <div className="flex flex-col items-start mb-4">
-              <h3 className="text-xl font-serif">Memorial QR</h3>
-              <span className="text-xs text-gray-400 font-light">Tradition meets innovation</span>
-            </div>
-            <p className="text-gray-400">Preserving memories for generations to come with innovative QR technology.</p>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/memorials" className="text-gray-400 hover:text-white">
-                  Memorials
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="text-gray-400 hover:text-white">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="text-gray-400 hover:text-white">
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-gray-400 hover:text-white">
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Customer Support</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="text-gray-400 hover:text-white">
-                  Shipping Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="text-gray-400 hover:text-white">
-                  Returns & Refunds
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Newsletter</h4>
-            <p className="text-gray-400 mb-4">Subscribe to receive updates and special offers.</p>
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="px-4 py-2 w-full rounded-l-md focus:outline-none text-gray-900"
-              />
-              <Button className="rounded-l-none">Subscribe</Button>
-            </div>
-          </div>
-        </div>
-        <div className="container mx-auto mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Memorial QR. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   )
 }

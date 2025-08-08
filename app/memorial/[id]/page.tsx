@@ -6,11 +6,13 @@ import { Card } from "@/components/ui/card"
 import { QRImage } from "@/components/qr-image"
 import { FamilyTree } from "@/components/family-tree/family-tree"
 import { format } from "date-fns"
-import { MessageCircle, Users, ImageIcon, BookOpen, Video } from "lucide-react"
+import { MessageCircle, Users, ImageIcon, BookOpen, Video, Edit, Star, Play, ArrowLeft, Share2 } from "lucide-react"
 import { createServerSupabaseClient } from "@/lib/supabase"
 import { PersonImage } from "@/components/person-image"
 import { ReliableImage } from "@/components/reliable-image"
 import { ReliableVideo } from "@/components/reliable-video"
+import Link from "next/link"
+
 // Single sample memorial for focused development
 const sampleMemorials = {
   "sample-1": {
@@ -184,6 +186,28 @@ async function getMemorialData(memorialId: string) {
   }
 }
 
+// Check if user owns this memorial
+async function checkMemorialOwnership(memorialId: string) {
+  if (memorialId.startsWith("sample-")) {
+    return true // Sample memorials are always editable for demo
+  }
+
+  try {
+    const supabase = createServerSupabaseClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) return false
+
+    const { data: memorial } = await supabase.from("memorials").select("user_id").eq("id", memorialId).single()
+
+    return memorial?.user_id === user.id
+  } catch {
+    return false
+  }
+}
+
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const memorial = await getMemorialData(params.id)
 
@@ -202,6 +226,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 export default async function MemorialPage({ params }: { params: { id: string } }) {
   const memorialId = params.id
   const memorial = await getMemorialData(memorialId)
+  const isOwner = await checkMemorialOwnership(memorialId)
 
   if (!memorial) {
     console.log("Memorial not found, redirecting to 404")
@@ -232,276 +257,328 @@ export default async function MemorialPage({ params }: { params: { id: string } 
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section with Photo */}
-      <div className="relative w-full h-64 md:h-80 bg-gray-200 flex items-center justify-center">
-        <div className="absolute inset-0 overflow-hidden">
-          {memorial.cover_image_url ? (
-            <ReliableImage
-              src={memorial.cover_image_url || "/images/cemetery-hero.png"}
-              alt={`${memorial.name} memorial cover`}
-              width={800}
-              height={320}
-              className="w-full h-full object-cover"
-              priority
-              fallbackText="Memorial Cover"
-            />
-          ) : (
-            <PersonImage
-              name={memorial.name}
-              gender={gender}
-              className="w-full h-full object-cover"
-              seed={`${memorial.id}-cover`}
-              alt={`${memorial.name} memorial cover`}
-              type="cover"
-            />
-          )}
-        </div>
-        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
-        <div className="relative z-10 text-white text-center px-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-md">In Loving Memory</h1>
-        </div>
-      </div>
-
-      {/* Birth/Death Info and Profile Photo */}
-      <div className="relative px-4 md:px-8 max-w-5xl mx-auto">
-        {/* Birth/Death Info */}
-        <div className="flex justify-between text-center py-4 text-sm">
-          <div className="w-1/2 pr-2">
-            <div className="font-bold uppercase">BORN</div>
-            <div>{formattedBirthDate || "Unknown"}</div>
-            <div>{birthLocation}</div>
-          </div>
-          <div className="w-1/2 pl-2">
-            <div className="font-bold uppercase">DIED</div>
-            <div>{formattedDeathDate || "Unknown"}</div>
-            <div>{deathLocation}</div>
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center text-blue-600 hover:text-blue-700">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Link>
+            <div className="flex items-center space-x-4">
+              <Button variant="outline" size="sm">
+                <Share2 className="h-4 w-4 mr-2" />
+                Share Memorial
+              </Button>
+              {isOwner && (
+                <Link href={`/memorial/${memorialId}/edit`}>
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Memorial
+                  </Button>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Profile Photo */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white bg-gray-200">
-            {memorial.profile_image_url ? (
-              <ReliableImage
-                src={memorial.profile_image_url || "/images/male-memorial-portrait.png"}
-                alt={`${memorial.name} profile`}
-                width={128}
-                height={128}
-                className="w-full h-full object-cover"
-                priority
-                fallbackText={memorial.name}
-              />
-            ) : (
-              <PersonImage
-                name={memorial.name}
-                gender={gender}
-                className="w-full h-full object-cover"
-                seed={`${memorial.id}-profile`}
-                alt={`${memorial.name} profile`}
-                type="profile"
-              />
-            )}
+      {/* Hero Section - Gray Background with Memorial Cover Text */}
+      <section className="relative bg-gray-400 h-64">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-6xl md:text-8xl font-bold text-gray-600 opacity-50">Memorial Cover</h1>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-white">In Loving Memory</h2>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Name */}
-        <div className="text-center mt-16 mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">{memorial.name}</h1>
-          <p className="text-gray-500 mt-2">
-            {formattedBirthDate} - {formattedDeathDate}
-          </p>
+      {/* Birth/Death Info and Profile Section */}
+      <section className="bg-white py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          {/* Birth and Death Info */}
+          <div className="flex justify-between items-start mb-8">
+            <div className="text-center flex-1">
+              <div className="font-bold text-sm uppercase tracking-wide text-gray-900 mb-1">BORN</div>
+              <div className="text-lg font-medium text-gray-900">{formattedBirthDate || "Unknown"}</div>
+              <div className="text-gray-600">{birthLocation}</div>
+            </div>
+
+            {/* Profile Photo - Centered */}
+            <div className="flex-shrink-0 mx-8">
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-lg">
+                {memorial.profile_image_url ? (
+                  <ReliableImage
+                    src={memorial.profile_image_url}
+                    alt={`${memorial.name} profile`}
+                    width={128}
+                    height={128}
+                    className="w-full h-full object-cover"
+                    priority
+                    fallbackText={memorial.name}
+                  />
+                ) : (
+                  <PersonImage
+                    name={memorial.name}
+                    gender={gender}
+                    className="w-full h-full object-cover"
+                    seed={`${memorial.id}-profile`}
+                    alt={`${memorial.name} profile`}
+                    type="profile"
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="text-center flex-1">
+              <div className="font-bold text-sm uppercase tracking-wide text-gray-900 mb-1">DIED</div>
+              <div className="text-lg font-medium text-gray-900">{formattedDeathDate || "Unknown"}</div>
+              <div className="text-gray-600">{deathLocation}</div>
+            </div>
+          </div>
+
+          {/* Name and Dates */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">{memorial.name}</h1>
+            <p className="text-xl text-gray-600">
+              {formattedBirthDate} - {formattedDeathDate}
+            </p>
+          </div>
         </div>
+      </section>
 
-        {/* Tabs Navigation */}
-        <Tabs defaultValue="biography" className="w-full">
-          <TabsList className="grid grid-cols-5 mb-8">
-            <TabsTrigger value="biography" className="data-[state=active]:bg-gray-100">
-              <BookOpen className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Biography</span>
-              <span className="sm:hidden">Bio</span>
-            </TabsTrigger>
-            <TabsTrigger value="gallery" className="data-[state=active]:bg-gray-100">
-              <ImageIcon className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Gallery</span>
-              <span className="sm:hidden">Photos</span>
-            </TabsTrigger>
-            <TabsTrigger value="videos" className="data-[state=active]:bg-gray-100">
-              <Video className="h-4 w-4 mr-2" />
-              Videos
-            </TabsTrigger>
-            <TabsTrigger value="family" className="data-[state=active]:bg-gray-100">
-              <Users className="h-4 w-4 mr-2" />
-              Family
-            </TabsTrigger>
-            <TabsTrigger value="guestbook" className="data-[state=active]:bg-gray-100">
-              <MessageCircle className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Guest Book</span>
-              <span className="sm:hidden">Book</span>
-            </TabsTrigger>
-          </TabsList>
+      {/* Navigation Tabs */}
+      <section className="bg-white border-t">
+        <div className="max-w-4xl mx-auto px-4">
+          <Tabs defaultValue="biography" className="w-full">
+            <TabsList className="grid grid-cols-5 w-full bg-transparent border-b rounded-none h-auto p-0">
+              <TabsTrigger
+                value="biography"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none py-4 px-6 text-gray-600 hover:text-gray-900"
+              >
+                <BookOpen className="h-4 w-4 mr-2" />
+                Biography
+              </TabsTrigger>
+              <TabsTrigger
+                value="gallery"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none py-4 px-6 text-gray-600 hover:text-gray-900"
+              >
+                <ImageIcon className="h-4 w-4 mr-2" />
+                Gallery
+              </TabsTrigger>
+              <TabsTrigger
+                value="videos"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none py-4 px-6 text-gray-600 hover:text-gray-900"
+              >
+                <Video className="h-4 w-4 mr-2" />
+                Videos
+              </TabsTrigger>
+              <TabsTrigger
+                value="family"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none py-4 px-6 text-gray-600 hover:text-gray-900"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Family
+              </TabsTrigger>
+              <TabsTrigger
+                value="guestbook"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none py-4 px-6 text-gray-600 hover:text-gray-900"
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Guest Book
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Biography Tab */}
-          <TabsContent value="biography" className="space-y-6">
-            {memorial.bio ? (
-              <Card className="p-6">
-                <div className="prose max-w-none">
-                  <p className="whitespace-pre-line">{memorial.bio}</p>
+            {/* Tab Content */}
+            <div className="py-8">
+              {/* Biography Tab */}
+              <TabsContent value="biography" className="mt-0">
+                <div className="max-w-3xl mx-auto">
+                  {memorial.bio ? (
+                    <div className="prose prose-lg max-w-none">
+                      <p className="whitespace-pre-line text-gray-700 leading-relaxed">{memorial.bio}</p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-gray-500">No biography has been added yet.</p>
+                      {isOwner && (
+                        <Link href={`/memorial/${memorialId}/edit`} className="mt-2 inline-block">
+                          <Button variant="outline" size="sm">
+                            Add Biography
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </Card>
-            ) : (
-              <Card className="p-6 text-center">
-                <p className="text-gray-500">No biography has been added yet.</p>
-              </Card>
-            )}
-          </TabsContent>
+              </TabsContent>
 
-          {/* Gallery Tab */}
-          <TabsContent value="gallery" className="space-y-6">
-            {memorial.media && memorial.media.length > 0 ? (
-              <Card className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {memorial.media.map((item, index) => (
-                    <div key={item.id} className="space-y-2">
-                      <div className="aspect-square rounded-md overflow-hidden bg-gray-100">
-                        <ReliableImage
-                          src={item.url}
-                          alt={item.caption || `Memorial image ${index + 1}`}
-                          width={400}
-                          height={400}
-                          className="w-full h-full object-cover"
-                          fallbackText={item.caption || `Photo ${index + 1}`}
+              {/* Gallery Tab */}
+              <TabsContent value="gallery" className="mt-0">
+                <div className="max-w-4xl mx-auto">
+                  {memorial.media && memorial.media.length > 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {memorial.media.map((item, index) => (
+                        <div key={item.id} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
+                          <ReliableImage
+                            src={item.url}
+                            alt={item.caption || `Memorial image ${index + 1}`}
+                            fill
+                            className="object-cover hover:scale-105 transition-transform duration-200"
+                            fallbackText={item.caption || `Photo ${index + 1}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-500">No photos have been added yet.</p>
+                      {isOwner && (
+                        <Link href={`/memorial/${memorialId}/manage-images`} className="mt-2 inline-block">
+                          <Button variant="outline" size="sm">
+                            Add Photos
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* Videos Tab */}
+              <TabsContent value="videos" className="mt-0">
+                <div className="max-w-4xl mx-auto">
+                  {memorial.videos && memorial.videos.length > 0 ? (
+                    <div className="space-y-8">
+                      {memorial.videos.map((video, index) => (
+                        <Card key={video.id} className="overflow-hidden">
+                          <ReliableVideo
+                            src={video.url}
+                            title={video.caption || `Memorial video ${index + 1}`}
+                            poster={memorial.cover_image_url}
+                            className="w-full"
+                            width={800}
+                            height={450}
+                          />
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 h-96 flex items-center justify-center">
+                      <div className="text-center">
+                        <Play className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600 text-lg">Memorial Videos</p>
+                        <p className="text-gray-500 text-sm mb-4">Videos and memories will be displayed here</p>
+                        {isOwner && (
+                          <Link href={`/memorial/${memorialId}/manage-videos`}>
+                            <Button variant="outline" size="sm">
+                              Add Videos
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* Family Tab */}
+              <TabsContent value="family" className="mt-0">
+                <div className="max-w-4xl mx-auto">
+                  <FamilyTree memorialId={memorialId} isEditable={isOwner} />
+                </div>
+              </TabsContent>
+
+              {/* Guest Book Tab */}
+              <TabsContent value="guestbook" className="mt-0">
+                <div className="max-w-3xl mx-auto space-y-6">
+                  {memorial.stories && memorial.stories.length > 0 ? (
+                    <div className="space-y-6">
+                      {memorial.stories.map((story) => (
+                        <div key={story.id} className="border-l-4 border-blue-500 pl-6 py-4">
+                          <div className="flex items-center mb-2">
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                              ))}
+                            </div>
+                            <span className="ml-2 text-sm text-gray-500">
+                              {format(new Date(story.created_at), "MMM d, yyyy")}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 mb-3 leading-relaxed whitespace-pre-line">{story.content}</p>
+                          <p className="text-sm font-medium text-gray-900">- {story.author_name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-500">No guestbook entries have been added yet.</p>
+                    </div>
+                  )}
+
+                  {/* Add Memory Form */}
+                  <div className="bg-gray-50 rounded-lg p-6 mt-8">
+                    <h3 className="text-lg font-semibold mb-4">Leave a Memory</h3>
+                    <form className="space-y-4">
+                      <div>
+                        <label htmlFor="authorName" className="block text-sm font-medium text-gray-700 mb-1">
+                          Your Name
+                        </label>
+                        <input
+                          id="authorName"
+                          placeholder="Enter your name"
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
-                      {item.caption && <p className="text-sm text-gray-600 text-center">{item.caption}</p>}
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            ) : (
-              <Card className="p-6 text-center">
-                <p className="text-gray-500">No photos have been added yet.</p>
-              </Card>
-            )}
-          </TabsContent>
-
-          {/* Videos Tab */}
-          <TabsContent value="videos" className="space-y-6">
-            {memorial.videos && memorial.videos.length > 0 ? (
-              <div className="space-y-8">
-                {memorial.videos.map((video, index) => (
-                  <Card key={video.id} className="overflow-hidden">
-                    <ReliableVideo
-                      src={video.url}
-                      title={video.caption || `Memorial video ${index + 1}`}
-                      poster={memorial.cover_image_url}
-                      className="w-full"
-                      width={800}
-                      height={450}
-                    />
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="p-6 text-center">
-                <div className="space-y-4">
-                  <Video className="h-12 w-12 text-gray-400 mx-auto" />
-                  <div>
-                    <p className="text-gray-500 mb-2">No videos have been added yet.</p>
-                    <p className="text-sm text-gray-400">
-                      Videos help preserve precious memories and allow family and friends to hear their loved one's
-                      voice and see them in motion.
-                    </p>
+                      <div>
+                        <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                          Your Memory or Tribute
+                        </label>
+                        <textarea
+                          id="content"
+                          placeholder="Share your memory, story, or tribute..."
+                          rows={4}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Submit Memory
+                      </Button>
+                    </form>
                   </div>
                 </div>
-              </Card>
-            )}
-          </TabsContent>
-
-          {/* Family Tab */}
-          <TabsContent value="family" className="space-y-6">
-            <FamilyTree memorialId={memorialId} />
-          </TabsContent>
-
-          {/* Guest Book Tab */}
-          <TabsContent value="guestbook" className="space-y-6">
-            <div className="text-center mb-6">
-              <Button className="bg-navy-blue hover:bg-navy-blue/90 text-white">Submit Guestbook Entry</Button>
+              </TabsContent>
             </div>
+          </Tabs>
+        </div>
+      </section>
 
-            {memorial.stories && memorial.stories.length > 0 ? (
-              <div className="space-y-6">
-                {memorial.stories.map((story) => (
-                  <Card key={story.id} className="p-6 bg-cream">
-                    <div className="mb-2">
-                      <strong>{story.author_name}</strong>
-                      <span className="text-sm text-gray-500 ml-2">
-                        {format(new Date(story.created_at), "yyyy-MM-dd")}
-                      </span>
-                    </div>
-                    <p className="whitespace-pre-line">{story.content}</p>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="p-6 text-center">
-                <p className="text-gray-500">No guestbook entries have been added yet.</p>
-              </Card>
-            )}
-
-            {/* Add Memory Form */}
-            <Card className="p-6 bg-white">
-              <form className="space-y-4">
-                <h3 className="text-lg font-semibold">Add Your Memory</h3>
-                <div>
-                  <label htmlFor="authorName" className="block text-sm font-medium mb-1">
-                    Your Name
-                  </label>
-                  <input
-                    id="authorName"
-                    placeholder="Enter your name"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="content" className="block text-sm font-medium mb-1">
-                    Your Memory or Tribute
-                  </label>
-                  <textarea
-                    id="content"
-                    placeholder="Share your memory, story, or tribute..."
-                    rows={4}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <Button type="submit" className="bg-navy-blue hover:bg-navy-blue/90 text-white">
-                  Submit Memory
-                </Button>
-              </form>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* QR Code and Share Section */}
-        <div className="mt-12 mb-16 text-center">
-          <h3 className="text-xl font-semibold mb-4">Share This Memorial</h3>
-          <div className="flex justify-center mb-4">
-            <div className="p-2 bg-white border rounded-md">
-              <QRImage value={`https://memorial-qr-website.vercel.app/memorial/${memorial.id}`} size={150} />
-            </div>
+      {/* QR Code and Share Section */}
+      <div className="mt-12 mb-16 text-center max-w-4xl mx-auto px-4">
+        <h3 className="text-xl font-semibold mb-4">Share This Memorial</h3>
+        <div className="flex justify-center mb-4">
+          <div className="p-2 bg-white border rounded-md">
+            <QRImage value={`https://memorial-qr-website.vercel.app/memorial/${memorial.id}`} size={150} />
           </div>
-          <div className="flex justify-center gap-4">
-            <Button variant="outline" size="sm">
-              Facebook
-            </Button>
-            <Button variant="outline" size="sm">
-              Twitter
-            </Button>
-            <Button variant="outline" size="sm">
-              Email
-            </Button>
-          </div>
+        </div>
+        <div className="flex justify-center gap-4">
+          <Button variant="outline" size="sm">
+            Facebook
+          </Button>
+          <Button variant="outline" size="sm">
+            Twitter
+          </Button>
+          <Button variant="outline" size="sm">
+            Email
+          </Button>
         </div>
       </div>
     </div>

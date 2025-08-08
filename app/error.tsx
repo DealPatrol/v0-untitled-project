@@ -22,7 +22,13 @@ export default function Error({
         <p className="text-xl mb-8">We're sorry, but an error occurred.</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
-            onClick={() => reset()}
+            onClick={() => {
+              if (typeof reset === "function") {
+                reset()
+              } else {
+                window.location.reload()
+              }
+            }}
             className="bg-white text-rose-500 px-6 py-3 rounded-lg font-semibold hover:bg-rose-50 transition-colors"
           >
             Try again

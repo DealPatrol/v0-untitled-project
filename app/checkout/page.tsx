@@ -9,9 +9,9 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { AlertCircle, CheckCircle, Lock, Building, Truck, CreditCard, ExternalLink } from "lucide-react"
+import { AlertCircle, CheckCircle, Lock, Building, Truck, CreditCard, ExternalLink, Minus, Plus } from 'lucide-react'
 import { createFallbackOrder } from "../actions/fallback-payment"
 
 export default function CheckoutPage() {
@@ -20,9 +20,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
-  const [selectedPlan, setSelectedPlan] = useState("premium")
   const [paymentMethod, setPaymentMethod] = useState("stripe")
-  const [notification, setNotification] = useState<string | null>(null)
 
   // Form state
   const [firstName, setFirstName] = useState("")
@@ -34,14 +32,6 @@ export default function CheckoutPage() {
   const [zipCode, setZipCode] = useState("")
   const [country, setCountry] = useState("United States")
 
-  // Check for plan parameter in URL
-  useEffect(() => {
-    const planParam = searchParams.get("plan")
-    if (planParam && ["premium", "deluxe", "legacy"].includes(planParam)) {
-      setSelectedPlan(planParam)
-    }
-  }, [searchParams])
-
   // Check for canceled payment
   useEffect(() => {
     if (searchParams.get("canceled")) {
@@ -49,45 +39,15 @@ export default function CheckoutPage() {
     }
   }, [searchParams])
 
-  // Show notification when plan changes
-  useEffect(() => {
-    const planParam = searchParams.get("plan")
-    if (planParam && planParam !== selectedPlan) {
-      const planNames = {
-        premium: "Premium",
-        deluxe: "Deluxe",
-        legacy: "Legacy",
-      }
-      setNotification(`Plan changed to ${planNames[selectedPlan as keyof typeof planNames]}`)
+  // Product details - Single price point
+  const productPrice = 119.99
+  const subtotal = productPrice * quantity
+  const tax = subtotal * 0.08 // 8% tax
+  const shipping = 9.99
+  const total = subtotal + tax + shipping
 
-      const timer = setTimeout(() => {
-        setNotification(null)
-      }, 3000)
-
-      return () => clearTimeout(timer)
-    }
-  }, [selectedPlan, searchParams])
-
-  // Calculate prices based on quantity and plan
-  const prices = {
-    premium: 79.99,
-    deluxe: 99.99,
-    legacy: 249.99,
-  }
-
-  const basePrice = prices[selectedPlan as keyof typeof prices]
-  const discount = quantity > 1 ? (quantity === 2 ? 0.2 : 0.25) : 0
-  const subtotal = basePrice * quantity
-  const discountAmount = subtotal * discount
-  const total = subtotal - discountAmount
-  const shipping = 4.99
-
-  // Stripe payment links for each plan
-  const stripeLinks = {
-    premium: "https://buy.stripe.com/7sIaIb5sydOxgCc144",
-    deluxe: "https://buy.stripe.com/test_aFa14geYWep85HAeQC8og00",
-    legacy: "https://buy.stripe.com/test_fZubIUaIG1Cmc5YcIu8og01",
-  }
+  // Stripe payment link
+  const stripeLink = "https://buy.stripe.com/test_aFa14geYWep85HAeQC8og00"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -96,29 +56,18 @@ export default function CheckoutPage() {
 
     try {
       console.log("Starting checkout process...")
-      console.log("Selected plan:", selectedPlan)
       console.log("Payment method:", paymentMethod)
 
-      // If any plan and credit card payment, redirect to Stripe
+      // If credit card payment, redirect to Stripe
       if (paymentMethod === "stripe") {
-        const stripeLink = stripeLinks[selectedPlan as keyof typeof stripeLinks]
-
-        if (stripeLink) {
-          console.log("Redirecting to Stripe payment link:", stripeLink)
-
-          // Add a small delay to show processing state
-          setTimeout(() => {
-            window.location.href = stripeLink
-          }, 500)
-          return
-        } else {
-          setError("Credit card payment is not available for this plan. Please choose an alternative payment method.")
-          setIsProcessing(false)
-          return
-        }
+        console.log("Redirecting to Stripe payment link:", stripeLink)
+        setTimeout(() => {
+          window.location.href = stripeLink
+        }, 500)
+        return
       }
 
-      // Handle alternative payment methods (bank transfer, pay on delivery)
+      // Handle alternative payment methods
       if (!firstName || !lastName || !email || !address || !city || !state || !zipCode) {
         setError("Please fill in all required fields")
         setIsProcessing(false)
@@ -128,11 +77,11 @@ export default function CheckoutPage() {
       // Prepare items for checkout
       const items = [
         {
-          name: `${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} Memorial QR`,
-          description: `${quantity} QR code${quantity > 1 ? "s" : ""} for memorial`,
-          price: basePrice * (1 - discount),
+          name: "Memorial QR Code",
+          description: `${quantity} Memorial QR Code${quantity > 1 ? "s" : ""}`,
+          price: productPrice,
           quantity,
-          product_type: selectedPlan,
+          product_type: "memorial_qr",
         },
       ]
 
@@ -150,14 +99,14 @@ export default function CheckoutPage() {
 
       // Prepare metadata
       const orderMetadata = {
-        plan: selectedPlan,
+        plan: "memorial_qr",
         email: email,
         quantity: quantity.toString(),
-        product_type: selectedPlan,
+        product_type: "memorial_qr",
         payment_method: paymentMethod,
       }
 
-      console.log("Creating fallback order with:", { items, shippingInfo, orderMetadata })
+      console.log("Creating order with:", { items, shippingInfo, orderMetadata })
 
       const result = await createFallbackOrder(items, shippingInfo, orderMetadata)
 
@@ -174,9 +123,6 @@ export default function CheckoutPage() {
     }
   }
 
-  // All plans now support credit card
-  const isCreditCardAvailable = true
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -189,426 +135,303 @@ export default function CheckoutPage() {
         </div>
       </header>
 
-      {/* Checkout Steps */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center">
-            <div className="bg-gray-900 text-white w-8 h-8 rounded-full flex items-center justify-center">1</div>
-            <div className="text-gray-900 font-medium ml-2">Payment</div>
-            <div className="w-16 h-1 bg-gray-300 mx-2"></div>
-            <div className="bg-gray-300 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center">2</div>
-            <div className="text-gray-600 ml-2">Account</div>
-            <div className="w-16 h-1 bg-gray-300 mx-2"></div>
-            <div className="bg-gray-300 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center">3</div>
-            <div className="text-gray-600 ml-2">Confirmation</div>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Left Column - Order Summary */}
-          <div className="md:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Complete Your Purchase</CardTitle>
-                <CardDescription>Select your plan and payment method</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-start mb-6">
-                    <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>{error}</span>
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Left Column - Product Info */}
+            <div>
+              <div className="bg-white rounded-lg shadow-sm border p-8 mb-6">
+                <div className="text-center mb-8">
+                  <div className="relative w-64 h-64 mx-auto mb-6">
+                    <Image
+                      src="/images/qr-code-gravestone.png"
+                      alt="Memorial QR Code"
+                      fill
+                      className="object-contain"
+                    />
                   </div>
-                )}
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">Memorial QR Code</h1>
+                  <p className="text-xl text-gray-600 mb-4">A lasting digital memorial for your loved one</p>
+                  <div className="text-4xl font-bold text-gray-900">${productPrice.toFixed(2)}</div>
+                  <p className="text-sm text-gray-500 mt-1">Before tax and shipping</p>
+                </div>
 
+                {/* Quantity Selector */}
                 <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-2">Select Your Plan</h3>
-                  <p className="text-gray-600 mb-4">You can change your plan here before completing your purchase.</p>
-                  <RadioGroup
-                    defaultValue="premium"
-                    value={selectedPlan}
-                    onValueChange={setSelectedPlan}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                  >
-                    <div
-                      className={`border-2 ${selectedPlan === "premium" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
+                  <Label className="text-lg font-medium mb-4 block">Quantity</Label>
+                  <div className="flex items-center justify-center space-x-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      disabled={quantity <= 1}
                     >
-                      {selectedPlan === "premium" && (
-                        <div className="absolute -top-3 right-3 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
-                          BASIC
-                        </div>
-                      )}
-                      <RadioGroupItem value="premium" id="premium" className="sr-only" />
-                      <Label htmlFor="premium" className="flex flex-col cursor-pointer">
-                        <span className="font-medium">Premium</span>
-                        <span className="text-2xl font-bold mt-1">$79.99</span>
-                        <span className="text-sm text-gray-500 mt-2">
-                          Standard memorial page with basic features
-                          {selectedPlan === "premium" && <span className="block text-rose-500 mt-1">✓ Selected</span>}
-                        </span>
-                      </Label>
-                    </div>
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-2xl font-semibold w-12 text-center">{quantity}</span>
+                    <Button variant="outline" size="sm" onClick={() => setQuantity(quantity + 1)}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
 
-                    <div
-                      className={`border-2 ${selectedPlan === "deluxe" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
-                    >
-                      {selectedPlan === "deluxe" && (
-                        <div className="absolute -top-3 right-3 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
-                          POPULAR
-                        </div>
-                      )}
-                      <RadioGroupItem value="deluxe" id="deluxe" className="sr-only" />
-                      <Label htmlFor="deluxe" className="flex flex-col cursor-pointer">
-                        <span className="font-medium">Deluxe</span>
-                        <span className="text-2xl font-bold mt-1">$99.99</span>
-                        <span className="text-sm text-gray-500 mt-2">
-                          Enhanced memorial page with additional features
-                          {selectedPlan === "deluxe" && <span className="block text-rose-500 mt-1">✓ Selected</span>}
-                        </span>
-                      </Label>
-                    </div>
+                {/* Features */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-lg mb-4">What's Included:</h3>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Weather-resistant QR code plaque</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Beautiful digital memorial page</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Unlimited photos and videos</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Interactive family tree</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Guest book for memories</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Lifetime hosting included</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                    <div
-                      className={`border-2 ${selectedPlan === "legacy" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
-                    >
-                      {selectedPlan === "legacy" && (
-                        <div className="absolute -top-3 right-3 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
-                          PREMIUM
-                        </div>
-                      )}
-                      <RadioGroupItem value="legacy" id="legacy" className="sr-only" />
-                      <Label htmlFor="legacy" className="flex flex-col cursor-pointer">
-                        <span className="font-medium">Legacy</span>
-                        <span className="text-2xl font-bold mt-1">$249.99</span>
-                        <span className="text-sm text-gray-500 mt-2">
-                          Full-service memorial creation by our team
-                          {selectedPlan === "legacy" && <span className="block text-rose-500 mt-1">✓ Selected</span>}
-                        </span>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                  {notification && (
-                    <div className="mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md flex items-start">
-                      <CheckCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>{notification}</span>
+            {/* Right Column - Checkout Form */}
+            <div>
+              <Card className="shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-2xl">Complete Your Order</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-start mb-6">
+                      <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>{error}</span>
                     </div>
                   )}
-                </div>
 
-                <div className="mb-8">
-                  <h3 className="font-medium mb-4">Select Quantity</h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    {[1, 2, 3].map((qty) => (
-                      <div
-                        key={qty}
-                        onClick={() => setQuantity(qty)}
-                        className={`border-2 ${quantity === qty ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 text-center cursor-pointer`}
-                      >
-                        <div className="font-medium">Buy {qty}</div>
-                        <div className="relative w-full h-16 my-2">
-                          <Image
-                            src="/images/qr-code-gravestone.png"
-                            alt="QR Code on Gravestone"
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
-                        <div className="font-bold">
-                          ${(basePrice * qty * (1 - (qty > 1 ? (qty === 2 ? 0.2 : 0.25) : 0))).toFixed(2)}
-                        </div>
-                        {qty > 1 && (
-                          <div className="bg-rose-800 text-white text-xs rounded-full py-1 px-2 mt-1">
-                            Save {qty === 2 ? "20%" : "25%"}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-8">
-                  <h3 className="font-medium mb-4">Select Payment Method</h3>
-                  <RadioGroup
-                    defaultValue="stripe"
-                    value={paymentMethod}
-                    onValueChange={setPaymentMethod}
-                    className="space-y-4"
-                  >
-                    <div
-                      className={`border-2 ${paymentMethod === "stripe" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
-                    >
-                      <RadioGroupItem value="stripe" id="stripe" className="sr-only" />
-                      <Label htmlFor="stripe" className="flex items-start cursor-pointer">
-                        <CreditCard className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
-                        <div className="flex-1">
-                          <span className="font-medium">Credit Card</span>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Pay securely with your credit or debit card via Stripe.
-                          </p>
-                          <div className="flex items-center mt-2 text-sm text-green-600">
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            Available for all plans - Premium, Deluxe & Legacy
-                          </div>
-                        </div>
-                        {paymentMethod === "stripe" && <ExternalLink className="h-4 w-4 text-blue-500 ml-2" />}
-                      </Label>
-                    </div>
-
-                    <div
-                      className={`border-2 ${paymentMethod === "bank_transfer" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
-                    >
-                      <RadioGroupItem value="bank_transfer" id="bank_transfer" className="sr-only" />
-                      <Label htmlFor="bank_transfer" className="flex items-start cursor-pointer">
-                        <Building className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <span className="font-medium">Bank Transfer</span>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Make a direct transfer to our bank account. We'll send you the details after you place your
-                            order.
-                          </p>
-                        </div>
-                      </Label>
-                    </div>
-
-                    <div
-                      className={`border-2 ${paymentMethod === "pay_on_delivery" ? "border-rose-500" : "border-gray-200"} rounded-lg p-4 relative`}
-                    >
-                      <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" className="sr-only" />
-                      <Label htmlFor="pay_on_delivery" className="flex items-start cursor-pointer">
-                        <Truck className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <span className="font-medium">Pay on Delivery</span>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Pay with cash or card when your QR code is delivered to your address.
-                          </p>
-                        </div>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-8">
-                  {paymentMethod !== "stripe" && (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Payment Method */}
                     <div>
-                      <h3 className="font-medium mb-4">Shipping Information</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="firstName">First Name *</Label>
-                          <Input
-                            id="firstName"
-                            placeholder="John"
-                            className="mt-1"
-                            required
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                          />
+                      <Label className="text-lg font-medium mb-4 block">Payment Method</Label>
+                      <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
+                        <div
+                          className={`border-2 ${paymentMethod === "stripe" ? "border-blue-500 bg-blue-50" : "border-gray-200"} rounded-lg p-4`}
+                        >
+                          <RadioGroupItem value="stripe" id="stripe" className="sr-only" />
+                          <Label htmlFor="stripe" className="flex items-start cursor-pointer">
+                            <CreditCard className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0 text-blue-600" />
+                            <div className="flex-1">
+                              <span className="font-medium">Credit Card</span>
+                              <p className="text-sm text-gray-500 mt-1">Pay securely with your credit or debit card</p>
+                            </div>
+                            {paymentMethod === "stripe" && <CheckCircle className="h-5 w-5 text-blue-500" />}
+                          </Label>
                         </div>
-                        <div>
-                          <Label htmlFor="lastName">Last Name *</Label>
-                          <Input
-                            id="lastName"
-                            placeholder="Doe"
-                            className="mt-1"
-                            required
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                          />
+
+                        <div
+                          className={`border-2 ${paymentMethod === "bank_transfer" ? "border-blue-500 bg-blue-50" : "border-gray-200"} rounded-lg p-4`}
+                        >
+                          <RadioGroupItem value="bank_transfer" id="bank_transfer" className="sr-only" />
+                          <Label htmlFor="bank_transfer" className="flex items-start cursor-pointer">
+                            <Building className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0 text-blue-600" />
+                            <div className="flex-1">
+                              <span className="font-medium">Bank Transfer</span>
+                              <p className="text-sm text-gray-500 mt-1">
+                                Direct bank transfer (instructions provided after order)
+                              </p>
+                            </div>
+                            {paymentMethod === "bank_transfer" && <CheckCircle className="h-5 w-5 text-blue-500" />}
+                          </Label>
                         </div>
-                        <div className="md:col-span-2">
-                          <Label htmlFor="email">Email *</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder="your.email@example.com"
-                            className="mt-1"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                          />
+
+                        <div
+                          className={`border-2 ${paymentMethod === "pay_on_delivery" ? "border-blue-500 bg-blue-50" : "border-gray-200"} rounded-lg p-4`}
+                        >
+                          <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" className="sr-only" />
+                          <Label htmlFor="pay_on_delivery" className="flex items-start cursor-pointer">
+                            <Truck className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0 text-blue-600" />
+                            <div className="flex-1">
+                              <span className="font-medium">Pay on Delivery</span>
+                              <p className="text-sm text-gray-500 mt-1">Pay when your QR code arrives</p>
+                            </div>
+                            {paymentMethod === "pay_on_delivery" && <CheckCircle className="h-5 w-5 text-blue-500" />}
+                          </Label>
                         </div>
-                        <div className="md:col-span-2">
-                          <Label htmlFor="address">Address *</Label>
-                          <Input
-                            id="address"
-                            placeholder="123 Main St"
-                            className="mt-1"
-                            required
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="city">City *</Label>
-                          <Input
-                            id="city"
-                            placeholder="New York"
-                            className="mt-1"
-                            required
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="zipCode">ZIP Code *</Label>
-                          <Input
-                            id="zipCode"
-                            placeholder="10001"
-                            className="mt-1"
-                            required
-                            value={zipCode}
-                            onChange={(e) => setZipCode(e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="state">State *</Label>
-                          <Input
-                            id="state"
-                            placeholder="NY"
-                            className="mt-1"
-                            required
-                            value={state}
-                            onChange={(e) => setState(e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="country">Country *</Label>
-                          <Input
-                            id="country"
-                            placeholder="United States"
-                            className="mt-1"
-                            required
-                            value={country}
-                            onChange={(e) => setCountry(e.target.value)}
-                          />
-                        </div>
-                      </div>
+                      </RadioGroup>
                     </div>
-                  )}
 
-                  {paymentMethod === "stripe" && (
-                    <div>
-                      <h3 className="font-medium mb-4">Credit Card Payment</h3>
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <div className="flex items-start">
-                          <CreditCard className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-blue-800">Secure Stripe Checkout</p>
-                            <p className="text-blue-700 text-sm mt-1">
-                              You'll be redirected to Stripe's secure payment page to complete your purchase.
-                            </p>
-                            <p className="text-blue-700 text-sm mt-2 font-medium">
-                              ✓ Ready to redirect to Stripe payment page for{" "}
-                              {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} plan
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex items-center text-sm text-gray-500 mt-4">
-                    <Lock size={16} className="mr-2" />
-                    Your information is secure and encrypted
-                  </div>
-
-                  <Button type="submit" className="w-full mt-6" disabled={isProcessing}>
-                    {isProcessing ? (
-                      <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        {paymentMethod === "stripe" ? "Redirecting to Stripe..." : "Processing..."}
-                      </div>
-                    ) : paymentMethod === "stripe" ? (
-                      <div className="flex items-center">
-                        Continue to Stripe - ${(total + shipping).toFixed(2)}
-                        <ExternalLink className="h-4 w-4 ml-2" />
-                      </div>
-                    ) : (
-                      `Complete Order - $${(total + shipping).toFixed(2)}`
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Column - Order Summary */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between">
-                  <span>Plan</span>
-                  <span className="font-medium capitalize">{selectedPlan}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Quantity</span>
-                  <span className="font-medium">{quantity}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span className="font-medium">${subtotal.toFixed(2)}</span>
-                </div>
-                {discount > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Discount ({discount * 100}%)</span>
-                    <span>-${discountAmount.toFixed(2)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span className="font-medium">${shipping.toFixed(2)}</span>
-                </div>
-                <div className="border-t pt-4 flex justify-between font-bold">
-                  <span>Total</span>
-                  <span>${(total + shipping).toFixed(2)}</span>
-                </div>
-
-                {paymentMethod === "stripe" && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
-                    <div className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                    {/* Shipping Information - Only show for non-Stripe payments */}
+                    {paymentMethod !== "stripe" && (
                       <div>
-                        <p className="font-medium text-green-800">Credit Card Payment Available</p>
-                        <p className="text-green-700 text-sm mt-1">
-                          You can pay with credit card for the{" "}
-                          {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} plan.
-                        </p>
+                        <Label className="text-lg font-medium mb-4 block">Shipping Information</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="firstName">First Name *</Label>
+                            <Input
+                              id="firstName"
+                              placeholder="John"
+                              className="mt-1"
+                              required
+                              value={firstName}
+                              onChange={(e) => setFirstName(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="lastName">Last Name *</Label>
+                            <Input
+                              id="lastName"
+                              placeholder="Doe"
+                              className="mt-1"
+                              required
+                              value={lastName}
+                              onChange={(e) => setLastName(e.target.value)}
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <Label htmlFor="email">Email *</Label>
+                            <Input
+                              id="email"
+                              type="email"
+                              placeholder="your.email@example.com"
+                              className="mt-1"
+                              required
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <Label htmlFor="address">Address *</Label>
+                            <Input
+                              id="address"
+                              placeholder="123 Main St"
+                              className="mt-1"
+                              required
+                              value={address}
+                              onChange={(e) => setAddress(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="city">City *</Label>
+                            <Input
+                              id="city"
+                              placeholder="New York"
+                              className="mt-1"
+                              required
+                              value={city}
+                              onChange={(e) => setCity(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="state">State *</Label>
+                            <Input
+                              id="state"
+                              placeholder="NY"
+                              className="mt-1"
+                              required
+                              value={state}
+                              onChange={(e) => setState(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="zipCode">ZIP Code *</Label>
+                            <Input
+                              id="zipCode"
+                              placeholder="10001"
+                              className="mt-1"
+                              required
+                              value={zipCode}
+                              onChange={(e) => setZipCode(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="country">Country *</Label>
+                            <select
+                              id="country"
+                              className="w-full border rounded-md px-3 py-2 mt-1"
+                              value={country}
+                              onChange={(e) => setCountry(e.target.value)}
+                              required
+                            >
+                              <option value="United States">United States</option>
+                              <option value="Canada">Canada</option>
+                              <option value="United Kingdom">United Kingdom</option>
+                              <option value="Australia">Australia</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Order Summary */}
+                    <div className="bg-gray-50 rounded-lg p-6">
+                      <h3 className="font-semibold text-lg mb-4">Order Summary</h3>
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <span>Memorial QR Code × {quantity}</span>
+                          <span>${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Tax</span>
+                          <span>${tax.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Shipping</span>
+                          <span>${shipping.toFixed(2)}</span>
+                        </div>
+                        <div className="border-t pt-3 flex justify-between font-bold text-lg">
+                          <span>Total</span>
+                          <span>${total.toFixed(2)}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
 
-                <div className="bg-gray-50 p-4 rounded-lg mt-6">
-                  <div className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium">100% Money-Back Guarantee</p>
-                      <p className="text-sm text-gray-600">
-                        If you're not satisfied, we'll refund your purchase within 30 days.
-                      </p>
+                    {/* Security Notice */}
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Lock size={16} className="mr-2" />
+                      Your information is secure and encrypted
                     </div>
-                  </div>
-                </div>
 
-                <div className="relative w-full h-40 mt-6">
-                  <Image
-                    src="/images/qr-code-gravestone.png"
-                    alt="QR Code on Gravestone"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col space-y-4 border-t pt-4">
-                <div className="text-sm text-center text-gray-600">
-                  Need help?{" "}
-                  <Link href="/contact" className="text-rose-600 hover:text-rose-800">
-                    Contact Support
-                  </Link>
-                </div>
-              </CardFooter>
-            </Card>
+                    {/* Submit Button */}
+                    <Button
+                      type="submit"
+                      className="w-full py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? (
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                          {paymentMethod === "stripe" ? "Redirecting to Payment..." : "Processing Order..."}
+                        </div>
+                      ) : paymentMethod === "stripe" ? (
+                        <div className="flex items-center justify-center">
+                          Continue to Payment - ${total.toFixed(2)}
+                          <ExternalLink className="h-5 w-5 ml-2" />
+                        </div>
+                      ) : (
+                        `Complete Order - $${total.toFixed(2)}`
+                      )}
+                    </Button>
+
+                    {/* Money Back Guarantee */}
+                    <div className="text-center text-sm text-gray-600">
+                      <CheckCircle className="h-4 w-4 inline mr-1 text-green-500" />
+                      30-day money-back guarantee
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

@@ -3,58 +3,74 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { ShoppingCart, ArrowRight, X } from 'lucide-react'
 
 export function StickyPurchaseCTA() {
   const [isVisible, setIsVisible] = useState(false)
+  const [isDismissed, setIsDismissed] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show the sticky header after scrolling past 300px
       const scrollPosition = window.scrollY
-      setIsVisible(scrollPosition > 300)
+      const windowHeight = window.innerHeight
+      
+      // Show after scrolling past the pricing section
+      if (scrollPosition > windowHeight * 1.5 && !isDismissed) {
+        setIsVisible(true)
+      } else {
+        setIsVisible(false)
+      }
     }
 
-    // Add scroll event listener
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [isDismissed])
 
-    // Initial check in case page is loaded scrolled down
-    handleScroll()
-
-    // Clean up
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  if (isDismissed) return null
 
   return (
-    <div
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 bg-white shadow-md transition-all duration-300 border-b border-rose-100",
-        isVisible ? "translate-y-0" : "-translate-y-full",
-      )}
-    >
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center">
-          <span className="text-xl font-serif text-rose-800 mr-2">MEMORIAL</span>
-          <span className="text-xl text-yellow-400">★</span>
-          <span className="text-xl font-serif text-rose-800 ml-1">QR</span>
-        </div>
-
-        <div className="hidden md:flex items-center space-x-4">
-          <div className="text-rose-800 font-medium">
-            <span className="text-sm">Starting at </span>
-            <span className="text-xl">$79.99</span>
+    <div className={`fixed top-0 left-0 right-0 z-50 transform transition-transform duration-300 ${
+      isVisible ? 'translate-y-0' : '-translate-y-full'
+    }`}>
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 shadow-2xl">
+        <div className="container mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <ShoppingCart className="w-5 h-5" />
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="font-bold">Memorial QR Package</span>
+                <Badge className="bg-white/20 text-white text-xs px-2 py-1">
+                  40% OFF
+                </Badge>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="text-white/80 line-through">$199.99</span>
+                <span className="font-bold text-lg">$119.99</span>
+              </div>
+            </div>
           </div>
-          <Link href="/checkout?plan=premium">
-            <Button className="bg-rose-600 hover:bg-rose-700 text-white">Buy Now</Button>
-          </Link>
-        </div>
-
-        <div className="md:hidden">
-          <Link href="/checkout?plan=premium">
-            <Button size="sm" className="bg-rose-600 hover:bg-rose-700 text-white">
-              Buy Now
+          
+          <div className="flex items-center space-x-2">
+            <Button 
+              size="sm"
+              className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-4 py-2 rounded-full"
+              asChild
+            >
+              <Link href="/create-profile">
+                Buy Now
+                <ArrowRight className="ml-1 w-4 h-4" />
+              </Link>
             </Button>
-          </Link>
+            
+            <button
+              onClick={() => setIsDismissed(true)}
+              className="text-white/80 hover:text-white p-1"
+              aria-label="Dismiss"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
