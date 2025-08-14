@@ -1,32 +1,25 @@
 "use server"
 
-import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
+export async function enhanceStory(formData: FormData) {
+  const story = formData.get("story") as string
+  const tone = (formData.get("tone") as string) || "heartfelt"
 
-export async function enhanceStory(story: string): Promise<string> {
-  try {
-    const prompt = `
-      The following is a memory or story about a loved one who has passed away.
-      Please enhance this text by improving the flow, fixing any grammar issues,
-      and making it more emotionally resonant while preserving the original meaning
-      and personal voice. Do not add new facts or change the essence of the story.
-      
-      Original story:
-      "${story}"
-      
-      Enhanced version:
-    `
+  // Simulate AI processing delay
+  await new Promise((resolve) => setTimeout(resolve, 1500))
 
-    const { text } = await generateText({
-      model: openai("gpt-4o"),
-      prompt,
-      temperature: 0.7,
-      maxTokens: 1000,
-    })
+  // Simple story enhancement based on tone
+  let enhancedStory = story
 
-    return text
-  } catch (error) {
-    console.error("Error enhancing story:", error)
-    return story
+  if (tone === "heartfelt") {
+    enhancedStory = `${story}\n\nThis memory holds a special place in our hearts and reminds us of the love and joy they brought to our lives.`
+  } else if (tone === "celebratory") {
+    enhancedStory = `${story}\n\nWhat a wonderful celebration of a life well-lived! This memory brings smiles and reminds us to cherish every moment.`
+  } else if (tone === "peaceful") {
+    enhancedStory = `${story}\n\nIn quiet reflection, this memory brings comfort and peace, knowing their spirit lives on in these precious moments we shared.`
+  }
+
+  return {
+    success: true,
+    enhancedStory: enhancedStory,
   }
 }

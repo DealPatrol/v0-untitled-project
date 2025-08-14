@@ -1,54 +1,76 @@
 "use server"
 
-import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
+export async function getMemorialAssistance(formData: FormData) {
+  const question = formData.get("question") as string
+  const category = (formData.get("category") as string) || "general"
 
-export type MemorialAssistantMessage = {
-  role: "user" | "assistant"
-  content: string
-}
+  // Simulate AI processing delay
+  await new Promise((resolve) => setTimeout(resolve, 1000))
 
-// Define the system prompt that will guide the AI's behavior
-const systemPrompt = `
-You are a compassionate Virtual Memorial Assistant, specialized in helping people plan and create meaningful memorials for their loved ones.
+  // Simple keyword-based responses
+  const responses = {
+    photos:
+      "For photos, we recommend uploading high-resolution images (at least 1024x768). You can add unlimited photos to your memorial. Consider including photos from different life stages, family gatherings, hobbies, and special moments.",
 
-Your expertise includes:
-- Guiding users through the memorial planning process
-- Offering suggestions for memorial services and ceremonies
-- Providing advice on honoring and celebrating a loved one's life
-- Answering questions about Memorial QR's services and features
-- Offering gentle support for those who are grieving
+    stories:
+      "Stories make memorials come alive. Include childhood memories, funny anecdotes, achievements, and moments that capture their personality. Family members can also contribute their own stories and memories.",
 
-Always be respectful, compassionate, and understanding. Remember that users are likely grieving and may need extra patience and kindness.
+    setup:
+      "Setting up your memorial is easy! After ordering, you'll receive login credentials to add content. Upload photos, write stories, and customize the design. Your QR plaque will be shipped once your memorial is complete.",
 
-Avoid:
-- Making assumptions about religious or cultural preferences
-- Using clichés about death or grief
-- Giving medical or legal advice
-- Making promises about services that Memorial QR might not offer
+    sharing:
+      "Your memorial can be shared via the QR code on the plaque, or by sharing the direct website link with family and friends. The memorial is accessible on all devices - phones, tablets, and computers.",
 
-If you don't know the answer to a specific question about Memorial QR's services, acknowledge this and suggest the user contact customer support for detailed information.
-`
+    editing:
+      "You can edit and add to your memorial anytime after it's created. Add new photos, update stories, or include new memories as they come to mind. There's no limit to updates.",
 
-export async function getMemorialAssistantResponse(messages: MemorialAssistantMessage[]): Promise<string> {
-  try {
-    // Format the messages for the AI
-    const formattedMessages = [
-      { role: "system", content: systemPrompt },
-      ...messages.map((msg) => ({ role: msg.role, content: msg.content })),
-    ]
+    general:
+      "I'm here to help you create a beautiful memorial. You can ask me about adding photos and stories, setting up your memorial, sharing with family, or any other questions about the process.",
+  }
 
-    // Generate a response using the AI SDK
-    const { text } = await generateText({
-      model: openai("gpt-4o"),
-      messages: formattedMessages,
-      temperature: 0.7,
-      maxTokens: 500,
-    })
+  // Simple keyword matching
+  let response = responses.general
 
-    return text
-  } catch (error) {
-    console.error("Error generating memorial assistant response:", error)
-    return "I'm sorry, I'm having trouble connecting right now. Please try again or contact our support team for assistance with your memorial planning needs."
+  if (
+    question.toLowerCase().includes("photo") ||
+    question.toLowerCase().includes("picture") ||
+    question.toLowerCase().includes("image")
+  ) {
+    response = responses.photos
+  } else if (
+    question.toLowerCase().includes("story") ||
+    question.toLowerCase().includes("memory") ||
+    question.toLowerCase().includes("write")
+  ) {
+    response = responses.stories
+  } else if (
+    question.toLowerCase().includes("setup") ||
+    question.toLowerCase().includes("start") ||
+    question.toLowerCase().includes("begin")
+  ) {
+    response = responses.setup
+  } else if (
+    question.toLowerCase().includes("share") ||
+    question.toLowerCase().includes("family") ||
+    question.toLowerCase().includes("access")
+  ) {
+    response = responses.sharing
+  } else if (
+    question.toLowerCase().includes("edit") ||
+    question.toLowerCase().includes("change") ||
+    question.toLowerCase().includes("update")
+  ) {
+    response = responses.editing
+  }
+
+  return {
+    success: true,
+    response: response,
+    suggestions: [
+      "How do I add photos to my memorial?",
+      "What kind of stories should I include?",
+      "How do I share the memorial with family?",
+      "Can I edit the memorial after it's created?",
+    ],
   }
 }

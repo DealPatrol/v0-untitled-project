@@ -1,19 +1,46 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 
-import { ErrorBoundary } from "react-error-boundary"
+interface Props {
+  children: React.ReactNode
+}
 
-export function ClientErrorBoundary({ children }: { children: React.ReactNode }) {
-  return (
-    <ErrorBoundary
-      fallback={
-        <div className="p-4 bg-rose-100 text-rose-700 rounded-md">
-          Something went wrong. Please try refreshing the page.
+interface State {
+  hasError: boolean
+}
+
+export class ClientErrorBoundary extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError(_: Error): State {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Error caught by boundary:", error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+            <button
+              onClick={() => this.setState({ hasError: false })}
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Try again
+            </button>
+          </div>
         </div>
-      }
-    >
-      {children}
-    </ErrorBoundary>
-  )
+      )
+    }
+
+    return this.props.children
+  }
 }

@@ -1,41 +1,56 @@
 "use server"
 
-import { generateText } from "ai"
-import { xai } from "@ai-sdk/xai"
+export async function getGriefSupport(formData: FormData) {
+  const situation = formData.get("situation") as string
+  const relationship = formData.get("relationship") as string
 
-type GriefSupportRequest = {
-  relationship: string
-  timeframe: string
-  specificConcerns: string
-}
+  // Simulate processing delay
+  await new Promise((resolve) => setTimeout(resolve, 1000))
 
-export async function getGriefSupportResources(request: GriefSupportRequest): Promise<string> {
-  try {
-    const prompt = `
-      Provide compassionate grief support resources and coping strategies for someone who:
-      - Lost their ${request.relationship}
-      - The loss occurred ${request.timeframe}
-      - They are specifically concerned about: ${request.specificConcerns}
-      
-      Include:
-      1. 2-3 paragraphs of supportive, empathetic text
-      2. 3-5 specific coping strategies
-      3. 2-3 recommended support resources (books, websites, or support groups)
-      
-      Format with clear headings and bullet points where appropriate.
-      Be warm, compassionate, and avoid clichés about grief.
-    `
+  // Provide supportive resources based on situation
+  const resources = {
+    "recent-loss": {
+      title: "Coping with Recent Loss",
+      content:
+        "The pain of losing someone close to you can feel overwhelming. Remember that grief is a natural process and there's no 'right' way to grieve. Take things one day at a time, and don't hesitate to reach out for support from friends, family, or professional counselors.",
+      tips: [
+        "Allow yourself to feel your emotions",
+        "Maintain routines when possible",
+        "Accept help from others",
+        "Take care of your physical health",
+        "Consider joining a support group",
+      ],
+    },
+    anniversary: {
+      title: "Anniversary Grief",
+      content:
+        "Anniversaries and special dates can bring back intense feelings of loss. This is completely normal. Planning ahead for these difficult days can help you cope and honor your loved one's memory.",
+      tips: [
+        "Plan a meaningful tribute or ritual",
+        "Spend time with supportive people",
+        "Share memories and stories",
+        "Visit places that were special to them",
+        "Create a new tradition in their honor",
+      ],
+    },
+    ongoing: {
+      title: "Long-term Grief Support",
+      content:
+        "Grief doesn't follow a timeline, and it's normal for feelings to come and go even years later. Healing doesn't mean forgetting - it means learning to carry your love for them in a way that allows you to live fully.",
+      tips: [
+        "Practice self-compassion",
+        "Find healthy ways to honor their memory",
+        "Stay connected with your support network",
+        "Consider professional counseling if needed",
+        "Remember that healing is not linear",
+      ],
+    },
+  }
 
-    const { text } = await generateText({
-      model: xai("grok-1"),
-      prompt,
-      temperature: 0.7,
-      maxTokens: 1000,
-    })
+  const selectedResource = resources[situation as keyof typeof resources] || resources["ongoing"]
 
-    return text
-  } catch (error) {
-    console.error("Error generating grief support:", error)
-    return "We apologize, but we were unable to generate personalized grief support resources at this time. Please consider reaching out to a grief counselor or support group in your area."
+  return {
+    success: true,
+    resource: selectedResource,
   }
 }

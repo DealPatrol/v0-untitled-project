@@ -3,110 +3,95 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, QrCode } from 'lucide-react'
+import { Menu, X, Heart } from "lucide-react"
 
-export function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+    <header className="bg-white shadow-sm border-b sticky top-0 z-40">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-bold text-xl text-gray-900 hover:text-rose-600 transition-colors"
-          >
-            <div className="w-8 h-8 bg-rose-600 rounded-lg flex items-center justify-center">
-              <QrCode className="h-5 w-5 text-white" />
-            </div>
-            Memorial QR
+          <Link href="/" className="flex items-center space-x-2">
+            <Heart className="h-8 w-8 text-red-500" />
+            <span className="text-xl font-bold text-gray-900">Memorial QR</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="/how-it-works" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/memorials" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Memorials
+            </Link>
+            <Link href="/how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
               How It Works
             </Link>
-            <Link href="/pricing" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+            <Link href="/pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
               Pricing
             </Link>
-            <Link href="/memorial/sample" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-              Sample Memorial
-            </Link>
-            <Link href="/faq" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+            <Link href="/faq" className="text-gray-600 hover:text-gray-900 transition-colors">
               FAQ
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+            <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition-colors">
               Contact
             </Link>
           </nav>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* CTA Button */}
+          <div className="hidden md:flex items-center space-x-4">
             <Link href="/create-profile">
-              <Button className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300">
-                Buy Now - $119.99
-              </Button>
+              <Button className="bg-red-600 hover:bg-red-700 text-white">Create Memorial</Button>
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
-            aria-label="Toggle mobile menu"
-          >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 bg-white">
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 border-t">
             <nav className="flex flex-col space-y-4">
               <Link
+                href="/memorials"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Memorials
+              </Link>
+              <Link
                 href="/how-it-works"
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors px-2 py-1"
-                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 How It Works
               </Link>
               <Link
                 href="/pricing"
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors px-2 py-1"
-                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Pricing
               </Link>
               <Link
-                href="/memorial/sample"
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors px-2 py-1"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Sample Memorial
-              </Link>
-              <Link
                 href="/faq"
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors px-2 py-1"
-                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 FAQ
               </Link>
               <Link
                 href="/contact"
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors px-2 py-1"
-                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Contact
               </Link>
-              <div className="pt-4 border-t border-gray-200">
-                <Link href="/create-profile" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button className="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-full">
-                    Buy Now - $119.99
-                  </Button>
-                </Link>
-              </div>
+              <Link href="/create-profile" onClick={() => setIsMenuOpen(false)}>
+                <Button className="bg-red-600 hover:bg-red-700 text-white w-full">Create Memorial</Button>
+              </Link>
             </nav>
           </div>
         )}

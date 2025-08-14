@@ -1,24 +1,51 @@
 "use server"
 
-// This is a placeholder for actual photo restoration API integration
-// You would need to integrate with a service like Replicate or a custom model
-export async function restorePhoto(imageBase64: string): Promise<string> {
-  try {
-    // In a real implementation, you would:
-    // 1. Call an AI photo restoration API
-    // 2. Process the restored image
-    // 3. Return the restored image as base64
+export async function getPhotoRestorationGuidance(formData: FormData) {
+  const issueType = formData.get("issueType") as string
 
-    // For now, we'll just return a mock response
-    console.log("Photo restoration requested - this would call an AI service")
+  // Simulate processing delay
+  await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+  const guidance = {
+    faded: {
+      title: "Restoring Faded Photos",
+      steps: [
+        "Scan the photo at high resolution (at least 600 DPI)",
+        "Use photo editing software to adjust brightness and contrast",
+        "Carefully increase saturation to restore color",
+        "Use the 'levels' tool to improve tonal range",
+        "Save as a high-quality format (TIFF or PNG)",
+      ],
+      tips: "Work with a copy, never the original. Make small adjustments gradually.",
+    },
+    torn: {
+      title: "Repairing Torn Photos",
+      steps: [
+        "Scan both pieces separately at high resolution",
+        "Use photo editing software to align the pieces",
+        "Use the clone stamp or healing brush to blend the tear",
+        "Adjust colors to match across the repair",
+        "Clean up any remaining artifacts",
+      ],
+      tips: "For valuable photos, consider professional restoration services.",
+    },
+    stained: {
+      title: "Removing Stains and Spots",
+      steps: [
+        "Scan at high resolution to capture all detail",
+        "Use the spot healing brush for small stains",
+        "For larger stains, use the clone stamp tool",
+        "Sample from nearby areas with similar texture",
+        "Blend edges carefully for natural results",
+      ],
+      tips: "Work in layers so you can undo changes if needed.",
+    },
+  }
 
-    // In a real implementation, return the restored image
-    return imageBase64
-  } catch (error) {
-    console.error("Error restoring photo:", error)
-    throw new Error("Failed to restore photo")
+  const selectedGuidance = guidance[issueType as keyof typeof guidance] || guidance["faded"]
+
+  return {
+    success: true,
+    guidance: selectedGuidance,
   }
 }

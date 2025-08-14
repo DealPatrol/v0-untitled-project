@@ -1,35 +1,37 @@
 "use server"
 
-import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
+export async function generateCondolence(formData: FormData) {
+  const relationship = formData.get("relationship") as string
+  const tone = (formData.get("tone") as string) || "heartfelt"
+  const personName = formData.get("personName") as string
 
-type CondolenceRequest = {
-  relationship: string
-  tone: string
-  personalDetails?: string
-}
+  // Simulate AI processing delay
+  await new Promise((resolve) => setTimeout(resolve, 1500))
 
-export async function generateCondolenceMessage(request: CondolenceRequest): Promise<string> {
-  try {
-    const prompt = `
-      Generate a thoughtful condolence message for someone who lost their ${request.relationship}.
-      The message should be in a ${request.tone} tone.
-      ${request.personalDetails ? `Include these personal details: ${request.personalDetails}` : ""}
-      
-      The message should be 3-5 sentences long, genuine, and avoid clichés.
-      It should offer comfort while acknowledging the pain of loss.
-    `
+  const templates = {
+    family: {
+      heartfelt: `My heart goes out to you and your family during this difficult time. ${personName} was truly special, and their memory will live on in the hearts of all who knew them. Please know that you are in my thoughts and prayers.`,
+      supportive: `I am so sorry for your loss. ${personName} was a wonderful person who touched many lives. Please don't hesitate to reach out if you need anything during this time. You and your family are in my thoughts.`,
+      comforting: `Words cannot express how sorry I am for your loss. ${personName} will be deeply missed but never forgotten. May you find comfort in the beautiful memories you shared together.`,
+    },
+    friend: {
+      heartfelt: `I am deeply saddened by the loss of ${personName}. They were such a special person who brought joy to everyone around them. My thoughts are with you during this difficult time.`,
+      supportive: `I'm here for you during this difficult time. ${personName} was an amazing person, and I feel blessed to have known them. Please let me know if there's anything I can do to help.`,
+      comforting: `My heart aches for you. ${personName} was truly one of a kind, and their spirit will live on in all the lives they touched. Sending you love and comfort.`,
+    },
+    colleague: {
+      heartfelt: `I was deeply saddened to hear about the passing of ${personName}. They were a valued colleague and friend who will be greatly missed. My thoughts are with you and their family during this time.`,
+      supportive: `Please accept my sincere condolences on the loss of ${personName}. They were a wonderful colleague who made a positive impact on everyone they worked with. If there's anything I can do to support you or the team, please let me know.`,
+      comforting: `I'm so sorry for your loss. ${personName} was not only a great colleague but also a kind and caring person. Their contributions and friendship will not be forgotten.`,
+    },
+  }
 
-    const { text } = await generateText({
-      model: openai("gpt-4o"),
-      prompt,
-      temperature: 0.7,
-      maxTokens: 300,
-    })
+  const relationshipTemplates = templates[relationship as keyof typeof templates] || templates["friend"]
+  const message =
+    relationshipTemplates[tone as keyof typeof relationshipTemplates] || relationshipTemplates["heartfelt"]
 
-    return text
-  } catch (error) {
-    console.error("Error generating condolence message:", error)
-    return "We were unable to generate a condolence message at this time. Please try again later."
+  return {
+    success: true,
+    message: message,
   }
 }
