@@ -6,12 +6,12 @@ export function ErrorTracker() {
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
       console.error("Global error:", event.error)
-      // Track error here
+      // Add error tracking logic here
     }
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       console.error("Unhandled promise rejection:", event.reason)
-      // Track error here
+      // Add error tracking logic here
     }
 
     window.addEventListener("error", handleError)

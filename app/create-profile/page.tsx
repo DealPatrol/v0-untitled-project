@@ -1,406 +1,201 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Star, Shield, Clock, Users, ArrowRight, User, Calendar, MapPin, Phone, Mail } from "lucide-react"
+import { Upload, Heart, Shield, Clock } from "lucide-react"
 
 export default function CreateProfilePage() {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    birthDate: "",
-    deathDate: "",
-    location: "",
-    email: "",
-    phone: "",
-    relationship: "",
-    biography: "",
-    keyMemories: "",
-  })
-
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
-  }
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required"
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required"
-    if (!formData.birthDate) newErrors.birthDate = "Birth date is required"
-    if (!formData.email.trim()) newErrors.email = "Email is required"
-    if (!formData.relationship.trim()) newErrors.relationship = "Relationship is required"
-
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) return
-
-    setIsSubmitting(true)
-
-    try {
-      // Store form data in localStorage for checkout
-      localStorage.setItem("memorialFormData", JSON.stringify(formData))
-
-      // Redirect to Stripe checkout
-      window.location.href = "/checkout"
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      alert("There was an error processing your request. Please try again.")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2">
-              🔥 SAVE $80 TODAY - Limited Time!
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Create Their Memorial</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Fill out the form below to create a beautiful, lasting memorial. Takes just 5 minutes to get started.
-            </p>
-          </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Form */}
+          <div className="lg:col-span-2">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                <div className="flex items-center gap-3">
+                  <Heart className="w-8 h-8 text-blue-600" />
+                  <div>
+                    <CardTitle className="text-2xl">Create Memorial Profile</CardTitle>
+                    <p className="text-gray-600 mt-1">Step 1 of 2 - Tell us about your loved one</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <div className="flex-1 bg-blue-600 h-2 rounded"></div>
+                  <div className="flex-1 bg-gray-200 h-2 rounded"></div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-8 space-y-6">
+                <form className="space-y-6">
+                  {/* Basic Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Form */}
-            <div className="lg:col-span-2">
-              <Card className="shadow-xl border-2 border-gray-100">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
-                  <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
-                    <User className="h-6 w-6" />
-                    Memorial Information
-                  </CardTitle>
-                  <p className="text-gray-600">Tell us about your loved one so we can create a beautiful memorial</p>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Personal Information */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                          First Name *
-                        </label>
-                        <input
-                          type="text"
-                          id="firstName"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                            errors.firstName ? "border-red-500" : "border-gray-300"
-                          }`}
-                          placeholder="Enter first name"
-                        />
-                        {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
+                        <Label htmlFor="firstName">First Name *</Label>
+                        <Input id="firstName" placeholder="Enter first name" required />
                       </div>
                       <div>
-                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                          Last Name *
-                        </label>
-                        <input
-                          type="text"
-                          id="lastName"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                            errors.lastName ? "border-red-500" : "border-gray-300"
-                          }`}
-                          placeholder="Enter last name"
-                        />
-                        {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
+                        <Label htmlFor="lastName">Last Name *</Label>
+                        <Input id="lastName" placeholder="Enter last name" required />
                       </div>
                     </div>
 
-                    {/* Dates */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 mb-2">
-                          <Calendar className="inline h-4 w-4 mr-1" />
-                          Birth Date *
-                        </label>
-                        <input
-                          type="date"
-                          id="birthDate"
-                          name="birthDate"
-                          value={formData.birthDate}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                            errors.birthDate ? "border-red-500" : "border-gray-300"
-                          }`}
-                        />
-                        {errors.birthDate && <p className="text-red-500 text-sm mt-1">{errors.birthDate}</p>}
+                        <Label htmlFor="birthDate">Date of Birth</Label>
+                        <Input id="birthDate" type="date" />
                       </div>
                       <div>
-                        <label htmlFor="deathDate" className="block text-sm font-medium text-gray-700 mb-2">
-                          <Calendar className="inline h-4 w-4 mr-1" />
-                          Date of Passing
-                        </label>
-                        <input
-                          type="date"
-                          id="deathDate"
-                          name="deathDate"
-                          value={formData.deathDate}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
+                        <Label htmlFor="deathDate">Date of Passing</Label>
+                        <Input id="deathDate" type="date" />
                       </div>
                     </div>
 
-                    {/* Location */}
                     <div>
-                      <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                        <MapPin className="inline h-4 w-4 mr-1" />
-                        Location (City, State)
-                      </label>
-                      <input
-                        type="text"
-                        id="location"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="e.g., Springfield, IL"
-                      />
+                      <Label htmlFor="location">Location</Label>
+                      <Input id="location" placeholder="City, State" />
                     </div>
+                  </div>
 
-                    {/* Contact Information */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                          <Mail className="inline h-4 w-4 mr-1" />
-                          Your Email *
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                            errors.email ? "border-red-500" : "border-gray-300"
-                          }`}
-                          placeholder="your@email.com"
-                        />
-                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-                      </div>
-                      <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                          <Phone className="inline h-4 w-4 mr-1" />
-                          Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="(555) 123-4567"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Relationship */}
+                  {/* Biography */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Life Story</h3>
                     <div>
-                      <label htmlFor="relationship" className="block text-sm font-medium text-gray-700 mb-2">
-                        Your Relationship *
-                      </label>
-                      <select
-                        id="relationship"
-                        name="relationship"
-                        value={formData.relationship}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                          errors.relationship ? "border-red-500" : "border-gray-300"
-                        }`}
-                      >
-                        <option value="">Select your relationship</option>
-                        <option value="spouse">Spouse</option>
-                        <option value="child">Child</option>
-                        <option value="parent">Parent</option>
-                        <option value="sibling">Sibling</option>
-                        <option value="grandchild">Grandchild</option>
-                        <option value="grandparent">Grandparent</option>
-                        <option value="friend">Friend</option>
-                        <option value="other">Other</option>
-                      </select>
-                      {errors.relationship && <p className="text-red-500 text-sm mt-1">{errors.relationship}</p>}
-                    </div>
-
-                    {/* Biography */}
-                    <div>
-                      <label htmlFor="biography" className="block text-sm font-medium text-gray-700 mb-2">
-                        Brief Biography (Optional)
-                      </label>
-                      <textarea
+                      <Label htmlFor="biography">Biography</Label>
+                      <Textarea
                         id="biography"
-                        name="biography"
-                        value={formData.biography}
-                        onChange={handleInputChange}
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Tell us about their life, achievements, and what made them special..."
+                        placeholder="Share their life story, achievements, passions, and what made them special..."
+                        rows={6}
                       />
-                    </div>
-
-                    {/* Key Memories */}
-                    <div>
-                      <label htmlFor="keyMemories" className="block text-sm font-medium text-gray-700 mb-2">
-                        Key Memories or Stories (Optional)
-                      </label>
-                      <textarea
-                        id="keyMemories"
-                        name="keyMemories"
-                        value={formData.keyMemories}
-                        onChange={handleInputChange}
-                        rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Share special memories, favorite sayings, or stories that capture who they were..."
-                      />
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="pt-6">
-                      <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                      >
-                        {isSubmitting ? (
-                          "Processing..."
-                        ) : (
-                          <>
-                            Continue to Payment - $119.99
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                          </>
-                        )}
-                      </Button>
-                      <p className="text-center text-sm text-gray-500 mt-3">
-                        ✅ Secure payment • ✅ 30-day guarantee • ✅ Lifetime hosting
+                      <p className="text-sm text-gray-500 mt-1">
+                        This will be the main story displayed on the memorial page.
                       </p>
                     </div>
-                  </form>
+                  </div>
+
+                  {/* Photos */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Photos</h3>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <Label>Profile Photo *</Label>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+                          <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-600 mb-2">Upload main profile photo</p>
+                          <p className="text-sm text-gray-500">JPG, PNG up to 10MB</p>
+                          <Button variant="outline" className="mt-4 bg-transparent">
+                            Choose File
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>Cover Photo</Label>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+                          <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-600 mb-2">Upload cover photo</p>
+                          <p className="text-sm text-gray-500">JPG, PNG up to 10MB</p>
+                          <Button variant="outline" className="mt-4 bg-transparent">
+                            Choose File
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label>Additional Photos</Label>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+                        <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600 mb-2">Upload additional photos</p>
+                        <p className="text-sm text-gray-500">You can upload multiple photos at once</p>
+                        <Button variant="outline" className="mt-4 bg-transparent">
+                          Choose Files
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Navigation */}
+                  <div className="flex justify-between pt-6 border-t">
+                    <Link href="/">
+                      <Button variant="outline">← Back to Home</Button>
+                    </Link>
+                    <Link href="/checkout">
+                      <Button className="bg-blue-600 hover:bg-blue-700">Continue to Checkout →</Button>
+                    </Link>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Order Summary Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-lg">Order Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span>Memorial Package</span>
+                    <span className="font-semibold">$119.99</span>
+                  </div>
+                  <div className="flex justify-between items-center text-green-600">
+                    <span>Limited Time Discount</span>
+                    <span>-$80.00</span>
+                  </div>
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between items-center text-lg font-bold">
+                      <span>Total</span>
+                      <span>$119.99</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4" />
+                      <span>30-day money-back guarantee</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      <span>Setup completed in 5 minutes</span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Benefits Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24 space-y-6">
-                {/* Pricing Card */}
-                <Card className="border-2 border-orange-200 shadow-xl bg-gradient-to-br from-orange-50 to-red-50">
-                  <CardContent className="p-6">
-                    <div className="text-center mb-4">
-                      <Badge className="bg-red-500 text-white px-3 py-1 mb-3">LIMITED TIME: Save $80</Badge>
-                      <div className="text-gray-500 line-through text-lg">$199.99</div>
-                      <div className="text-4xl font-bold text-gray-900 mb-1">$119.99</div>
-                      <div className="text-gray-600">One-time payment</div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Weather-resistant QR plaque</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Unlimited photos & videos</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Interactive family tree</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Lifetime hosting included</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>30-day money-back guarantee</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              <Card className="shadow-lg">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-3">What's Included:</h3>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• Complete memorial website</li>
+                    <li>• Custom QR code</li>
+                    <li>• Unlimited photos & videos</li>
+                    <li>• Family tree builder</li>
+                    <li>• Guest book & condolences</li>
+                    <li>• Lifetime hosting</li>
+                    <li>• Mobile responsive design</li>
+                    <li>• 24/7 support</li>
+                  </ul>
+                </CardContent>
+              </Card>
 
-                {/* Trust Indicators */}
-                <Card className="shadow-lg">
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-gray-900 mb-4">Why Families Choose Us</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                        <div>
-                          <div className="font-semibold text-sm">4.9/5 Rating</div>
-                          <div className="text-xs text-gray-600">From 2,847 families</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Users className="h-5 w-5 text-blue-500" />
-                        <div>
-                          <div className="font-semibold text-sm">10,000+ Memorials</div>
-                          <div className="text-xs text-gray-600">Created worldwide</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Shield className="h-5 w-5 text-green-500" />
-                        <div>
-                          <div className="font-semibold text-sm">Secure & Private</div>
-                          <div className="text-xs text-gray-600">Your data is protected</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-purple-500" />
-                        <div>
-                          <div className="font-semibold text-sm">Setup in Minutes</div>
-                          <div className="text-xs text-gray-600">Quick and easy process</div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Testimonial */}
-                <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-purple-50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-1 mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                      ))}
-                    </div>
-                    <blockquote className="text-gray-700 text-sm mb-3 italic">
-                      "The $119.99 was the best money I've ever spent. The memorial is beautiful and our whole family
-                      can now share memories of Dad easily."
-                    </blockquote>
-                    <div className="text-xs text-gray-600">- Sarah M., Verified Customer</div>
-                  </CardContent>
-                </Card>
-              </div>
+              <Card className="bg-blue-50 border-blue-200 shadow-lg">
+                <CardContent className="p-6 text-center">
+                  <Badge className="bg-blue-600 text-white mb-3">Limited Time</Badge>
+                  <h3 className="font-semibold text-blue-900 mb-2">Save $80 Today!</h3>
+                  <p className="text-sm text-blue-700">
+                    This special pricing won't last long. Create your memorial now and save.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

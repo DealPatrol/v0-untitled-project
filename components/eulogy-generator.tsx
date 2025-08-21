@@ -7,33 +7,31 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { generateEulogy } from "@/app/actions/generate-eulogy"
-import { Loader2, Copy } from "lucide-react"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Loader2, Copy, FileText, User, Heart } from "lucide-react"
 
 export function EulogyGenerator() {
   const [name, setName] = useState("")
   const [relationship, setRelationship] = useState("")
-  const [personalQualities, setPersonalQualities] = useState("")
-  const [specialMemories, setSpecialMemories] = useState("")
-  const [tone, setTone] = useState("heartfelt")
-  const [length, setLength] = useState<"short" | "medium" | "long">("medium")
+  const [keyMemories, setKeyMemories] = useState("")
+  const [personalityTraits, setPersonalityTraits] = useState("")
   const [eulogy, setEulogy] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
 
   async function handleGenerate() {
-    if (!name || !relationship || !personalQualities || !specialMemories) return
+    if (!name || !relationship || !keyMemories || !personalityTraits) return
 
     setIsGenerating(true)
     try {
-      const generatedEulogy = await generateEulogy({
-        name,
-        relationship,
-        personalQualities,
-        specialMemories,
-        tone,
-        length,
-      })
-      setEulogy(generatedEulogy)
+      const formData = new FormData()
+      formData.append("name", name)
+      formData.append("relationship", relationship)
+      formData.append("keyMemories", keyMemories)
+      formData.append("personalityTraits", personalityTraits)
+
+      const result = await generateEulogy(formData)
+      if (result.success) {
+        setEulogy(result.eulogy)
+      }
     } catch (error) {
       console.error("Error:", error)
     } finally {
@@ -46,19 +44,17 @@ export function EulogyGenerator() {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h3 className="text-xl font-medium">Eulogy Generator</h3>
-        <p className="text-sm text-gray-500">Create a meaningful eulogy to honor your loved one</p>
-      </div>
-
+    <div className="space-y-6">
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="name">Full Name of Deceased</Label>
+          <div className="space-y-2">
+            <Label htmlFor="name" className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Full Name of Deceased
+            </Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Smith" />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="relationship">Your Relationship</Label>
             <Select value={relationship} onValueChange={setRelationship}>
               <SelectTrigger id="relationship">
@@ -69,87 +65,45 @@ export function EulogyGenerator() {
                 <SelectItem value="child">Child</SelectItem>
                 <SelectItem value="parent">Parent</SelectItem>
                 <SelectItem value="sibling">Sibling</SelectItem>
-                <SelectItem value="friend">Friend</SelectItem>
+                <SelectItem value="friend">Close Friend</SelectItem>
                 <SelectItem value="grandchild">Grandchild</SelectItem>
                 <SelectItem value="colleague">Colleague</SelectItem>
-                <SelectItem value="other family member">Other Family Member</SelectItem>
+                <SelectItem value="other">Other Family Member</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="qualities">Personal Qualities & Characteristics</Label>
+        <div className="space-y-2">
+          <Label htmlFor="personalityTraits" className="flex items-center gap-2">
+            <Heart className="h-4 w-4" />
+            Personality Traits & Characteristics
+          </Label>
           <Textarea
-            id="qualities"
-            value={personalQualities}
-            onChange={(e) => setPersonalQualities(e.target.value)}
-            placeholder="Kind-hearted, passionate about gardening, always made people laugh, dedicated to family..."
+            id="personalityTraits"
+            value={personalityTraits}
+            onChange={(e) => setPersonalityTraits(e.target.value)}
+            placeholder="Kind-hearted, generous, had a great sense of humor, passionate about helping others, loved gardening, always put family first..."
             rows={3}
           />
         </div>
 
-        <div>
-          <Label htmlFor="memories">Special Memories & Moments</Label>
+        <div className="space-y-2">
+          <Label htmlFor="keyMemories">Special Memories & Stories</Label>
           <Textarea
-            id="memories"
-            value={specialMemories}
-            onChange={(e) => setSpecialMemories(e.target.value)}
-            placeholder="Annual fishing trips, how they helped during difficult times, their favorite sayings..."
-            rows={3}
+            id="keyMemories"
+            value={keyMemories}
+            onChange={(e) => setKeyMemories(e.target.value)}
+            placeholder="Annual family fishing trips, how they helped neighbors during difficult times, their famous Sunday dinners, the way they always had time to listen, their love of old movies..."
+            rows={4}
           />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="tone">Tone</Label>
-            <Select value={tone} onValueChange={setTone}>
-              <SelectTrigger id="tone">
-                <SelectValue placeholder="Select tone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="heartfelt">Heartfelt & Emotional</SelectItem>
-                <SelectItem value="celebratory">Celebratory of Life</SelectItem>
-                <SelectItem value="reflective">Thoughtful & Reflective</SelectItem>
-                <SelectItem value="religious">Religious & Spiritual</SelectItem>
-                <SelectItem value="humorous">Warm & Humorous</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label>Length</Label>
-            <RadioGroup
-              value={length}
-              onValueChange={(value) => setLength(value as "short" | "medium" | "long")}
-              className="flex space-x-4 pt-2"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="short" id="short" />
-                <Label htmlFor="short" className="cursor-pointer">
-                  Short
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="medium" id="medium" />
-                <Label htmlFor="medium" className="cursor-pointer">
-                  Medium
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="long" id="long" />
-                <Label htmlFor="long" className="cursor-pointer">
-                  Long
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
         </div>
 
         <Button
           onClick={handleGenerate}
-          disabled={isGenerating || !name || !relationship || !personalQualities || !specialMemories}
+          disabled={isGenerating || !name || !relationship || !keyMemories || !personalityTraits}
           className="w-full"
+          size="lg"
         >
           {isGenerating ? (
             <>
@@ -157,32 +111,46 @@ export function EulogyGenerator() {
               Generating Eulogy...
             </>
           ) : (
-            "Generate Eulogy"
+            <>
+              <FileText className="mr-2 h-4 w-4" />
+              Generate Eulogy
+            </>
           )}
         </Button>
+      </div>
 
-        {eulogy && (
-          <div className="mt-6 space-y-4">
-            <div className="p-6 bg-gray-50 rounded-lg">
-              <div className="prose max-w-none">
-                <div className="whitespace-pre-line">{eulogy}</div>
-              </div>
-            </div>
+      {eulogy && (
+        <div className="space-y-4 border-t pt-6">
+          <Label className="text-lg font-semibold">Generated Eulogy</Label>
+          <div className="bg-muted/50 p-6 rounded-lg">
+            <Textarea
+              value={eulogy}
+              onChange={(e) => setEulogy(e.target.value)}
+              rows={15}
+              className="w-full bg-background"
+            />
+          </div>
 
-            <div className="flex justify-end">
-              <Button variant="outline" onClick={handleCopy}>
-                <Copy className="mr-2 h-4 w-4" />
-                Copy to Clipboard
-              </Button>
-            </div>
-
-            <p className="text-xs text-gray-500">
-              This eulogy is a starting point. We recommend personalizing it further with your own memories and
-              feelings.
+          <div className="flex justify-between items-center">
+            <Button variant="outline" onClick={handleCopy}>
+              <Copy className="mr-2 h-4 w-4" />
+              Copy to Clipboard
+            </Button>
+            <p className="text-sm text-muted-foreground">
+              Word count: {eulogy.split(" ").length} words (approximately {Math.ceil(eulogy.split(" ").length / 150)}{" "}
+              minutes to read)
             </p>
           </div>
-        )}
-      </div>
+
+          <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
+            <p className="text-sm">
+              <strong>Tips for delivery:</strong> Practice reading this aloud beforehand. It's okay to pause if you
+              become emotional. Consider having a backup person ready to continue if needed. Remember, this eulogy is a
+              starting point - feel free to add your own personal touches and memories.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

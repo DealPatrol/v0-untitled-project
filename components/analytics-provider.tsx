@@ -2,19 +2,16 @@
 
 import type React from "react"
 
-import { createContext, useContext, useEffect } from "react"
-
-const AnalyticsContext = createContext({})
+import { useEffect } from "react"
+import { usePathname } from "next/navigation"
+import { trackPageView } from "@/lib/analytics"
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+
   useEffect(() => {
-    // Initialize analytics here if needed
-    console.log("Analytics initialized")
-  }, [])
+    trackPageView(pathname)
+  }, [pathname])
 
-  return <AnalyticsContext.Provider value={{}}>{children}</AnalyticsContext.Provider>
-}
-
-export function useAnalytics() {
-  return useContext(AnalyticsContext)
+  return <>{children}</>
 }

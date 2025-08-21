@@ -2,17 +2,17 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { getGriefSupportResources } from "@/app/actions/grief-support"
-import { Loader2, Heart } from "lucide-react"
+import { Loader2, Heart, Phone } from "lucide-react"
 
 export function GriefSupportTool() {
   const [relationship, setRelationship] = useState("")
   const [timeframe, setTimeframe] = useState("")
   const [specificConcerns, setSpecificConcerns] = useState("")
-  const [supportResources, setSupportResources] = useState("")
+  const [supportResources, setSupportResources] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleGetSupport() {
@@ -20,12 +20,17 @@ export function GriefSupportTool() {
 
     setIsLoading(true)
     try {
-      const resources = await getGriefSupportResources({
-        relationship,
-        timeframe,
-        specificConcerns,
-      })
-      setSupportResources(resources)
+      const formData = new FormData()
+      formData.append("relationship", relationship)
+      formData.append("timeframe", timeframe)
+      if (specificConcerns) {
+        formData.append("specificConcerns", specificConcerns)
+      }
+
+      const result = await getGriefSupportResources(formData)
+      if (result.success) {
+        setSupportResources(result.resources)
+      }
     } catch (error) {
       console.error("Error:", error)
     } finally {
@@ -34,18 +39,13 @@ export function GriefSupportTool() {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h3 className="text-xl font-medium">Grief Support Resources</h3>
-        <p className="text-sm text-gray-500">Get personalized coping strategies and support resources</p>
-      </div>
-
+    <div className="space-y-6">
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="relationship">Relationship to the deceased</Label>
+        <div className="space-y-2">
+          <Label htmlFor="relationship">Your relationship to the deceased</Label>
           <Select value={relationship} onValueChange={setRelationship}>
             <SelectTrigger id="relationship">
-              <SelectValue placeholder="Select relationship" />
+              <SelectValue placeholder="Select your relationship" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="spouse">Spouse/Partner</SelectItem>
@@ -59,35 +59,37 @@ export function GriefSupportTool() {
           </Select>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="timeframe">When did the loss occur?</Label>
           <Select value={timeframe} onValueChange={setTimeframe}>
             <SelectTrigger id="timeframe">
               <SelectValue placeholder="Select timeframe" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="recently (within days)">Recently (within days)</SelectItem>
-              <SelectItem value="within the past month">Within the past month</SelectItem>
-              <SelectItem value="1-6 months ago">1-6 months ago</SelectItem>
-              <SelectItem value="6-12 months ago">6-12 months ago</SelectItem>
-              <SelectItem value="over a year ago">Over a year ago</SelectItem>
-              <SelectItem value="several years ago">Several years ago</SelectItem>
+              <SelectItem value="immediate">Recently (within days)</SelectItem>
+              <SelectItem value="months">Within the past few months</SelectItem>
+              <SelectItem value="years">Over a year ago</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="concerns">Specific concerns or challenges (optional)</Label>
           <Textarea
             id="concerns"
             value={specificConcerns}
             onChange={(e) => setSpecificConcerns(e.target.value)}
-            placeholder="E.g., trouble sleeping, feeling isolated, helping children cope, etc."
+            placeholder="E.g., trouble sleeping, feeling isolated, helping children cope, returning to work, anniversary dates..."
             rows={3}
           />
         </div>
 
-        <Button onClick={handleGetSupport} disabled={isLoading || !relationship || !timeframe} className="w-full">
+        <Button
+          onClick={handleGetSupport}
+          disabled={isLoading || !relationship || !timeframe}
+          className="w-full"
+          size="lg"
+        >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -100,20 +102,63 @@ export function GriefSupportTool() {
             </>
           )}
         </Button>
+      </div>
 
-        {supportResources && (
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <h4 className="text-lg font-medium mb-4">Your Support Resources</h4>
-            <div className="prose max-w-none">
-              <div className="whitespace-pre-line">{supportResources}</div>
-            </div>
-            <div className="mt-4 text-sm text-gray-500">
-              Remember: These resources are meant to provide general guidance. For personalized support, please consider
-              speaking with a grief counselor or mental health professional.
+      {supportResources && (
+        <div className="space-y-6 border-t pt-6">
+          <div className="bg-blue-50 dark:bg-blue-950/20 p-6 rounded-lg">
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Heart className="h-5 w-5 text-blue-600" />
+              {supportResources.title}
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">Recommended Resources:</h4>
+                <ul className="space-y-1">
+                  {supportResources.resources.map((resource: string, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-blue-600 mt-1">•</span>
+                      <span className="text-sm">{resource}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {supportResources.helplines && (
+                <div>
+                  <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    Crisis Support Helplines:
+                  </h4>
+                  <ul className="space-y-1">
+                    {supportResources.helplines.map((helpline: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-green-600 mt-1">•</span>
+                        <span className="text-sm font-mono">{helpline}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+
+          <div className="bg-amber-50 dark:bg-amber-950/20 p-4 rounded-lg">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              <strong>Important:</strong> These resources provide general guidance. If you're experiencing thoughts of
+              self-harm or suicide, please contact emergency services (911) or the National Suicide Prevention Lifeline
+              (988) immediately.
+            </p>
+          </div>
+
+          <div className="text-center">
+            <Button variant="outline" onClick={() => setSupportResources(null)}>
+              Get Different Resources
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

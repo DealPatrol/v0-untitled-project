@@ -45,6 +45,30 @@ export const event = ({ action, category, label, value }: any) => {
   }
 }
 
+// Simple analytics tracking without external dependencies
+export function trackPageView(url: string) {
+  if (typeof window !== "undefined") {
+    console.log("Page view tracked:", url)
+    // Add your analytics tracking code here
+    // Example: gtag('config', 'GA_MEASUREMENT_ID', { page_path: url })
+  }
+}
+
+export function trackEvent(eventName: string, parameters?: Record<string, any>) {
+  if (typeof window !== "undefined") {
+    console.log("Event tracked:", eventName, parameters)
+    // Add your analytics tracking code here
+    // Example: gtag('event', eventName, parameters)
+  }
+}
+
+export function trackConversion(conversionId: string, value?: number) {
+  if (typeof window !== "undefined") {
+    console.log("Conversion tracked:", conversionId, value)
+    // Add your conversion tracking code here
+  }
+}
+
 // React hook to initialize GA and track page views
 export const useAnalytics = () => {
   const pathname = usePathname()
@@ -64,6 +88,7 @@ export const useAnalytics = () => {
     if (hasConsented === "all" && pathname) {
       const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
       pageview(url)
+      trackPageView(url) // Call the new trackPageView function
     }
   }, [pathname, searchParams])
 }

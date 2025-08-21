@@ -1,231 +1,267 @@
-"use client"
-
-import { useEffect, useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, CreditCard, Shield, Clock, ArrowLeft } from "lucide-react"
-import Link from "next/link"
-
-interface FormData {
-  firstName: string
-  lastName: string
-  birthDate: string
-  deathDate: string
-  location: string
-  email: string
-  phone: string
-  relationship: string
-  biography: string
-  keyMemories: string
-}
+import { CreditCard, Shield, Lock, Heart } from "lucide-react"
 
 export default function CheckoutPage() {
-  const [formData, setFormData] = useState<FormData | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    // Load form data from localStorage
-    const savedData = localStorage.getItem("memorialFormData")
-    if (savedData) {
-      setFormData(JSON.parse(savedData))
-    }
-  }, [])
-
-  const handleStripeCheckout = async () => {
-    setIsLoading(true)
-
-    try {
-      // In a real implementation, this would create a Stripe checkout session
-      // For now, we'll simulate the process
-
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Redirect to Stripe (simulated)
-      alert(
-        "Redirecting to secure Stripe checkout...\n\nIn production, this would redirect to Stripe with your memorial information.",
-      )
-
-      // In production, you would redirect to Stripe:
-      // window.location.href = stripeCheckoutUrl
-    } catch (error) {
-      console.error("Checkout error:", error)
-      alert("There was an error processing your checkout. Please try again.")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  if (!formData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">No Memorial Information Found</h1>
-          <p className="text-gray-600 mb-8">Please fill out the memorial form first.</p>
-          <Link href="/create-profile">
-            <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Form
-            </Button>
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <Badge className="mb-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2">
-              🔥 SAVE $80 TODAY - Limited Time!
-            </Badge>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Complete Your Memorial</h1>
-            <p className="text-xl text-gray-600">Review your information and complete your secure payment</p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Order Summary */}
-            <div>
-              <Card className="shadow-xl border-2 border-gray-100 mb-6">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
-                  <CardTitle className="text-xl text-gray-900">Memorial Information</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 text-lg">
-                        {formData.firstName} {formData.lastName}
-                      </h3>
-                      <p className="text-gray-600">
-                        {formData.birthDate} {formData.deathDate && `- ${formData.deathDate}`}
-                      </p>
-                      {formData.location && <p className="text-gray-600">{formData.location}</p>}
-                    </div>
-
-                    <div className="border-t pt-4">
-                      <h4 className="font-medium text-gray-900 mb-2">Contact Information</h4>
-                      <p className="text-gray-600">{formData.email}</p>
-                      {formData.phone && <p className="text-gray-600">{formData.phone}</p>}
-                      <p className="text-gray-600">Relationship: {formData.relationship}</p>
-                    </div>
-
-                    {formData.biography && (
-                      <div className="border-t pt-4">
-                        <h4 className="font-medium text-gray-900 mb-2">Biography</h4>
-                        <p className="text-gray-600 text-sm">{formData.biography}</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Link href="/create-profile">
-                <Button variant="outline" className="w-full bg-transparent">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Edit Information
-                </Button>
-              </Link>
-            </div>
-
-            {/* Payment */}
-            <div>
-              <Card className="shadow-xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-red-50">
-                <CardHeader>
-                  <CardTitle className="text-xl text-gray-900 flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Complete Your Order
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="text-center mb-6">
-                    <Badge className="bg-red-500 text-white px-3 py-1 mb-3">LIMITED TIME: Save $80</Badge>
-                    <div className="text-gray-500 line-through text-xl">$199.99</div>
-                    <div className="text-5xl font-bold text-gray-900 mb-2">$119.99</div>
-                    <div className="text-gray-600">One-time payment • No monthly fees</div>
-                  </div>
-
-                  <div className="space-y-3 mb-6">
-                    <h4 className="font-semibold text-gray-900">What's Included:</h4>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Weather-resistant QR plaque</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Beautiful memorial website</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Unlimited photos & videos</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Interactive family tree</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Guest book & timeline</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>Lifetime hosting included</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>30-day money-back guarantee</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={handleStripeCheckout}
-                    disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 mb-4"
-                  >
-                    {isLoading ? (
-                      "Processing..."
-                    ) : (
-                      <>
-                        <Shield className="mr-2 h-5 w-5" />
-                        Secure Checkout - $119.99
-                      </>
-                    )}
-                  </Button>
-
-                  <div className="text-center space-y-2 text-sm text-gray-600">
-                    <div className="flex items-center justify-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <Shield className="h-4 w-4 text-green-500" />
-                        <span>SSL Secured</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-blue-500" />
-                        <span>Instant Access</span>
-                      </div>
-                    </div>
-                    <p>Powered by Stripe • All major cards accepted</p>
-                    <p>✅ 30-day money-back guarantee</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Trust Indicators */}
-              <div className="mt-6 text-center">
-                <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
-                  <div className="flex items-center gap-1">
-                    <Shield className="h-4 w-4 text-green-500" />
-                    <span>Secure Payment</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <CheckCircle className="h-4 w-4 text-blue-500" />
-                    <span>Trusted by 10,000+ families</span>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Checkout Form */}
+          <div className="lg:col-span-2">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                <div className="flex items-center gap-3">
+                  <Heart className="w-8 h-8 text-blue-600" />
+                  <div>
+                    <CardTitle className="text-2xl">Complete Your Order</CardTitle>
+                    <p className="text-gray-600 mt-1">Step 2 of 2 - Payment and contact information</p>
                   </div>
                 </div>
-              </div>
+                <div className="flex gap-2 mt-4">
+                  <div className="flex-1 bg-blue-600 h-2 rounded"></div>
+                  <div className="flex-1 bg-blue-600 h-2 rounded"></div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-8 space-y-8">
+                <form className="space-y-8">
+                  {/* Contact Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="contactFirstName">First Name *</Label>
+                        <Input id="contactFirstName" placeholder="Your first name" required />
+                      </div>
+                      <div>
+                        <Label htmlFor="contactLastName">Last Name *</Label>
+                        <Input id="contactLastName" placeholder="Your last name" required />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="email">Email Address *</Label>
+                      <Input id="email" type="email" placeholder="your@email.com" required />
+                      <p className="text-sm text-gray-500 mt-1">
+                        We'll send your memorial details and QR code to this email
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input id="phone" type="tel" placeholder="(555) 123-4567" />
+                    </div>
+                  </div>
+
+                  {/* Shipping Address */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Shipping Address</h3>
+                    <p className="text-sm text-gray-600">For your physical QR code keepsake (optional)</p>
+
+                    <div>
+                      <Label htmlFor="address">Street Address</Label>
+                      <Input id="address" placeholder="123 Main Street" />
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="city">City</Label>
+                        <Input id="city" placeholder="City" />
+                      </div>
+                      <div>
+                        <Label htmlFor="state">State</Label>
+                        <Input id="state" placeholder="State" />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="zipCode">ZIP Code</Label>
+                        <Input id="zipCode" placeholder="12345" />
+                      </div>
+                      <div>
+                        <Label htmlFor="country">Country</Label>
+                        <Input id="country" placeholder="United States" defaultValue="United States" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payment Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <CreditCard className="w-5 h-5" />
+                      Payment Information
+                    </h3>
+
+                    <div>
+                      <Label htmlFor="cardNumber">Card Number *</Label>
+                      <Input id="cardNumber" placeholder="1234 5678 9012 3456" required />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="col-span-2">
+                        <Label htmlFor="expiryDate">Expiry Date *</Label>
+                        <Input id="expiryDate" placeholder="MM/YY" required />
+                      </div>
+                      <div>
+                        <Label htmlFor="cvv">CVV *</Label>
+                        <Input id="cvv" placeholder="123" required />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="cardName">Name on Card *</Label>
+                      <Input id="cardName" placeholder="Full name as shown on card" required />
+                    </div>
+                  </div>
+
+                  {/* Terms and Conditions */}
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-2">
+                      <Checkbox id="terms" required />
+                      <Label htmlFor="terms" className="text-sm leading-relaxed">
+                        I agree to the{" "}
+                        <Link href="/terms" className="text-blue-600 hover:underline">
+                          Terms of Service
+                        </Link>{" "}
+                        and{" "}
+                        <Link href="/privacy" className="text-blue-600 hover:underline">
+                          Privacy Policy
+                        </Link>
+                      </Label>
+                    </div>
+
+                    <div className="flex items-start space-x-2">
+                      <Checkbox id="marketing" />
+                      <Label htmlFor="marketing" className="text-sm leading-relaxed">
+                        I would like to receive updates and special offers via email
+                      </Label>
+                    </div>
+                  </div>
+
+                  {/* Security Notice */}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-green-800">
+                      <Lock className="w-5 h-5" />
+                      <span className="font-semibold">Secure Payment</span>
+                    </div>
+                    <p className="text-sm text-green-700 mt-1">
+                      Your payment information is encrypted and secure. We never store your credit card details.
+                    </p>
+                  </div>
+
+                  {/* Navigation */}
+                  <div className="flex justify-between pt-6 border-t">
+                    <Link href="/create-profile">
+                      <Button variant="outline">← Back to Profile</Button>
+                    </Link>
+                    <Button className="bg-blue-600 hover:bg-blue-700 px-8">Complete Order - $119.99</Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Order Summary Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-lg">Order Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span>Memorial Package</span>
+                      <span>$199.99</span>
+                    </div>
+                    <div className="flex justify-between items-center text-green-600">
+                      <span>Limited Time Discount</span>
+                      <span>-$80.00</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Subtotal</span>
+                      <span>$119.99</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Tax</span>
+                      <span>$0.00</span>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between items-center text-xl font-bold">
+                      <span>Total</span>
+                      <span>$119.99</span>
+                    </div>
+                  </div>
+
+                  <Badge className="w-full justify-center bg-green-100 text-green-800 border-green-200">
+                    Save $80 Today!
+                  </Badge>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-4">Your Memorial Includes:</h3>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      Complete memorial website
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      Custom QR code
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      Unlimited photos & videos
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      Family tree builder
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      Guest book & condolences
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      Lifetime hosting
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      Mobile responsive design
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      24/7 customer support
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-blue-50 border-blue-200 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Shield className="w-5 h-5 text-blue-600" />
+                    <h3 className="font-semibold text-blue-900">Our Guarantee</h3>
+                  </div>
+                  <ul className="space-y-2 text-sm text-blue-700">
+                    <li>• 30-day money-back guarantee</li>
+                    <li>• Lifetime hosting included</li>
+                    <li>• SSL security & encryption</li>
+                    <li>• 24/7 customer support</li>
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

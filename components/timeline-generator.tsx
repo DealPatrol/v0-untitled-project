@@ -5,31 +5,40 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { generateTimeline, type TimelineEvent } from "@/app/actions/generate-timeline"
-import { Loader2, Plus, Trash2 } from "lucide-react"
+import { generateTimeline } from "@/app/actions/generate-timeline"
+import { Loader2, Plus, Trash2, Clock, User, Calendar } from "lucide-react"
+
+interface TimelineEvent {
+  year: number
+  event: string
+  description: string
+}
 
 export function TimelineGenerator() {
   const [name, setName] = useState("")
-  const [birthYear, setBirthYear] = useState("")
-  const [deathYear, setDeathYear] = useState("")
-  const [lifeEvents, setLifeEvents] = useState("")
+  const [birthDate, setBirthDate] = useState("")
+  const [deathDate, setDeathDate] = useState("")
+  const [majorEvents, setMajorEvents] = useState("")
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [customEvents, setCustomEvents] = useState<TimelineEvent[]>([])
-  const [newEvent, setNewEvent] = useState<TimelineEvent>({ year: "", title: "", description: "" })
+  const [newEvent, setNewEvent] = useState<Partial<TimelineEvent>>({ year: undefined, event: "", description: "" })
 
   async function handleGenerate() {
-    if (!name || !birthYear || !deathYear) return
+    if (!name || !birthDate || !deathDate) return
 
     setIsGenerating(true)
     try {
-      const events = await generateTimeline({
-        name,
-        birthYear,
-        deathYear,
-        lifeEvents,
-      })
-      setTimelineEvents(events)
+      const formData = new FormData()
+      formData.append("name", name)
+      formData.append("birthDate", birthDate)
+      formData.append("deathDate", deathDate)
+      formData.append("majorEvents", majorEvents)
+
+      const result = await generateTimeline(formData)
+      if (result.success) {
+        setTimelineEvents(result.timeline)
+      }
     } catch (error) {
       console.error("Error:", error)
     } finally {
@@ -38,9 +47,9 @@ export function TimelineGenerator() {
   }
 
   function handleAddCustomEvent() {
-    if (newEvent.year && newEvent.title && newEvent.description) {
-      setCustomEvents([...customEvents, { ...newEvent }])
-      setNewEvent({ year: "", title: "", description: "" })
+    if (newEvent.year && newEvent.event && newEvent.description) {
+      setCustomEvents([...customEvents, newEvent as TimelineEvent])
+      setNewEvent({ year: undefined, event: "", description: "" })
     }
   }
 
@@ -49,55 +58,57 @@ export function TimelineGenerator() {
   }
 
   // Combine AI-generated and custom events, then sort by year
-  const allEvents = [...timelineEvents, ...customEvents].sort((a, b) => {
-    const yearA = Number.parseInt(a.year.split("-")[0]) || 0
-    const yearB = Number.parseInt(b.year.split("-")[0]) || 0
-    return yearA - yearB
-  })
+  const allEvents = [...timelineEvents, ...customEvents].sort((a, b) => a.year - b.year)
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h3 className="text-xl font-medium">Life Timeline Generator</h3>
-        <p className="text-sm text-gray-500">Create a chronological timeline of your loved one's life</p>
-      </div>
-
+    <div className="space-y-6">
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="name">Full Name</Label>
+        <div className="space-y-2">
+          <Label htmlFor="name" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            Full Name
+          </Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Smith" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="birthYear">Birth Year</Label>
-            <Input id="birthYear" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1950" />
+          <div className="space-y-2">
+            <Label htmlFor="birthDate" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Birth Date
+            </Label>
+            <Input id="birthDate" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
           </div>
-          <div>
-            <Label htmlFor="deathYear">Death Year</Label>
-            <Input id="deathYear" value={deathYear} onChange={(e) => setDeathYear(e.target.value)} placeholder="2022" />
+          <div className="space-y-2">
+            <Label htmlFor="deathDate" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Death Date
+            </Label>
+            <Input id="deathDate" type="date" value={deathDate} onChange={(e) => setDeathDate(e.target.value)} />
           </div>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="events">Key Life Events (one per line)</Label>
           <Textarea
             id="events"
-            value={lifeEvents}
-            onChange={(e) => setLifeEvents(e.target.value)}
+            value={majorEvents}
+            onChange={(e) => setMajorEvents(e.target.value)}
             placeholder="Graduated from Harvard University
 Married Sarah Johnson
 Had three children: Michael, Jennifer, and Robert
 Worked as a doctor for 40 years
-Moved to Florida after retirement"
-            rows={5}
+Moved to Florida after retirement
+Volunteered at local hospital"
+            rows={6}
           />
         </div>
 
         <Button
           onClick={handleGenerate}
-          disabled={isGenerating || !name || !birthYear || !deathYear}
+          disabled={isGenerating || !name || !birthDate || !deathDate}
           className="w-full"
+          size="lg"
         >
           {isGenerating ? (
             <>
@@ -105,93 +116,104 @@ Moved to Florida after retirement"
               Generating Timeline...
             </>
           ) : (
-            "Generate Timeline"
+            <>
+              <Clock className="mr-2 h-4 w-4" />
+              Generate Life Timeline
+            </>
           )}
         </Button>
+      </div>
 
-        {allEvents.length > 0 && (
-          <div className="mt-8">
-            <h4 className="text-lg font-medium mb-4">Life Timeline</h4>
+      {allEvents.length > 0 && (
+        <div className="space-y-6 border-t pt-6">
+          <h3 className="text-xl font-semibold">Life Timeline for {name}</h3>
 
-            <div className="relative border-l-2 border-gray-200 ml-4 pl-8 pb-8 space-y-8">
+          <div className="relative">
+            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 to-purple-500"></div>
+            <div className="space-y-6 pl-12">
               {allEvents.map((event, index) => (
                 <div key={index} className="relative">
-                  <div className="absolute -left-12 mt-1.5 h-6 w-6 rounded-full bg-rose-100 border border-rose-300 flex items-center justify-center">
-                    <span className="h-3 w-3 rounded-full bg-rose-500"></span>
+                  <div className="absolute -left-14 mt-1.5 h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 border-4 border-white shadow-lg flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">{event.year}</span>
                   </div>
-                  <div>
-                    <h5 className="text-md font-medium flex items-center">
-                      <span className="text-rose-600 mr-2">{event.year}</span>
-                      {event.title}
-                    </h5>
-                    <p className="text-gray-600 mt-1">{event.description}</p>
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border">
+                    <h4 className="font-semibold text-lg text-blue-600 dark:text-blue-400">{event.event}</h4>
+                    <p className="text-muted-foreground mt-1">{event.description}</p>
+                    <p className="text-sm text-muted-foreground mt-2">Year: {event.year}</p>
                   </div>
                 </div>
               ))}
             </div>
-
-            <div className="mt-8 border-t pt-6">
-              <h4 className="text-md font-medium mb-4">Add Custom Event</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div>
-                  <Label htmlFor="eventYear">Year</Label>
-                  <Input
-                    id="eventYear"
-                    value={newEvent.year}
-                    onChange={(e) => setNewEvent({ ...newEvent, year: e.target.value })}
-                    placeholder="1975"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="eventTitle">Title</Label>
-                  <Input
-                    id="eventTitle"
-                    value={newEvent.title}
-                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                    placeholder="Graduated College"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="eventDescription">Description</Label>
-                  <Input
-                    id="eventDescription"
-                    value={newEvent.description}
-                    onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                    placeholder="Received Bachelor's degree in Psychology"
-                  />
-                </div>
-              </div>
-              <Button
-                onClick={handleAddCustomEvent}
-                variant="outline"
-                disabled={!newEvent.year || !newEvent.title || !newEvent.description}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Event
-              </Button>
-            </div>
-
-            {customEvents.length > 0 && (
-              <div className="mt-6">
-                <h4 className="text-md font-medium mb-2">Custom Events</h4>
-                <div className="space-y-2">
-                  {customEvents.map((event, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                      <div>
-                        <span className="font-medium">{event.year}: </span>
-                        <span>{event.title}</span>
-                      </div>
-                      <Button variant="ghost" size="sm" onClick={() => handleRemoveCustomEvent(index)}>
-                        <Trash2 className="h-4 w-4 text-gray-500" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {timelineEvents.length > 0 && (
+        <div className="space-y-4 border-t pt-6">
+          <h4 className="text-lg font-semibold">Add Custom Event</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="eventYear">Year</Label>
+              <Input
+                id="eventYear"
+                type="number"
+                value={newEvent.year || ""}
+                onChange={(e) => setNewEvent({ ...newEvent, year: Number.parseInt(e.target.value) || undefined })}
+                placeholder="1975"
+                min="1900"
+                max="2030"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="eventTitle">Event Title</Label>
+              <Input
+                id="eventTitle"
+                value={newEvent.event || ""}
+                onChange={(e) => setNewEvent({ ...newEvent, event: e.target.value })}
+                placeholder="Graduated College"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="eventDescription">Description</Label>
+              <Input
+                id="eventDescription"
+                value={newEvent.description || ""}
+                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                placeholder="Received Bachelor's degree"
+              />
+            </div>
+          </div>
+          <Button
+            onClick={handleAddCustomEvent}
+            variant="outline"
+            disabled={!newEvent.year || !newEvent.event || !newEvent.description}
+            className="w-full bg-transparent"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Custom Event
+          </Button>
+
+          {customEvents.length > 0 && (
+            <div className="space-y-2">
+              <h5 className="font-medium">Custom Events Added:</h5>
+              <div className="space-y-2">
+                {customEvents.map((event, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <div>
+                      <span className="font-medium">{event.year}: </span>
+                      <span>{event.event}</span>
+                      <span className="text-muted-foreground ml-2">- {event.description}</span>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => handleRemoveCustomEvent(index)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

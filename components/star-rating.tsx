@@ -1,59 +1,27 @@
+import { Star } from "lucide-react"
+
 interface StarRatingProps {
   rating: number
+  maxRating?: number
+  size?: "sm" | "md" | "lg"
 }
 
-export function StarRating({ rating }: StarRatingProps) {
-  const fullStars = Math.floor(rating)
-  const hasHalfStar = rating % 1 >= 0.5
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0)
+export function StarRating({ rating, maxRating = 5, size = "md" }: StarRatingProps) {
+  const sizeClasses = {
+    sm: "w-4 h-4",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
+  }
 
   return (
-    <div className="flex">
-      {[...Array(fullStars)].map((_, i) => (
-        <svg
-          key={`full-${i}`}
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="text-yellow-400"
-        >
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-      ))}
-
-      {hasHalfStar && (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" className="text-yellow-400">
-          <defs>
-            <linearGradient id="half" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="50%" stopColor="currentColor" />
-              <stop offset="50%" stopColor="none" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <polygon
-            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-            fill="url(#half)"
-            stroke="currentColor"
-            strokeWidth="1"
-          />
-        </svg>
-      )}
-
-      {[...Array(emptyStars)].map((_, i) => (
-        <svg
-          key={`empty-${i}`}
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
-          className="text-yellow-400"
-        >
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
+    <div className="flex items-center gap-1">
+      {Array.from({ length: maxRating }, (_, index) => (
+        <Star
+          key={index}
+          className={`${sizeClasses[size]} ${
+            index < rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"
+          }`}
+        />
       ))}
     </div>
   )

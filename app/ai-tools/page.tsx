@@ -1,8 +1,5 @@
-"use client"
-
-import { useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AIBiographyAssistant } from "@/components/ai-biography-assistant"
+import { Header } from "@/components/header"
+import { AiBiographyAssistant } from "@/components/ai-biography-assistant"
 import { StoryEnhancer } from "@/components/story-enhancer"
 import { GriefSupportTool } from "@/components/grief-support-tool"
 import { PhotoRestorationTool } from "@/components/photo-restoration-tool"
@@ -11,92 +8,223 @@ import { EulogyGenerator } from "@/components/eulogy-generator"
 import { MemorialPoemGenerator } from "@/components/memorial-poem-generator"
 import { TimelineGenerator } from "@/components/timeline-generator"
 import { VirtualMemorialAssistant } from "@/components/virtual-memorial-assistant"
-import { Header } from "@/components/header"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Brain, Heart, Camera, MessageSquare, FileText, Sparkles, Clock, Bot, Lightbulb } from "lucide-react"
 
 export default function AIToolsPage() {
-  const [activeTab, setActiveTab] = useState("biography")
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
 
-      <div className="container mx-auto py-8 px-4">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-serif mb-2">Memorial QR AI Tools</h1>
-          <p className="text-lg text-rose-600 font-light mb-2">Tradition meets innovation</p>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Our AI-powered tools help you create meaningful memorials, enhance photos, and find support during difficult
-            times.
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-4">AI-Powered Memorial Tools</h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Our advanced AI tools help you create meaningful, personalized memorials with ease. From writing biographies
+            to generating poems, we're here to support you through every step.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="bg-white p-4 rounded-lg shadow-sm mb-4 overflow-x-auto">
-              <TabsList className="grid grid-cols-2 md:grid-cols-9 gap-2 min-w-max">
-                <TabsTrigger value="biography">Biography</TabsTrigger>
-                <TabsTrigger value="story">Story Enhancer</TabsTrigger>
-                <TabsTrigger value="support">Grief Support</TabsTrigger>
-                <TabsTrigger value="photo">Photo Restoration</TabsTrigger>
-                <TabsTrigger value="condolence">Condolence</TabsTrigger>
-                <TabsTrigger value="eulogy">Eulogy</TabsTrigger>
-                <TabsTrigger value="poem">Memorial Poem</TabsTrigger>
-                <TabsTrigger value="timeline">Timeline</TabsTrigger>
-                <TabsTrigger value="assistant">Virtual Assistant</TabsTrigger>
-              </TabsList>
-            </div>
+        <Tabs defaultValue="biography" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 mb-8">
+            <TabsTrigger value="biography" className="flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              <span className="hidden sm:inline">Biography</span>
+            </TabsTrigger>
+            <TabsTrigger value="story" className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden sm:inline">Story</span>
+            </TabsTrigger>
+            <TabsTrigger value="grief" className="flex items-center gap-2">
+              <Heart className="h-4 w-4" />
+              <span className="hidden sm:inline">Grief</span>
+            </TabsTrigger>
+            <TabsTrigger value="photo" className="flex items-center gap-2">
+              <Camera className="h-4 w-4" />
+              <span className="hidden sm:inline">Photo</span>
+            </TabsTrigger>
+            <TabsTrigger value="condolence" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden sm:inline">Message</span>
+            </TabsTrigger>
+            <TabsTrigger value="eulogy" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Eulogy</span>
+            </TabsTrigger>
+            <TabsTrigger value="poem" className="flex items-center gap-2">
+              <Lightbulb className="h-4 w-4" />
+              <span className="hidden sm:inline">Poem</span>
+            </TabsTrigger>
+            <TabsTrigger value="timeline" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              <span className="hidden sm:inline">Timeline</span>
+            </TabsTrigger>
+            <TabsTrigger value="assistant" className="flex items-center gap-2">
+              <Bot className="h-4 w-4" />
+              <span className="hidden sm:inline">Assistant</span>
+            </TabsTrigger>
+          </TabsList>
 
-            <div className="bg-white rounded-lg shadow-sm p-1">
-              <TabsContent value="biography" className="mt-0">
-                <AIBiographyAssistant />
-              </TabsContent>
+          <TabsContent value="biography">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Brain className="h-5 w-5" />
+                  AI Biography Assistant
+                </CardTitle>
+                <CardDescription>
+                  Create a comprehensive life story with the help of AI. Answer a few questions and we'll help you craft
+                  a beautiful biography.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AiBiographyAssistant />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="story" className="mt-0">
+          <TabsContent value="story">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5" />
+                  Story Enhancer
+                </CardTitle>
+                <CardDescription>
+                  Improve and expand existing stories or memories. Our AI will help make your stories more engaging and
+                  complete.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <StoryEnhancer />
-              </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="support" className="mt-0">
+          <TabsContent value="grief">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5" />
+                  Grief Support Tool
+                </CardTitle>
+                <CardDescription>
+                  Find personalized grief support resources based on your relationship and where you are in your
+                  journey.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <GriefSupportTool />
-              </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="photo" className="mt-0">
+          <TabsContent value="photo">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Camera className="h-5 w-5" />
+                  Photo Restoration Tool
+                </CardTitle>
+                <CardDescription>
+                  Get guidance on restoring old or damaged photos for your memorial. Learn techniques to bring precious
+                  memories back to life.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <PhotoRestorationTool />
-              </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="condolence" className="mt-0">
+          <TabsContent value="condolence">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5" />
+                  Condolence Message Generator
+                </CardTitle>
+                <CardDescription>
+                  Generate thoughtful, personalized condolence messages for different relationships and situations.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <CondolenceMessageGenerator />
-              </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="eulogy" className="mt-0">
+          <TabsContent value="eulogy">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Eulogy Generator
+                </CardTitle>
+                <CardDescription>
+                  Create a meaningful eulogy that honors your loved one's life, achievements, and impact on others.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <EulogyGenerator />
-              </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="poem" className="mt-0">
+          <TabsContent value="poem">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lightbulb className="h-5 w-5" />
+                  Memorial Poem Generator
+                </CardTitle>
+                <CardDescription>
+                  Generate beautiful, personalized poems to honor your loved one's memory and celebrate their life.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <MemorialPoemGenerator />
-              </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="timeline" className="mt-0">
+          <TabsContent value="timeline">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5" />
+                  Timeline Generator
+                </CardTitle>
+                <CardDescription>
+                  Create a chronological timeline of your loved one's life, highlighting important milestones and
+                  achievements.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <TimelineGenerator />
-              </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="assistant" className="mt-0">
+          <TabsContent value="assistant">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bot className="h-5 w-5" />
+                  Virtual Memorial Assistant
+                </CardTitle>
+                <CardDescription>
+                  Get personalized help and guidance throughout your memorial creation process. Ask questions and get
+                  instant support.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <VirtualMemorialAssistant />
-              </TabsContent>
-            </div>
-          </Tabs>
-
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500 mb-4">
-              These AI tools are designed to help you create and enhance your memorial pages. For more assistance,
-              please contact our support team.
-            </p>
-            <Button asChild variant="outline">
-              <Link href="/">Return to Home</Link>
-            </Button>
-          </div>
-        </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )
