@@ -1,6 +1,11 @@
 "use server"
 
 import { redirect } from "next/navigation"
+import Stripe from "stripe"
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-06-20",
+})
 
 interface PaymentData {
   firstName: string
@@ -12,6 +17,15 @@ interface PaymentData {
   state: string
   zipCode: string
   amount: number
+}
+
+interface OrderData {
+  id: string
+  customerInfo: PaymentData
+  status: string
+  amount: number
+  createdAt: string
+  qrCodeUrl: string
 }
 
 export async function processPayment(formData: FormData) {
@@ -43,7 +57,7 @@ export async function processPayment(formData: FormData) {
       throw new Error("Invalid email format")
     }
 
-    // Validate phone format (basic validation)
+    // Validate phone format (fixed regex)
     const phoneRegex = /^$$?([0-9]{3})$$?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
     if (!phoneRegex.test(paymentData.phone)) {
       throw new Error("Invalid phone number format")
@@ -55,21 +69,27 @@ export async function processPayment(formData: FormData) {
       throw new Error("Invalid zip code format")
     }
 
-    // In a real application, you would:
-    // 1. Create a Stripe payment intent
-    // 2. Process the payment
-    // 3. Save order to database
-    // 4. Generate QR code
-    // 5. Send confirmation email
+    // Create order
+    const order = await createOrder(paymentData)
 
-    // For now, simulate successful payment
+    // Redirect to confirmation page
+    redirect(`/checkout/confirmation?orderId=${order.id}`)
+  } catch (error) {
+    console.error("Payment processing error:", error)
+    throw new Error(error instanceof Error ? error.message : "Payment processing failed")
+  }
+}
+
+export async function createOrder(paymentData: PaymentData): Promise<OrderData> {
+  try {
+    // Generate order ID
     const orderId = `MQR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
     // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Create order record (in real app, save to database)
-    const order = {
+    // Create order record
+    const order: OrderData = {
       id: orderId,
       customerInfo: paymentData,
       status: "completed",
@@ -79,38 +99,53 @@ export async function processPayment(formData: FormData) {
     }
 
     console.log("Order created:", order)
-
-    // Redirect to confirmation page
-    redirect(`/checkout/confirmation?orderId=${orderId}`)
+    return order
   } catch (error) {
-    console.error("Payment processing error:", error)
-    throw new Error(error instanceof Error ? error.message : "Payment processing failed")
+    console.error("Order creation error:", error)
+    throw new Error("Failed to create order")
   }
 }
 
-export async function createStripePaymentIntent(amount: number) {
+export async function createPaymentIntent(amount: number) {
   try {
-    // In a real application, you would create a Stripe payment intent here
-    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-    // const paymentIntent = await stripe.paymentIntents.create({
-    //   amount: amount * 100, // Convert to cents
-    //   currency: 'usd',
-    //   metadata: {
-    //     product: 'memorial-qr'
-    //   }
-    // })
-    // return paymentIntent
-
-    // For now, return a mock payment intent
-    return {
-      id: `pi_${Date.now()}`,
-      client_secret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
-      amount: amount * 100,
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
       currency: "usd",
-      status: "requires_payment_method",
+      metadata: {
+        product: "memorial-qr",
+      },
+    })
+
+    return {
+      id: paymentIntent.id,
+      client_secret: paymentIntent.client_secret,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
+      status: paymentIntent.status,
     }
   } catch (error) {
     console.error("Stripe payment intent creation error:", error)
     throw new Error("Failed to create payment intent")
+  }
+}
+
+export async function createStripePaymentIntent(amount: number) {
+  return createPaymentIntent(amount)
+}
+
+export async function getCheckoutSession(sessionId: string) {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+    return {
+      id: session.id,
+      payment_status: session.payment_status,
+      customer_email: session.customer_email,
+      amount_total: session.amount_total,
+      currency: session.currency,
+      metadata: session.metadata,
+    }
+  } catch (error) {
+    console.error("Stripe checkout session retrieval error:", error)
+    throw new Error("Failed to retrieve checkout session")
   }
 }

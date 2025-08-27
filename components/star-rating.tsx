@@ -1,6 +1,6 @@
 "use client"
 
-import { Star } from 'lucide-react'
+import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface StarRatingProps {
@@ -37,3 +37,6 @@ export function StarRating({ rating, maxRating = 5, size = "md", className, show
     </div>
   )
 }
+
+// Named export for compatibility
+export { StarRating as default }

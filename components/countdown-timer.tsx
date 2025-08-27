@@ -62,3 +62,6 @@ export function CountdownTimer() {
     </div>
   )
 }
+
+// Named export for compatibility
+export { CountdownTimer as default }
