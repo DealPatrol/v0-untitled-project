@@ -2,92 +2,85 @@
 
 import { useState } from "react"
 import { Star } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 interface StarRatingProps {
   rating?: number
   maxRating?: number
   size?: "sm" | "md" | "lg"
-  interactive?: boolean
-  onRatingChange?: (rating: number) => void
+  readonly?: boolean
+  onChange?: (rating: number) => void
   className?: string
+}
+
+const sizeClasses = {
+  sm: "w-4 h-4",
+  md: "w-5 h-5",
+  lg: "w-6 h-6",
 }
 
 export function StarRating({
   rating = 0,
   maxRating = 5,
   size = "md",
-  interactive = false,
-  onRatingChange,
-  className,
+  readonly = false,
+  onChange,
+  className = "",
 }: StarRatingProps) {
   const [hoverRating, setHoverRating] = useState(0)
   const [currentRating, setCurrentRating] = useState(rating)
 
-  const sizeClasses = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
+  const handleClick = (value: number) => {
+    if (readonly) return
+    setCurrentRating(value)
+    onChange?.(value)
   }
 
-  const handleClick = (starRating: number) => {
-    if (!interactive) return
-    setCurrentRating(starRating)
-    onRatingChange?.(starRating)
-  }
-
-  const handleMouseEnter = (starRating: number) => {
-    if (!interactive) return
-    setHoverRating(starRating)
+  const handleMouseEnter = (value: number) => {
+    if (readonly) return
+    setHoverRating(value)
   }
 
   const handleMouseLeave = () => {
-    if (!interactive) return
+    if (readonly) return
     setHoverRating(0)
   }
 
-  const displayRating = interactive ? hoverRating || currentRating : rating
+  const displayRating = hoverRating || currentRating
 
   return (
-    <div className={cn("flex items-center gap-1", className)}>
+    <div className={`flex items-center space-x-1 ${className}`}>
       {Array.from({ length: maxRating }, (_, index) => {
-        const starRating = index + 1
-        const isFilled = starRating <= displayRating
-        const isPartial = !isFilled && starRating - 0.5 <= displayRating
+        const starValue = index + 1
+        const isFilled = starValue <= displayRating
 
         return (
           <button
             key={index}
             type="button"
-            disabled={!interactive}
-            className={cn(
-              "relative transition-colors",
-              interactive && "cursor-pointer hover:scale-110",
-              !interactive && "cursor-default",
-            )}
-            onClick={() => handleClick(starRating)}
-            onMouseEnter={() => handleMouseEnter(starRating)}
+            className={`${
+              readonly ? "cursor-default" : "cursor-pointer hover:scale-110 transition-transform duration-150"
+            } focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 rounded`}
+            onClick={() => handleClick(starValue)}
+            onMouseEnter={() => handleMouseEnter(starValue)}
             onMouseLeave={handleMouseLeave}
-            aria-label={`${starRating} star${starRating !== 1 ? "s" : ""}`}
+            disabled={readonly}
+            aria-label={`Rate ${starValue} out of ${maxRating} stars`}
           >
             <Star
-              className={cn(
-                sizeClasses[size],
-                "transition-colors",
-                isFilled
-                  ? "fill-yellow-400 text-yellow-400"
-                  : isPartial
-                    ? "fill-yellow-400/50 text-yellow-400"
-                    : "fill-gray-200 text-gray-200",
-              )}
+              className={`${sizeClasses[size]} transition-colors duration-150 ${
+                isFilled ? "fill-yellow-400 text-yellow-400" : "fill-none text-gray-300 hover:text-yellow-400"
+              }`}
             />
           </button>
         )
       })}
-      {!interactive && <span className="ml-1 text-sm text-gray-600">({rating.toFixed(1)})</span>}
+      {!readonly && (
+        <span className="ml-2 text-sm text-gray-600">
+          {currentRating > 0 ? `${currentRating}/${maxRating}` : "Rate this"}
+        </span>
+      )}
     </div>
   )
 }
 
-// Named export for compatibility
-export { StarRating as default }
+export default StarRating

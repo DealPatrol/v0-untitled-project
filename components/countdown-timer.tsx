@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 
 interface CountdownTimerProps {
-  targetDate?: Date
+  targetDate?: Date | string
   title?: string
   className?: string
 }
@@ -16,121 +15,104 @@ interface TimeLeft {
   seconds: number
 }
 
-export function CountdownTimer({ targetDate, title = "Limited Time Offer", className }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  })
+export function CountdownTimer({ targetDate, title = "Limited Time Offer", className = "" }: CountdownTimerProps) {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const [mounted, setMounted] = useState(false)
 
-  // Memoize the target date to prevent infinite re-renders
+  // Memoize the final target date to prevent infinite loops
   const finalTargetDate = useMemo(() => {
     if (targetDate) {
-      return targetDate
+      return typeof targetDate === "string" ? new Date(targetDate) : targetDate
     }
-    // Default to 7 days from now if no targetDate provided
+    // Default to 7 days from now
     const defaultDate = new Date()
     defaultDate.setDate(defaultDate.getDate() + 7)
     return defaultDate
   }, [targetDate])
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) return
-
-    const calculateTimeLeft = () => {
-      const difference = finalTargetDate.getTime() - new Date().getTime()
+  const calculateTimeLeft = useMemo(() => {
+    return (): TimeLeft => {
+      const now = new Date().getTime()
+      const target = finalTargetDate.getTime()
+      const difference = target - now
 
       if (difference > 0) {
-        setTimeLeft({
+        return {
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        })
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000),
+        }
       }
+
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 }
     }
+  }, [finalTargetDate])
 
-    // Calculate immediately
-    calculateTimeLeft()
+  useEffect(() => {
+    setMounted(true)
 
-    // Set up interval
-    const timer = setInterval(calculateTimeLeft, 1000)
+    if (!mounted) return
+
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft())
+    }, 1000)
+
+    // Set initial time
+    setTimeLeft(calculateTimeLeft())
 
     return () => clearInterval(timer)
-  }, [mounted, finalTargetDate])
+  }, [mounted, calculateTimeLeft])
 
   if (!mounted) {
     return (
-      <Card className={className}>
-        <CardContent className="p-6">
+      <div className={`bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-lg text-center ${className}`}>
+        <h3 className="text-lg font-semibold mb-2">{title}</h3>
+        <div className="flex justify-center space-x-4">
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-4">{title}</h3>
-            <div className="grid grid-cols-4 gap-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="text-center">
-                  <div className="bg-red-600 text-white rounded-lg p-3 mb-2">
-                    <div className="text-2xl font-bold">--</div>
-                  </div>
-                  <div className="text-sm text-gray-600">Loading</div>
-                </div>
-              ))}
-            </div>
+            <div className="text-2xl font-bold">--</div>
+            <div className="text-sm">Days</div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-center">
+            <div className="text-2xl font-bold">--</div>
+            <div className="text-sm">Hours</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold">--</div>
+            <div className="text-sm">Minutes</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold">--</div>
+            <div className="text-sm">Seconds</div>
+          </div>
+        </div>
+      </div>
     )
   }
 
-  const isExpired = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0
-
   return (
-    <Card className={className}>
-      <CardContent className="p-6">
+    <div className={`bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-lg text-center ${className}`}>
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <div className="flex justify-center space-x-4">
         <div className="text-center">
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">{title}</h3>
-          {isExpired ? (
-            <div className="text-red-600 font-bold text-xl">Offer Expired!</div>
-          ) : (
-            <div className="grid grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="bg-red-600 text-white rounded-lg p-3 mb-2 shadow-lg">
-                  <div className="text-2xl font-bold tabular-nums">{timeLeft.days.toString().padStart(2, "0")}</div>
-                </div>
-                <div className="text-sm text-gray-600 font-medium">Days</div>
-              </div>
-              <div className="text-center">
-                <div className="bg-red-600 text-white rounded-lg p-3 mb-2 shadow-lg">
-                  <div className="text-2xl font-bold tabular-nums">{timeLeft.hours.toString().padStart(2, "0")}</div>
-                </div>
-                <div className="text-sm text-gray-600 font-medium">Hours</div>
-              </div>
-              <div className="text-center">
-                <div className="bg-red-600 text-white rounded-lg p-3 mb-2 shadow-lg">
-                  <div className="text-2xl font-bold tabular-nums">{timeLeft.minutes.toString().padStart(2, "0")}</div>
-                </div>
-                <div className="text-sm text-gray-600 font-medium">Minutes</div>
-              </div>
-              <div className="text-center">
-                <div className="bg-red-600 text-white rounded-lg p-3 mb-2 shadow-lg">
-                  <div className="text-2xl font-bold tabular-nums">{timeLeft.seconds.toString().padStart(2, "0")}</div>
-                </div>
-                <div className="text-sm text-gray-600 font-medium">Seconds</div>
-              </div>
-            </div>
-          )}
+          <div className="text-2xl font-bold">{timeLeft.days.toString().padStart(2, "0")}</div>
+          <div className="text-sm">Days</div>
         </div>
-      </CardContent>
-    </Card>
+        <div className="text-center">
+          <div className="text-2xl font-bold">{timeLeft.hours.toString().padStart(2, "0")}</div>
+          <div className="text-sm">Hours</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold">{timeLeft.minutes.toString().padStart(2, "0")}</div>
+          <div className="text-sm">Minutes</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold">{timeLeft.seconds.toString().padStart(2, "0")}</div>
+          <div className="text-sm">Seconds</div>
+        </div>
+      </div>
+    </div>
   )
 }
 
-// Named export for compatibility
-export { CountdownTimer as default }
+export default CountdownTimer

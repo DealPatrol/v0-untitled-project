@@ -14,7 +14,6 @@ export function Header() {
     { name: "Browse Memorials", href: "/browse-memorials" },
     { name: "How It Works", href: "/how-it-works" },
     { name: "Pricing", href: "/pricing" },
-    { name: "AI Tools", href: "/ai-tools" },
     { name: "Contact", href: "/contact" },
   ]
 
