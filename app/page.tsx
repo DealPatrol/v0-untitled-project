@@ -2,334 +2,380 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Heart, Users, Clock, Shield, QrCode, Globe } from "lucide-react"
-import { CountdownTimer } from "@/components/countdown-timer"
 import { StarRating } from "@/components/star-rating"
+import { CountdownTimer } from "@/components/countdown-timer"
 import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
+import { Heart, QrCode, Smartphone, Shield, Clock, Users, CheckCircle, Phone, Mail, MapPin, ArrowRight, Camera, Share2 } from 'lucide-react'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white">
-      <HomepageStickyCTA />
-
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <Badge className="bg-blue-100 text-blue-800 border-blue-200">⭐ Trusted by 10,000+ Families</Badge>
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                  Honor Their Memory with a <span className="text-blue-600">Digital Memorial</span>
-                </h1>
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  Create a beautiful, lasting tribute that family and friends can access anytime, anywhere. Share
-                  stories, photos, and memories with a simple QR code.
-                </p>
-              </div>
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="absolute inset-0 bg-[url('/images/cemetery-hero.png')] bg-cover bg-center opacity-20" />
+        <div className="relative container mx-auto px-4 py-20 lg:py-32">
+          <div className="max-w-4xl mx-auto text-center">
+            <Badge className="mb-6 bg-orange-500/20 text-orange-300 border-orange-500/30">
+              ⭐ Trusted by 10,000+ Families Worldwide
+            </Badge>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              Preserve Their Legacy
+              <span className="block text-orange-400">Forever</span>
+            </h1>
+
+            <p className="text-xl md:text-2xl mb-8 text-slate-300 max-w-3xl mx-auto">
+              Create beautiful, weatherproof QR memorial plaques that link to personalized tribute pages. Share stories,
+              photos, and memories that last for generations.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Button asChild size="lg" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg">
                 <Link href="/create-profile">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
-                    Create Memorial - $119.99
-                  </Button>
+                  Create Memorial Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
-                <Link href="/memorial/sample">
-                  <Button variant="outline" size="lg" className="px-8 py-4 text-lg bg-transparent">
-                    View Sample Memorial
-                  </Button>
-                </Link>
-              </div>
+              </Button>
 
-              <div className="flex items-center gap-6 pt-4">
-                <div className="flex items-center gap-2">
-                  <StarRating rating={5} />
-                  <span className="text-sm text-gray-600">4.9/5 from 2,847 reviews</span>
-                </div>
-              </div>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg bg-transparent"
+              >
+                <Link href="#how-it-works">See How It Works</Link>
+              </Button>
             </div>
 
-            <div className="relative">
-              <div className="bg-white rounded-2xl shadow-2xl p-8">
-                <video className="w-full rounded-lg" autoPlay muted loop playsInline poster="/images/memorial-demo.jpg">
-                  <source src="/videos/memorial-qr-demo.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-gray-600">See how easy it is to create and share a memorial</p>
-                </div>
+            {/* Trust Indicators */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
+              <div className="text-center">
+                <Shield className="h-8 w-8 mx-auto mb-2 text-orange-400" />
+                <p className="text-sm text-slate-300">10-Year Guarantee</p>
+              </div>
+              <div className="text-center">
+                <Heart className="h-8 w-8 mx-auto mb-2 text-orange-400" />
+                <p className="text-sm text-slate-300">Made with Love</p>
+              </div>
+              <div className="text-center">
+                <QrCode className="h-8 w-8 mx-auto mb-2 text-orange-400" />
+                <p className="text-sm text-slate-300">Free QR Code</p>
+              </div>
+              <div className="text-center">
+                <Users className="h-8 w-8 mx-auto mb-2 text-orange-400" />
+                <p className="text-sm text-slate-300">Family Friendly</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof Stats */}
-      <section className="py-16 bg-white border-b">
+      {/* Social Proof Section */}
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold text-blue-600">10,000+</div>
-              <div className="text-gray-600">Memorials Created</div>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">Loved by Families Everywhere</h2>
+            <div className="flex justify-center items-center gap-2 mb-6">
+              <StarRating rating={5} size="lg" />
+              <span className="text-lg font-semibold text-slate-700">4.9/5 from 2,847 reviews</span>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-blue-600">50,000+</div>
-              <div className="text-gray-600">Stories Shared</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-blue-600">4.9/5</div>
-              <div className="text-gray-600">Customer Rating</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-blue-600">99.9%</div>
-              <div className="text-gray-600">Uptime Guarantee</div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <StarRating rating={5} />
+                  <span className="ml-2 text-sm text-slate-600">Verified Purchase</span>
+                </div>
+                <p className="text-slate-700 mb-4">
+                  "This memorial QR code has brought our family together. We can all share memories of Dad, and even
+                  strangers at the cemetery leave beautiful messages."
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-slate-200 rounded-full mr-3" />
+                  <div>
+                    <p className="font-semibold text-slate-900">Sarah Johnson</p>
+                    <p className="text-sm text-slate-600">Michigan</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <StarRating rating={5} />
+                  <span className="ml-2 text-sm text-slate-600">Verified Purchase</span>
+                </div>
+                <p className="text-slate-700 mb-4">
+                  "After 3 years, the QR plaque still looks brand new despite harsh winters. The memorial page has
+                  become our family's digital gathering place."
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-slate-200 rounded-full mr-3" />
+                  <div>
+                    <p className="font-semibold text-slate-900">Michael Rodriguez</p>
+                    <p className="text-sm text-slate-600">Canada</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <StarRating rating={5} />
+                  <span className="ml-2 text-sm text-slate-600">Verified Purchase</span>
+                </div>
+                <p className="text-slate-700 mb-4">
+                  "The setup was so easy, and now Mom's full life story is preserved forever. Worth every penny for the
+                  peace of mind it brings."
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-slate-200 rounded-full mr-3" />
+                  <div>
+                    <p className="font-semibold text-slate-900">Emily Chen</p>
+                    <p className="text-sm text-slate-600">California</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Urgency Section */}
+      <section className="py-16 bg-gradient-to-r from-orange-50 to-orange-100">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto">
+            <Badge className="mb-4 bg-red-100 text-red-700 border-red-200">
+              <Clock className="w-4 h-4 mr-1" />
+              Limited Time Offer
+            </Badge>
+
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">Special Launch Pricing Ends Soon</h2>
+
+            <p className="text-xl text-slate-700 mb-8">
+              Save $30 on your memorial package - but only for the next 7 days!
+            </p>
+
+            <CountdownTimer />
+
+            <div className="mt-8">
+              <Button asChild size="lg" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg">
+                <Link href="/pricing">
+                  Claim Your Discount Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 bg-gray-50">
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Creating a beautiful memorial is simple and takes just minutes
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">How It Works</h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Creating a lasting memorial is simple with our 3-step process
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="text-center p-8 border-0 shadow-lg">
-              <CardContent className="space-y-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                  <Heart className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold">1. Share Their Story</h3>
-                <p className="text-gray-600">
-                  Upload photos, write their biography, and add meaningful details about their life
-                </p>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Camera className="h-10 w-10 text-orange-600" />
+              </div>
+              <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mb-4 text-lg font-bold">
+                1
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-slate-900">Create Your Memorial</h3>
+              <p className="text-slate-600">
+                Upload photos, write their story, and customize your tribute page with our easy-to-use editor. Add
+                videos, memories, and family connections.
+              </p>
+            </div>
 
-            <Card className="text-center p-8 border-0 shadow-lg">
-              <CardContent className="space-y-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                  <QrCode className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold">2. Get Your QR Code</h3>
-                <p className="text-gray-600">
-                  We create a unique QR code and beautiful memorial page that lasts forever
-                </p>
-              </CardContent>
-            </Card>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <QrCode className="h-10 w-10 text-orange-600" />
+              </div>
+              <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mb-4 text-lg font-bold">
+                2
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-slate-900">Receive Your QR Plaque</h3>
+              <p className="text-slate-600">
+                We create your weatherproof QR plaque and ship it within 3 business days. Includes mounting hardware and
+                installation guide.
+              </p>
+            </div>
 
-            <Card className="text-center p-8 border-0 shadow-lg">
-              <CardContent className="space-y-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                  <Globe className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold">3. Share & Remember</h3>
-                <p className="text-gray-600">
-                  Family and friends can scan the code to view the memorial and add their own memories
-                </p>
-              </CardContent>
-            </Card>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Share2 className="h-10 w-10 text-orange-600" />
+              </div>
+              <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mb-4 text-lg font-bold">
+                3
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-slate-900">Share & Connect</h3>
+              <p className="text-slate-600">
+                Install your plaque and share the memorial with family. Anyone can scan to view the tribute and add
+                their own memories.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-                Everything You Need to Honor Their Memory
-              </h2>
-              <div className="space-y-4">
-                {[
-                  "Unlimited photo and video uploads",
-                  "Beautiful, responsive memorial pages",
-                  "QR code for easy sharing",
-                  "Family tree and relationship mapping",
-                  "Guest book for condolences",
-                  "Timeline of life events",
-                  "Privacy controls and moderation",
-                  "Mobile-optimized viewing",
-                  "Lifetime hosting guarantee",
-                  "24/7 customer support",
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="relative">
-              <img src="/images/how-it-works.jpg" alt="Memorial QR Code Features" className="rounded-2xl shadow-2xl" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <Badge className="bg-red-100 text-red-800 border-red-200 mb-4">🔥 Limited Time Offer</Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Create a Lasting Memorial Today</h2>
-            <p className="text-xl text-gray-600 mb-8">One-time payment. Lifetime hosting. No hidden fees.</p>
-
-            <div className="bg-white rounded-2xl shadow-2xl p-8 mb-8">
-              <div className="text-center mb-6">
-                <div className="text-5xl font-bold text-blue-600 mb-2">$119.99</div>
-                <div className="text-gray-500 line-through text-xl">$199.99</div>
-                <div className="text-green-600 font-semibold">Save $80 - Limited Time!</div>
-              </div>
-
-              <CountdownTimer />
-
-              <div className="space-y-3 text-left mb-8">
-                {[
-                  "Complete memorial website",
-                  "Custom QR code",
-                  "Unlimited photos & videos",
-                  "Family tree builder",
-                  "Guest book & condolences",
-                  "Lifetime hosting",
-                  "Mobile responsive design",
-                  "24/7 support",
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-500" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <Link href="/create-profile">
-                <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg">
-                  Create Memorial Now - $119.99
-                </Button>
-              </Link>
-
-              <div className="flex items-center justify-center gap-4 mt-6 text-sm text-gray-500">
-                <div className="flex items-center gap-1">
-                  <Shield className="w-4 h-4" />
-                  <span>30-day guarantee</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>Setup in 5 minutes</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Trusted by Thousands of Families</h2>
-            <p className="text-xl text-gray-600">See what our customers say about Memorial QR</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">Why Choose MemorialStarQR?</h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              We've thought of everything to make honoring your loved one simple and meaningful
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-6 border-0 shadow-lg">
-              <CardContent className="space-y-4">
-                <StarRating rating={5} />
-                <p className="text-gray-700">
-                  "Creating my father's memorial was so easy and meaningful. The QR code on his headstone allows
-                  visitors to learn about his incredible life story."
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-6">
+                <Shield className="h-12 w-12 text-orange-500 mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-slate-900">10-Year Durability</h3>
+                <p className="text-slate-600">
+                  Industrial-grade materials that withstand harsh weather, UV rays, and temperature extremes. Guaranteed
+                  to last a decade outdoors.
                 </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-                  <div>
-                    <div className="font-semibold">Sarah Johnson</div>
-                    <div className="text-sm text-gray-500">Verified Customer</div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
-            <Card className="p-6 border-0 shadow-lg">
-              <CardContent className="space-y-4">
-                <StarRating rating={5} />
-                <p className="text-gray-700">
-                  "The memorial page is beautiful and has brought our family closer together. We love being able to
-                  share memories and photos in one place."
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-6">
+                <Heart className="h-12 w-12 text-orange-500 mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-slate-900">Beautiful Tributes</h3>
+                <p className="text-slate-600">
+                  Customizable memorial pages with photo galleries, life stories, virtual candles, and guest books for
+                  lasting remembrance.
                 </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-                  <div>
-                    <div className="font-semibold">Michael Chen</div>
-                    <div className="text-sm text-gray-500">Verified Customer</div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
-            <Card className="p-6 border-0 shadow-lg">
-              <CardContent className="space-y-4">
-                <StarRating rating={5} />
-                <p className="text-gray-700">
-                  "Outstanding service and support. The team helped us create something truly special that will preserve
-                  mom's memory forever."
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-6">
+                <Users className="h-12 w-12 text-orange-500 mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-slate-900">Family Collaboration</h3>
+                <p className="text-slate-600">
+                  Invite family members to contribute photos and memories. Everyone can help build a complete picture of
+                  your loved one's life.
                 </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-                  <div>
-                    <div className="font-semibold">Lisa Rodriguez</div>
-                    <div className="text-sm text-gray-500">Verified Customer</div>
-                  </div>
-                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-6">
+                <CheckCircle className="h-12 w-12 text-orange-500 mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-slate-900">Easy Setup</h3>
+                <p className="text-slate-600">
+                  No technical skills required. Our step-by-step process makes creating and installing your memorial
+                  simple and stress-free.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-6">
+                <QrCode className="h-12 w-12 text-orange-500 mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-slate-900">Fast Shipping</h3>
+                <p className="text-slate-600">
+                  Free worldwide shipping with tracking. Most orders ship within 24 hours and arrive in 3-5 business
+                  days.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-6">
+                <Smartphone className="h-12 w-12 text-orange-500 mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-slate-900">Premium Support</h3>
+                <p className="text-slate-600">
+                  Dedicated customer support team available 7 days a week. We're here to help you every step of the way.
+                </p>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-20 bg-gray-900 text-white">
+      {/* Final CTA Section */}
+      <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">Ready to Create a Beautiful Memorial?</h2>
-            <p className="text-xl text-gray-300 mb-8">
-              Join thousands of families who have chosen Memorial QR to honor their loved ones. Get started today with
-              our easy-to-use memorial creator.
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Don't Let Their Memory Fade Away</h2>
+            <p className="text-xl text-slate-300 mb-8">
+              Create a lasting tribute that preserves their legacy for future generations. Start building their memorial
+              today with our 30-day money-back guarantee.
             </p>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/create-profile">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
-                  Create Memorial - $119.99
-                </Button>
-              </Link>
-              <Link href="/memorial/sample">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 text-lg bg-transparent"
-                >
-                  View Sample Memorial
-                </Button>
-              </Link>
+              <Button asChild size="lg" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg">
+                <Link href="/create-profile">
+                  Create Memorial Now - $119.99
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg bg-transparent"
+              >
+                <Link href="/pricing">View All Packages</Link>
+              </Button>
             </div>
-            <div className="flex items-center justify-center gap-6 mt-8 text-sm text-gray-400">
-              <div className="flex items-center gap-1">
-                <Shield className="w-4 h-4" />
-                <span>30-day money-back guarantee</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                <span>Trusted by 10,000+ families</span>
-              </div>
+
+            <p className="text-sm text-slate-400 mt-6">
+              ✓ 30-Day Money-Back Guarantee ✓ Free Worldwide Shipping ✓ 10-Year Durability Warranty
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-16 bg-gray-900 text-white">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h3 className="text-2xl font-bold mb-8">Need Help? We're Here for You</h3>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center">
+              <Phone className="w-8 h-8 text-orange-400 mb-3" />
+              <div className="font-semibold mb-1">Call Us</div>
+              <div className="text-gray-300">256-595-3354</div>
+              <div className="text-sm text-gray-400">Mon-Fri 9AM-6PM EST</div>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <Mail className="w-8 h-8 text-orange-400 mb-3" />
+              <div className="font-semibold mb-1">Email Us</div>
+              <div className="text-gray-300">support@memorialstarqr.com</div>
+              <div className="text-sm text-gray-400">24/7 Support</div>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <MapPin className="w-8 h-8 text-orange-400 mb-3" />
+              <div className="font-semibold mb-1">Based In</div>
+              <div className="text-gray-300">United States</div>
+              <div className="text-sm text-gray-400">Serving Worldwide</div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Sticky CTA Component */}
+      <HomepageStickyCTA />
     </div>
   )
 }

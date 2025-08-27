@@ -46,26 +46,31 @@ export const event = ({ action, category, label, value }: any) => {
 }
 
 // Simple analytics tracking without external dependencies
-export function trackPageView(url: string) {
-  if (typeof window !== "undefined") {
-    console.log("Page view tracked:", url)
-    // Add your analytics tracking code here
-    // Example: gtag('config', 'GA_MEASUREMENT_ID', { page_path: url })
+export function trackPageView(page: string) {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("config", GA_MEASUREMENT_ID, {
+      page_title: page,
+    })
   }
 }
 
-export function trackEvent(eventName: string, parameters?: Record<string, any>) {
-  if (typeof window !== "undefined") {
-    console.log("Event tracked:", eventName, parameters)
-    // Add your analytics tracking code here
-    // Example: gtag('event', eventName, parameters)
+export function trackEvent(action: string, category: string, label?: string, value?: number) {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", action, {
+      event_category: category,
+      event_label: label,
+      value: value,
+    })
   }
 }
 
-export function trackConversion(conversionId: string, value?: number) {
-  if (typeof window !== "undefined") {
-    console.log("Conversion tracked:", conversionId, value)
-    // Add your conversion tracking code here
+export function trackConversion(value: number, currency = "USD") {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "purchase", {
+      transaction_id: Date.now().toString(),
+      value: value,
+      currency: currency,
+    })
   }
 }
 

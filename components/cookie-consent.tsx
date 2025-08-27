@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { X } from "lucide-react"
 
 export function CookieConsent() {
@@ -27,26 +28,29 @@ export function CookieConsent() {
   if (!showConsent) return null
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50">
-      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex-1">
-          <p className="text-sm text-gray-600">
-            We use cookies to enhance your experience and analyze our traffic. By continuing to use our site, you
-            consent to our use of cookies.
+    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-md">
+      <Card className="shadow-lg">
+        <CardContent className="p-4">
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="font-semibold text-sm">Cookie Consent</h3>
+            <button onClick={declineCookies} className="text-gray-400 hover:text-gray-600">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-xs text-gray-600 mb-4">
+            We use cookies to improve your experience and analyze site usage. By continuing, you agree to our cookie
+            policy.
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={declineCookies}>
-            Decline
-          </Button>
-          <Button size="sm" onClick={acceptCookies}>
-            Accept
-          </Button>
-          <Button variant="ghost" size="sm" onClick={declineCookies}>
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={acceptCookies} className="flex-1">
+              Accept
+            </Button>
+            <Button size="sm" variant="outline" onClick={declineCookies} className="flex-1 bg-transparent">
+              Decline
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

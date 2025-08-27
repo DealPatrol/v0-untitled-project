@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
+import { X, ArrowRight } from 'lucide-react'
+import Link from "next/link"
 
 export function HomepageStickyCTA() {
   const [isVisible, setIsVisible] = useState(false)
@@ -14,7 +14,7 @@ export function HomepageStickyCTA() {
       const scrollPosition = window.scrollY
       const windowHeight = window.innerHeight
 
-      // Show CTA after scrolling past the first screen
+      // Show after scrolling 50% of viewport height
       if (scrollPosition > windowHeight * 0.5 && !isDismissed) {
         setIsVisible(true)
       } else {
@@ -26,28 +26,38 @@ export function HomepageStickyCTA() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [isDismissed])
 
-  const handleDismiss = () => {
-    setIsDismissed(true)
-    setIsVisible(false)
-  }
-
-  if (!isVisible || isDismissed) return null
+  if (isDismissed) return null
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
-      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-gray-900">Ready to create a memorial?</h3>
-          <button onClick={handleDismiss} className="text-gray-400 hover:text-gray-600">
-            <X className="w-4 h-4" />
-          </button>
+    <div
+      className={`fixed bottom-0 left-0 right-0 z-50 transform transition-transform duration-300 ${
+        isVisible ? "translate-y-0" : "translate-y-full"
+      }`}
+    >
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 shadow-lg">
+        <div className="container mx-auto flex items-center justify-between">
+          <div className="flex-1">
+            <div className="font-bold text-lg">Don't Miss Out!</div>
+            <div className="text-sm opacity-90">Create your memorial today - Limited time $119.99</div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Button asChild size="sm" className="bg-white text-orange-600 hover:bg-gray-100 font-semibold">
+              <Link href="/create-profile">
+                Get Started
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+
+            <button
+              onClick={() => setIsDismissed(true)}
+              className="text-white hover:text-gray-200 transition-colors"
+              aria-label="Dismiss"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-        <p className="text-sm text-gray-600 mb-3">
-          Start preserving precious memories today with our easy-to-use memorial creator.
-        </p>
-        <Link href="/create-profile">
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Create Memorial - $119.99</Button>
-        </Link>
       </div>
     </div>
   )

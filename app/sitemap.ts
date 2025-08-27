@@ -1,5 +1,3 @@
-export const dynamic = "force-static"
-
 import type { MetadataRoute } from "next"
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -7,7 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: "https://memorialqr.com",
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "yearly",
       priority: 1,
     },
     {
@@ -23,9 +21,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: "https://memorialqr.com/memorials",
+      url: "https://memorialqr.com/faq",
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "monthly",
       priority: 0.7,
     },
     {
@@ -35,16 +33,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     },
     {
-      url: "https://memorialqr.com/privacy-policy",
+      url: "https://memorialqr.com/memorials",
       lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: "https://memorialqr.com/terms-of-service",
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
+      changeFrequency: "weekly",
+      priority: 0.6,
     },
   ]
 }
