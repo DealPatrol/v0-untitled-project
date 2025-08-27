@@ -6,35 +6,32 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const search = searchParams.get("search") || ""
-    const category = searchParams.get("category") || ""
+    const search = searchParams.get("search")
+    const category = searchParams.get("category")
     const sortBy = searchParams.get("sortBy") || "recent"
-    const limit = Number.parseInt(searchParams.get("limit") || "20")
+    const limit = Number.parseInt(searchParams.get("limit") || "50")
     const offset = Number.parseInt(searchParams.get("offset") || "0")
 
     let query = supabase
       .from("memorials")
       .select(`
         id,
-        first_name,
-        last_name,
+        name,
         birth_date,
         death_date,
         location,
         biography,
         profile_image_url,
-        cover_image_url,
         tags,
-        created_at,
-        is_public
+        created_at
       `)
       .eq("is_public", true)
+      .range(offset, offset + limit - 1)
 
     // Apply search filter
     if (search) {
       query = query.or(`
-        first_name.ilike.%${search}%,
-        last_name.ilike.%${search}%,
+        name.ilike.%${search}%,
         location.ilike.%${search}%,
         biography.ilike.%${search}%,
         tags.cs.{${search}}
@@ -49,41 +46,40 @@ export async function GET(request: NextRequest) {
     // Apply sorting
     switch (sortBy) {
       case "name":
-        query = query.order("last_name", { ascending: true })
+        query = query.order("name", { ascending: true })
         break
-      case "date-desc":
-        query = query.order("death_date", { ascending: false })
-        break
-      case "date-asc":
+      case "oldest":
         query = query.order("death_date", { ascending: true })
         break
-      default: // recent
+      case "recent":
+      default:
         query = query.order("created_at", { ascending: false })
+        break
     }
 
-    // Apply pagination
-    query = query.range(offset, offset + limit - 1)
-
-    const { data: memorials, error, count } = await query
+    const { data: memorials, error } = await query
 
     if (error) {
       console.error("Error fetching memorials:", error)
       return NextResponse.json({ error: "Failed to fetch memorials" }, { status: 500 })
     }
 
-    // Get total count for pagination
-    const { count: totalCount } = await supabase
-      .from("memorials")
-      .select("*", { count: "exact", head: true })
-      .eq("is_public", true)
+    // Calculate age for each memorial
+    const memorialsWithAge =
+      memorials?.map((memorial) => ({
+        ...memorial,
+        age:
+          memorial.birth_date && memorial.death_date
+            ? new Date(memorial.death_date).getFullYear() - new Date(memorial.birth_date).getFullYear()
+            : null,
+      })) || []
 
     return NextResponse.json({
-      memorials: memorials || [],
-      totalCount: totalCount || 0,
-      hasMore: offset + limit < (totalCount || 0),
+      memorials: memorialsWithAge,
+      total: memorialsWithAge.length,
     })
   } catch (error) {
-    console.error("API error:", error)
+    console.error("Error in public memorials API:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

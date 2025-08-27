@@ -1,151 +1,161 @@
 "use server"
 
-import { redirect } from "next/navigation"
 import Stripe from "stripe"
+import { redirect } from "next/navigation"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
+  apiVersion: "2024-12-18.acacia",
 })
 
-interface PaymentData {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  address: string
-  city: string
-  state: string
-  zipCode: string
-  amount: number
-}
-
 interface OrderData {
-  id: string
-  customerInfo: PaymentData
-  status: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  customerAddress: string
+  memorialData: any
   amount: number
-  createdAt: string
-  qrCodeUrl: string
 }
 
-export async function processPayment(formData: FormData) {
+export async function createOrder(orderData: OrderData) {
   try {
-    // Extract form data
-    const paymentData: PaymentData = {
-      firstName: formData.get("firstName") as string,
-      lastName: formData.get("lastName") as string,
-      email: formData.get("email") as string,
-      phone: formData.get("phone") as string,
-      address: formData.get("address") as string,
-      city: formData.get("city") as string,
-      state: formData.get("state") as string,
-      zipCode: formData.get("zipCode") as string,
-      amount: 119.99,
+    // Create customer in Stripe
+    const customer = await stripe.customers.create({
+      name: orderData.customerName,
+      email: orderData.customerEmail,
+      phone: orderData.customerPhone,
+      address: {
+        line1: orderData.customerAddress,
+      },
+    })
+
+    // Create order record in your database here
+    // const order = await createOrderInDatabase(orderData, customer.id)
+
+    return {
+      success: true,
+      customerId: customer.id,
+      orderId: `order_${Date.now()}`, // Replace with actual order ID
     }
-
-    // Validate required fields
-    const requiredFields = ["firstName", "lastName", "email", "phone", "address", "city", "state", "zipCode"]
-    for (const field of requiredFields) {
-      if (!paymentData[field as keyof PaymentData]) {
-        throw new Error(`${field} is required`)
-      }
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(paymentData.email)) {
-      throw new Error("Invalid email format")
-    }
-
-    // Validate phone format (fixed regex)
-    const phoneRegex = /^$$?([0-9]{3})$$?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
-    if (!phoneRegex.test(paymentData.phone)) {
-      throw new Error("Invalid phone number format")
-    }
-
-    // Validate zip code
-    const zipRegex = /^\d{5}(-\d{4})?$/
-    if (!zipRegex.test(paymentData.zipCode)) {
-      throw new Error("Invalid zip code format")
-    }
-
-    // Create order
-    const order = await createOrder(paymentData)
-
-    // Redirect to confirmation page
-    redirect(`/checkout/confirmation?orderId=${order.id}`)
   } catch (error) {
-    console.error("Payment processing error:", error)
-    throw new Error(error instanceof Error ? error.message : "Payment processing failed")
+    console.error("Error creating order:", error)
+    return {
+      success: false,
+      error: "Failed to create order",
+    }
   }
 }
 
-export async function createOrder(paymentData: PaymentData): Promise<OrderData> {
-  try {
-    // Generate order ID
-    const orderId = `MQR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-
-    // Simulate processing delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Create order record
-    const order: OrderData = {
-      id: orderId,
-      customerInfo: paymentData,
-      status: "completed",
-      amount: paymentData.amount,
-      createdAt: new Date().toISOString(),
-      qrCodeUrl: `https://memorialqr.com/qr/${orderId}`,
-    }
-
-    console.log("Order created:", order)
-    return order
-  } catch (error) {
-    console.error("Order creation error:", error)
-    throw new Error("Failed to create order")
-  }
-}
-
-export async function createPaymentIntent(amount: number) {
+export async function createPaymentIntent(amount: number, orderId: string) {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
       currency: "usd",
       metadata: {
-        product: "memorial-qr",
+        orderId,
       },
     })
 
     return {
-      id: paymentIntent.id,
-      client_secret: paymentIntent.client_secret,
-      amount: paymentIntent.amount,
-      currency: paymentIntent.currency,
-      status: paymentIntent.status,
+      success: true,
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
     }
   } catch (error) {
-    console.error("Stripe payment intent creation error:", error)
-    throw new Error("Failed to create payment intent")
-  }
-}
-
-export async function createStripePaymentIntent(amount: number) {
-  return createPaymentIntent(amount)
-}
-
-export async function getCheckoutSession(sessionId: string) {
-  try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId)
+    console.error("Error creating payment intent:", error)
     return {
-      id: session.id,
-      payment_status: session.payment_status,
-      customer_email: session.customer_email,
-      amount_total: session.amount_total,
-      currency: session.currency,
-      metadata: session.metadata,
+      success: false,
+      error: "Failed to create payment intent",
+    }
+  }
+}
+
+export async function getCheckoutSession(priceId: string, successUrl: string, cancelUrl: string) {
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    })
+
+    return {
+      success: true,
+      sessionId: session.id,
+      url: session.url,
     }
   } catch (error) {
-    console.error("Stripe checkout session retrieval error:", error)
-    throw new Error("Failed to retrieve checkout session")
+    console.error("Error creating checkout session:", error)
+    return {
+      success: false,
+      error: "Failed to create checkout session",
+    }
   }
+}
+
+export async function processPayment(formData: FormData) {
+  const customerName = formData.get("customerName") as string
+  const customerEmail = formData.get("customerEmail") as string
+  const customerPhone = formData.get("customerPhone") as string
+  const customerAddress = formData.get("customerAddress") as string
+  const amount = Number.parseFloat(formData.get("amount") as string) || 119.99
+
+  // Validate phone number with corrected regex
+  const phoneRegex = /^$$?([0-9]{3})$$?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
+  if (!phoneRegex.test(customerPhone)) {
+    return {
+      success: false,
+      error: "Please enter a valid phone number",
+    }
+  }
+
+  try {
+    // Create order
+    const orderResult = await createOrder({
+      customerName,
+      customerEmail,
+      customerPhone,
+      customerAddress,
+      memorialData: {}, // Add memorial data as needed
+      amount,
+    })
+
+    if (!orderResult.success) {
+      return orderResult
+    }
+
+    // Create checkout session
+    const sessionResult = await getCheckoutSession(
+      "price_1234567890", // Replace with your actual price ID
+      `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      `${process.env.NEXT_PUBLIC_SITE_URL}/checkout?cancelled=true`,
+    )
+
+    if (!sessionResult.success || !sessionResult.url) {
+      return {
+        success: false,
+        error: "Failed to create checkout session",
+      }
+    }
+
+    // Redirect to Stripe checkout
+    redirect(sessionResult.url)
+  } catch (error) {
+    console.error("Error processing payment:", error)
+    return {
+      success: false,
+      error: "Payment processing failed",
+    }
+  }
+}
+
+// Utility function to validate email
+export function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
 }

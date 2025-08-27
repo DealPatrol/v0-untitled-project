@@ -5,14 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount)
-}
-
-export function formatDate(date: string | Date): string {
+export function formatDate(date: Date | string): string {
   const d = new Date(date)
   return d.toLocaleDateString("en-US", {
     year: "numeric",
@@ -21,51 +14,76 @@ export function formatDate(date: string | Date): string {
   })
 }
 
+export function formatPhoneNumber(phone: string): string {
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, "")
+
+  // Format as (XXX) XXX-XXXX for US numbers
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+  }
+
+  // Return original if not a standard US number
+  return phone
+}
+
 export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
 }
 
 export function validatePhone(phone: string): boolean {
-  // FIXED: Corrected regex pattern - supports formats like (123) 456-7890, 123-456-7890, etc.
-  const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
-  return phoneRegex.test(phone.replace(/\s/g, ""))
+  // Allow various phone number formats
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/
+  const cleaned = phone.replace(/[\s\-$$$$.]/g, "")
+  return phoneRegex.test(cleaned) && cleaned.length >= 10
 }
 
 export function validateZipCode(zipCode: string): boolean {
+  // US ZIP code format (5 digits or 5+4 format)
   const zipRegex = /^\d{5}(-\d{4})?$/
   return zipRegex.test(zipCode)
 }
 
-export function formatPhoneNumber(phone: string): string {
-  const cleaned = phone.replace(/\D/g, "")
-  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
-  if (match) {
-    return `(${match[1]}) ${match[2]}-${match[3]}`
+export function calculateAge(birthDate: Date | string, deathDate?: Date | string): number {
+  const birth = new Date(birthDate)
+  const death = deathDate ? new Date(deathDate) : new Date()
+
+  let age = death.getFullYear() - birth.getFullYear()
+  const monthDiff = death.getMonth() - birth.getMonth()
+
+  if (monthDiff < 0 || (monthDiff === 0 && death.getDate() < birth.getDate())) {
+    age--
   }
-  return phone
+
+  return age
 }
 
-export function generateId(): string {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36)
-}
-
-export function slugify(text: string): string {
+export function generateSlug(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^\w ]+/g, "")
-    .replace(/ +/g, "-")
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/[\s_-]+/g, "-") // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
 }
 
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text
-  return text.substring(0, maxLength).trim() + "..."
+  return text.slice(0, maxLength).replace(/\s+\S*$/, "") + "..."
+}
+
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount)
 }
 
 export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout
+  let timeout: NodeJS.Timeout | null = null
+
   return (...args: Parameters<T>) => {
-    clearTimeout(timeout)
+    if (timeout) clearTimeout(timeout)
     timeout = setTimeout(() => func(...args), wait)
   }
 }
@@ -84,27 +102,15 @@ export function getInitials(name: string): string {
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase())
     .join("")
-    .substring(0, 2)
+    .slice(0, 2)
 }
 
-export function calculateAge(birthDate: string, deathDate?: string): number {
-  const birth = new Date(birthDate)
-  const end = deathDate ? new Date(deathDate) : new Date()
-  const age = end.getFullYear() - birth.getFullYear()
-  const monthDiff = end.getMonth() - birth.getMonth()
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return "0 Bytes"
 
-  if (monthDiff < 0 || (monthDiff === 0 && end.getDate() < birth.getDate())) {
-    return age - 1
-  }
+  const k = 1024
+  const sizes = ["Bytes", "KB", "MB", "GB"]
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-  return age
-}
-
-export function sanitizeInput(input: string): string {
-  return input.replace(/[<>]/g, "").trim()
-}
-
-export function generateQRCodeUrl(memorialId: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://memorialstarqr.com"
-  return `${baseUrl}/memorial/${memorialId}`
+  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
 }

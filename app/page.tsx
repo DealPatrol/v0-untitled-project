@@ -5,7 +5,21 @@ import { Badge } from "@/components/ui/badge"
 import { StarRating } from "@/components/star-rating"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
-import { Heart, QrCode, Smartphone, Shield, Clock, Users, CheckCircle, Phone, Mail, MapPin, ArrowRight, Camera, Share2 } from 'lucide-react'
+import {
+  Heart,
+  QrCode,
+  Smartphone,
+  Shield,
+  Clock,
+  Users,
+  CheckCircle,
+  Phone,
+  Mail,
+  MapPin,
+  ArrowRight,
+  Camera,
+  Share2,
+} from "lucide-react"
 
 export default function HomePage() {
   return (
