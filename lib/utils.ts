@@ -5,71 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDate(date: Date | string): string {
+export function formatDate(date: string | Date): string {
   const d = new Date(date)
   return d.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   })
-}
-
-export function formatPhoneNumber(phone: string): string {
-  // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, "")
-
-  // Format as (XXX) XXX-XXXX for US numbers
-  if (cleaned.length === 10) {
-    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-  }
-
-  // Return original if not a standard US number
-  return phone
-}
-
-export function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
-}
-
-export function validatePhone(phone: string): boolean {
-  // Allow various phone number formats
-  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/
-  const cleaned = phone.replace(/[\s\-$$$$.]/g, "")
-  return phoneRegex.test(cleaned) && cleaned.length >= 10
-}
-
-export function validateZipCode(zipCode: string): boolean {
-  // US ZIP code format (5 digits or 5+4 format)
-  const zipRegex = /^\d{5}(-\d{4})?$/
-  return zipRegex.test(zipCode)
-}
-
-export function calculateAge(birthDate: Date | string, deathDate?: Date | string): number {
-  const birth = new Date(birthDate)
-  const death = deathDate ? new Date(deathDate) : new Date()
-
-  let age = death.getFullYear() - birth.getFullYear()
-  const monthDiff = death.getMonth() - birth.getMonth()
-
-  if (monthDiff < 0 || (monthDiff === 0 && death.getDate() < birth.getDate())) {
-    age--
-  }
-
-  return age
-}
-
-export function generateSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "") // Remove special characters
-    .replace(/[\s_-]+/g, "-") // Replace spaces and underscores with hyphens
-    .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
-}
-
-export function truncateText(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text
-  return text.slice(0, maxLength).replace(/\s+\S*$/, "") + "..."
 }
 
 export function formatCurrency(amount: number): string {
@@ -79,13 +21,65 @@ export function formatCurrency(amount: number): string {
   }).format(amount)
 }
 
-export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
+export function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
 
-  return (...args: Parameters<T>) => {
-    if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(() => func(...args), wait)
+export function validatePhone(phone: string): boolean {
+  // Remove all non-digit characters except +
+  const cleanPhone = phone.replace(/[\s\-().]/g, "")
+  // Basic international phone number validation
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/
+  return phoneRegex.test(cleanPhone)
+}
+
+export function validateZipCode(zipCode: string): boolean {
+  const zipRegex = /^\d{5}(-\d{4})?$/
+  return zipRegex.test(zipCode)
+}
+
+export function generateQRCodeUrl(memorialId: string): string {
+  return `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/qr/${memorialId}`
+}
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text
+  return text.slice(0, maxLength).trim() + "..."
+}
+
+export function getInitials(firstName?: string, lastName?: string): string {
+  const first = firstName?.charAt(0)?.toUpperCase() || ""
+  const last = lastName?.charAt(0)?.toUpperCase() || ""
+  return `${first}${last}` || "?"
+}
+
+export function calculateAge(birthDate: string, deathDate?: string): number {
+  const birth = new Date(birthDate)
+  const death = deathDate ? new Date(deathDate) : new Date()
+  const ageInMs = death.getTime() - birth.getTime()
+  return Math.floor(ageInMs / (1000 * 60 * 60 * 24 * 365.25))
+}
+
+export function formatPhoneNumber(phone: string): string {
+  // Remove all non-digit characters
+  const digits = phone.replace(/\D/g, "")
+
+  // Format as (XXX) XXX-XXXX for US numbers
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
   }
+
+  // Return original if not a standard US number
+  return phone
 }
 
 export function isValidUrl(url: string): boolean {
@@ -97,20 +91,15 @@ export function isValidUrl(url: string): boolean {
   }
 }
 
-export function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase())
-    .join("")
-    .slice(0, 2)
-}
+export function getRelativeTime(date: string | Date): string {
+  const now = new Date()
+  const past = new Date(date)
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000)
 
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes"
-
-  const k = 1024
-  const sizes = ["Bytes", "KB", "MB", "GB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  if (diffInSeconds < 60) return "just now"
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`
+  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`
+  return `${Math.floor(diffInSeconds / 31536000)} years ago`
 }
