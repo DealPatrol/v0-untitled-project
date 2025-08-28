@@ -20,7 +20,6 @@ interface Memorial {
   profile_image_url?: string
   tags: string[]
   age: number
-  gender?: "male" | "female" | "neutral"
 }
 
 export default function BrowseMemorialsPage() {
@@ -44,7 +43,6 @@ export default function BrowseMemorialsPage() {
       profile_image_url: "/images/robert-portrait.jpg",
       tags: ["veteran", "father", "carpenter"],
       age: 98,
-      gender: "male",
     },
     {
       id: "2",
@@ -57,7 +55,6 @@ export default function BrowseMemorialsPage() {
       profile_image_url: "/images/female-memorial-portrait.png",
       tags: ["teacher", "mother", "volunteer"],
       age: 83,
-      gender: "female",
     },
     {
       id: "3",
@@ -70,7 +67,6 @@ export default function BrowseMemorialsPage() {
       profile_image_url: "/images/male-memorial-portrait.png",
       tags: ["musician", "artist", "teacher"],
       age: 67,
-      gender: "male",
     },
     {
       id: "4",
@@ -83,7 +79,6 @@ export default function BrowseMemorialsPage() {
       profile_image_url: "/images/female-memorial-cover.png",
       tags: ["nurse", "mentor", "caregiver"],
       age: 88,
-      gender: "female",
     },
     {
       id: "5",
@@ -96,7 +91,6 @@ export default function BrowseMemorialsPage() {
       profile_image_url: "/images/veteran-portrait.png",
       tags: ["firefighter", "hero", "father"],
       age: 73,
-      gender: "male",
     },
     {
       id: "6",
@@ -109,7 +103,6 @@ export default function BrowseMemorialsPage() {
       profile_image_url: "/images/female-memorial-family.png",
       tags: ["engineer", "nasa", "pioneer"],
       age: 78,
-      gender: "female",
     },
   ]
 
@@ -291,12 +284,9 @@ export default function BrowseMemorialsPage() {
                 <CardHeader className="p-0">
                   <div className="relative h-48 w-full">
                     <PersonImage
-                      name={memorial.name}
-                      gender={memorial.gender}
                       src={memorial.profile_image_url}
-                      alt={`${memorial.name} memorial photo`}
+                      alt={memorial.name}
                       className="w-full h-full object-cover rounded-t-lg"
-                      type="cover"
                     />
                   </div>
                 </CardHeader>
