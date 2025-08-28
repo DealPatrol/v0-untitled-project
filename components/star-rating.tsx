@@ -17,9 +17,9 @@ export function StarRating({ rating = 0, onRatingChange, readonly = false, size 
   const [currentRating, setCurrentRating] = useState(rating)
 
   const sizeClasses = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
+    sm: "w-4 h-4",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
   }
 
   const handleClick = (value: number) => {
@@ -38,28 +38,29 @@ export function StarRating({ rating = 0, onRatingChange, readonly = false, size 
     setHoverRating(0)
   }
 
-  const displayRating = readonly ? rating : hoverRating || currentRating
+  const displayRating = hoverRating || currentRating
 
   return (
     <div className={cn("flex items-center gap-1", className)}>
-      {[1, 2, 3, 4, 5].map((star) => (
+      {[1, 2, 3, 4, 5].map((value) => (
         <button
-          key={star}
+          key={value}
           type="button"
           className={cn(
             "transition-colors",
-            readonly ? "cursor-default" : "cursor-pointer hover:scale-110",
-            sizeClasses[size],
+            !readonly && "hover:scale-110 cursor-pointer",
+            readonly && "cursor-default",
           )}
-          onClick={() => handleClick(star)}
-          onMouseEnter={() => handleMouseEnter(star)}
+          onClick={() => handleClick(value)}
+          onMouseEnter={() => handleMouseEnter(value)}
           onMouseLeave={handleMouseLeave}
           disabled={readonly}
         >
           <Star
             className={cn(
+              sizeClasses[size],
               "transition-colors",
-              star <= displayRating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200",
+              value <= displayRating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200",
             )}
           />
         </button>

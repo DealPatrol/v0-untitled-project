@@ -8,10 +8,7 @@ interface CountdownTimerProps {
   className?: string
 }
 
-export function CountdownTimer({
-  targetDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-  className,
-}: CountdownTimerProps) {
+export function CountdownTimer({ targetDate, className }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -20,8 +17,11 @@ export function CountdownTimer({
   })
 
   useEffect(() => {
+    // Set default target date to 7 days from now if not provided
+    const target = targetDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
     const calculateTimeLeft = () => {
-      const difference = targetDate.getTime() - new Date().getTime()
+      const difference = target.getTime() - new Date().getTime()
 
       if (difference > 0) {
         setTimeLeft({
@@ -35,11 +35,15 @@ export function CountdownTimer({
       }
     }
 
+    // Calculate initial time
     calculateTimeLeft()
+
+    // Set up interval
     const timer = setInterval(calculateTimeLeft, 1000)
 
+    // Cleanup interval on unmount
     return () => clearInterval(timer)
-  }, [targetDate])
+  }, [targetDate]) // Only depend on targetDate, not the calculated values
 
   return (
     <div className={className}>

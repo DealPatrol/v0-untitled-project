@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { X, ArrowRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { X } from "lucide-react"
+import Link from "next/link"
 
 export function HomepageStickyCTA() {
   const [isVisible, setIsVisible] = useState(false)
@@ -11,57 +11,42 @@ export function HomepageStickyCTA() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      const windowHeight = window.innerHeight
-
-      // Show CTA after scrolling past the first screen
-      setIsVisible(scrollPosition > windowHeight * 0.5)
+      // Show CTA after scrolling 50% of viewport height
+      const scrolled = window.scrollY > window.innerHeight * 0.5
+      setIsVisible(scrolled && !isDismissed)
     }
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [isDismissed])
 
   const handleDismiss = () => {
     setIsDismissed(true)
+    setIsVisible(false)
   }
 
-  if (isDismissed || !isVisible) {
-    return null
-  }
+  if (!isVisible) return null
 
   return (
-    <div
-      className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transform transition-transform duration-300",
-        isVisible ? "translate-y-0" : "translate-y-full",
-      )}
-    >
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-              <p className="font-semibold text-lg">🔥 Limited Time: Save 60% on Memorial QR Codes</p>
-              <p className="text-sm opacity-90">
-                Only <span className="font-bold">$119.99</span> (was $299.99)
-              </p>
-            </div>
-          </div>
+    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm">
+      <div className="bg-orange-600 text-white p-4 rounded-lg shadow-lg border border-orange-700">
+        <button
+          onClick={handleDismiss}
+          className="absolute top-2 right-2 text-white hover:text-gray-200 transition-colors"
+          aria-label="Dismiss"
+        >
+          <X className="w-4 h-4" />
+        </button>
 
-          <div className="flex items-center gap-3 ml-4">
-            <Button variant="secondary" size="sm" className="bg-white text-orange-600 hover:bg-gray-100 font-semibold">
-              Claim Discount
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+        <div className="pr-6">
+          <h3 className="font-semibold text-lg mb-2">🎯 Special Launch Price</h3>
+          <p className="text-sm mb-3 opacity-90">
+            Get your memorial QR code for just <span className="font-bold">$119.99</span>
+          </p>
 
-            <button
-              onClick={handleDismiss}
-              className="p-1 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Dismiss"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          <Button asChild className="w-full bg-white text-orange-600 hover:bg-gray-100 font-semibold">
+            <Link href="/create-profile">Create Memorial Now</Link>
+          </Button>
         </div>
       </div>
     </div>

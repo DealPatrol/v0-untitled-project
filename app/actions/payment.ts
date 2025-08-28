@@ -1,245 +1,314 @@
 "use server"
 
 import { z } from "zod"
-import Stripe from "stripe"
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-})
 
 // Validation schemas
-const OrderSchema = z.object({
+const CreateOrderSchema = z.object({
+  customerEmail: z.string().email("Invalid email address"),
   customerName: z.string().min(1, "Name is required"),
-  customerEmail: z.string().email("Valid email is required"),
-  customerPhone: z.string().min(10, "Valid phone number is required"),
-  customerAddress: z.string().min(1, "Address is required"),
-  customerCity: z.string().min(1, "City is required"),
-  customerState: z.string().min(1, "State is required"),
-  customerZip: z.string().min(5, "Valid zip code is required"),
-  memorialName: z.string().min(1, "Memorial name is required"),
-  memorialBio: z.string().min(1, "Biography is required"),
-  amount: z.number().min(1, "Amount must be greater than 0"),
+  customerPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  shippingAddress: z.object({
+    street: z.string().min(1, "Street address is required"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(2, "State is required"),
+    zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid zip code"),
+    country: z.string().default("US"),
+  }),
+  items: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      price: z.number().positive(),
+      quantity: z.number().positive(),
+    }),
+  ),
 })
 
 const PaymentIntentSchema = z.object({
-  amount: z.number().min(1),
+  amount: z.number().positive("Amount must be positive"),
   currency: z.string().default("usd"),
-  orderId: z.string().min(1),
+  customerEmail: z.string().email("Invalid email address"),
+  orderId: z.string().min(1, "Order ID is required"),
 })
 
 const CheckoutSessionSchema = z.object({
-  orderId: z.string().min(1),
-  amount: z.number().min(1),
-  customerEmail: z.string().email(),
-  successUrl: z.string().url(),
-  cancelUrl: z.string().url(),
+  orderId: z.string().min(1, "Order ID is required"),
+  successUrl: z.string().url("Invalid success URL"),
+  cancelUrl: z.string().url("Invalid cancel URL"),
 })
 
-export async function createOrder(formData: FormData) {
+const ProcessPaymentSchema = z.object({
+  paymentMethodId: z.string().min(1, "Payment method ID is required"),
+  paymentIntentId: z.string().min(1, "Payment intent ID is required"),
+  orderId: z.string().min(1, "Order ID is required"),
+})
+
+const RefundPaymentSchema = z.object({
+  paymentIntentId: z.string().min(1, "Payment intent ID is required"),
+  amount: z.number().positive("Refund amount must be positive").optional(),
+  reason: z.enum(["duplicate", "fraudulent", "requested_by_customer"]).default("requested_by_customer"),
+})
+
+// Types
+export type CreateOrderData = z.infer<typeof CreateOrderSchema>
+export type PaymentIntentData = z.infer<typeof PaymentIntentSchema>
+export type CheckoutSessionData = z.infer<typeof CheckoutSessionSchema>
+export type ProcessPaymentData = z.infer<typeof ProcessPaymentSchema>
+export type RefundPaymentData = z.infer<typeof RefundPaymentSchema>
+
+export interface OrderResult {
+  success: boolean
+  orderId?: string
+  error?: string
+}
+
+export interface PaymentIntentResult {
+  success: boolean
+  clientSecret?: string
+  paymentIntentId?: string
+  error?: string
+}
+
+export interface CheckoutSessionResult {
+  success: boolean
+  sessionUrl?: string
+  sessionId?: string
+  error?: string
+}
+
+export interface PaymentResult {
+  success: boolean
+  paymentId?: string
+  status?: string
+  error?: string
+}
+
+export interface RefundResult {
+  success: boolean
+  refundId?: string
+  amount?: number
+  status?: string
+  error?: string
+}
+
+// Create Order
+export async function createOrder(data: CreateOrderData): Promise<OrderResult> {
   try {
-    const rawData = {
-      customerName: formData.get("customerName") as string,
-      customerEmail: formData.get("customerEmail") as string,
-      customerPhone: formData.get("customerPhone") as string,
-      customerAddress: formData.get("customerAddress") as string,
-      customerCity: formData.get("customerCity") as string,
-      customerState: formData.get("customerState") as string,
-      customerZip: formData.get("customerZip") as string,
-      memorialName: formData.get("memorialName") as string,
-      memorialBio: formData.get("memorialBio") as string,
-      amount: 119.99,
-    }
+    // Validate input data
+    const validatedData = CreateOrderSchema.parse(data)
 
-    const validatedData = OrderSchema.parse(rawData)
+    // Simulate order creation
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Mock order creation - replace with actual database logic
+    // Generate mock order ID
     const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    console.log("Creating order:", { orderId, ...validatedData })
+    // In a real implementation, you would:
+    // 1. Save order to database
+    // 2. Calculate taxes and shipping
+    // 3. Validate inventory
+    // 4. Create order record
+
+    console.log("Order created:", { orderId, ...validatedData })
 
     return {
       success: true,
       orderId,
-      message: "Order created successfully",
     }
   } catch (error) {
-    console.error("Order creation error:", error)
+    console.error("Create order error:", error)
 
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: "Validation failed",
-        details: error.errors,
+        error: error.errors.map((e) => e.message).join(", "),
       }
     }
 
     return {
       success: false,
-      error: "Failed to create order",
+      error: "Failed to create order. Please try again.",
     }
   }
 }
 
-export async function createPaymentIntent(data: {
-  amount: number
-  currency?: string
-  orderId: string
-}) {
+// Create Payment Intent
+export async function createPaymentIntent(data: PaymentIntentData): Promise<PaymentIntentResult> {
   try {
+    // Validate input data
     const validatedData = PaymentIntentSchema.parse(data)
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(validatedData.amount * 100), // Convert to cents
-      currency: validatedData.currency,
-      metadata: {
-        orderId: validatedData.orderId,
-      },
-    })
+    // Simulate payment intent creation
+    await new Promise((resolve) => setTimeout(resolve, 800))
+
+    // Generate mock payment intent
+    const paymentIntentId = `pi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const clientSecret = `${paymentIntentId}_secret_${Math.random().toString(36).substr(2, 9)}`
+
+    // In a real implementation, you would:
+    // 1. Create Stripe payment intent
+    // 2. Set up payment methods
+    // 3. Configure webhooks
+    // 4. Handle 3D Secure if needed
+
+    console.log("Payment intent created:", { paymentIntentId, ...validatedData })
 
     return {
       success: true,
-      clientSecret: paymentIntent.client_secret,
-      paymentIntentId: paymentIntent.id,
+      clientSecret,
+      paymentIntentId,
     }
   } catch (error) {
-    console.error("Payment intent creation error:", error)
+    console.error("Create payment intent error:", error)
 
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: "Invalid payment data",
-        details: error.errors,
+        error: error.errors.map((e) => e.message).join(", "),
       }
     }
 
     return {
       success: false,
-      error: "Failed to create payment intent",
+      error: "Failed to create payment intent. Please try again.",
     }
   }
 }
 
-export async function getCheckoutSession(data: {
-  orderId: string
-  amount: number
-  customerEmail: string
-  successUrl: string
-  cancelUrl: string
-}) {
+// Create Checkout Session
+export async function getCheckoutSession(data: CheckoutSessionData): Promise<CheckoutSessionResult> {
   try {
+    // Validate input data
     const validatedData = CheckoutSessionSchema.parse(data)
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "Memorial QR Code",
-              description: "Digital memorial with QR code plaque",
-            },
-            unit_amount: Math.round(validatedData.amount * 100),
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: validatedData.successUrl,
-      cancel_url: validatedData.cancelUrl,
-      customer_email: validatedData.customerEmail,
-      metadata: {
-        orderId: validatedData.orderId,
-      },
-    })
+    // Simulate checkout session creation
+    await new Promise((resolve) => setTimeout(resolve, 600))
+
+    // Generate mock session
+    const sessionId = `cs_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const sessionUrl = `https://checkout.stripe.com/pay/${sessionId}`
+
+    // In a real implementation, you would:
+    // 1. Create Stripe checkout session
+    // 2. Configure line items
+    // 3. Set up success/cancel URLs
+    // 4. Configure shipping options
+
+    console.log("Checkout session created:", { sessionId, ...validatedData })
 
     return {
       success: true,
-      sessionId: session.id,
-      url: session.url,
+      sessionUrl,
+      sessionId,
     }
   } catch (error) {
-    console.error("Checkout session creation error:", error)
+    console.error("Create checkout session error:", error)
 
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: "Invalid checkout data",
-        details: error.errors,
+        error: error.errors.map((e) => e.message).join(", "),
       }
     }
 
     return {
       success: false,
-      error: "Failed to create checkout session",
+      error: "Failed to create checkout session. Please try again.",
     }
   }
 }
 
-export async function processPayment(paymentData: {
-  paymentMethodId: string
-  amount: number
-  orderId: string
-  customerInfo: {
-    name: string
-    email: string
-    phone: string
-  }
-}) {
+// Process Payment
+export async function processPayment(data: ProcessPaymentData): Promise<PaymentResult> {
   try {
-    // Create payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(paymentData.amount * 100),
-      currency: "usd",
-      payment_method: paymentData.paymentMethodId,
-      confirmation_method: "manual",
-      confirm: true,
-      metadata: {
-        orderId: paymentData.orderId,
-        customerName: paymentData.customerInfo.name,
-        customerEmail: paymentData.customerInfo.email,
-      },
-    })
+    // Validate input data
+    const validatedData = ProcessPaymentSchema.parse(data)
 
-    if (paymentIntent.status === "succeeded") {
-      return {
-        success: true,
-        paymentIntentId: paymentIntent.id,
-        message: "Payment processed successfully",
-      }
-    } else {
+    // Simulate payment processing
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    // Generate mock payment result
+    const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const status = Math.random() > 0.1 ? "succeeded" : "failed" // 90% success rate
+
+    // In a real implementation, you would:
+    // 1. Confirm payment intent with Stripe
+    // 2. Handle payment method authentication
+    // 3. Update order status
+    // 4. Send confirmation emails
+
+    console.log("Payment processed:", { paymentId, status, ...validatedData })
+
+    if (status === "failed") {
       return {
         success: false,
-        error: "Payment requires additional action",
-        clientSecret: paymentIntent.client_secret,
+        error: "Payment failed. Please check your payment method and try again.",
       }
     }
-  } catch (error) {
-    console.error("Payment processing error:", error)
-    return {
-      success: false,
-      error: "Payment processing failed",
-    }
-  }
-}
-
-export async function refundPayment(paymentIntentId: string, amount?: number) {
-  try {
-    const refund = await stripe.refunds.create({
-      payment_intent: paymentIntentId,
-      amount: amount ? Math.round(amount * 100) : undefined,
-    })
 
     return {
       success: true,
-      refundId: refund.id,
-      status: refund.status,
+      paymentId,
+      status,
     }
   } catch (error) {
-    console.error("Refund error:", error)
+    console.error("Process payment error:", error)
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.errors.map((e) => e.message).join(", "),
+      }
+    }
+
     return {
       success: false,
-      error: "Refund processing failed",
+      error: "Failed to process payment. Please try again.",
+    }
+  }
+}
+
+// Refund Payment
+export async function refundPayment(data: RefundPaymentData): Promise<RefundResult> {
+  try {
+    // Validate input data
+    const validatedData = RefundPaymentSchema.parse(data)
+
+    // Simulate refund processing
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    // Generate mock refund result
+    const refundId = `re_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const amount = validatedData.amount || 11999 // Default to $119.99
+    const status = "succeeded"
+
+    // In a real implementation, you would:
+    // 1. Create refund with Stripe
+    // 2. Update order status
+    // 3. Send refund confirmation
+    // 4. Handle partial refunds
+
+    console.log("Refund processed:", { refundId, amount, status, ...validatedData })
+
+    return {
+      success: true,
+      refundId,
+      amount,
+      status,
+    }
+  } catch (error) {
+    console.error("Refund payment error:", error)
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.errors.map((e) => e.message).join(", "),
+      }
+    }
+
+    return {
+      success: false,
+      error: "Failed to process refund. Please try again.",
     }
   }
 }
