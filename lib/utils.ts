@@ -5,20 +5,37 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDate(date: string | Date): string {
-  const d = new Date(date)
-  return d.toLocaleDateString("en-US", {
+export function formatCurrency(amount: number, currency = "USD"): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency,
+  }).format(amount / 100)
+}
+
+export function formatDate(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date
+  return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
-  })
+  }).format(d)
 }
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount)
+export function formatPhoneNumber(phone: string): string {
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, "")
+
+  // Format as (XXX) XXX-XXXX
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+  }
+
+  // Format as +X (XXX) XXX-XXXX for international
+  if (cleaned.length === 11 && cleaned.startsWith("1")) {
+    return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`
+  }
+
+  return phone
 }
 
 export function validateEmail(email: string): boolean {
@@ -27,20 +44,27 @@ export function validateEmail(email: string): boolean {
 }
 
 export function validatePhone(phone: string): boolean {
-  // Remove all non-digit characters except +
-  const cleanPhone = phone.replace(/[\s\-().]/g, "")
-  // Basic international phone number validation
+  // Allow various phone number formats
   const phoneRegex = /^[+]?[1-9][\d]{0,15}$/
-  return phoneRegex.test(cleanPhone)
+  const cleaned = phone.replace(/[\s\-$$$$]/g, "")
+  return phoneRegex.test(cleaned) && cleaned.length >= 10
 }
 
 export function validateZipCode(zipCode: string): boolean {
+  // US ZIP code format: 12345 or 12345-6789
   const zipRegex = /^\d{5}(-\d{4})?$/
   return zipRegex.test(zipCode)
 }
 
-export function generateQRCodeUrl(memorialId: string): string {
-  return `${process.env.NEXT_PUBLIC_SITE_URL || "https://memorialqr.com"}/qr/${memorialId}`
+export function generateId(prefix = ""): string {
+  const timestamp = Date.now().toString(36)
+  const randomStr = Math.random().toString(36).substr(2, 9)
+  return `${prefix}${timestamp}_${randomStr}`
+}
+
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text
+  return text.substr(0, maxLength) + "..."
 }
 
 export function slugify(text: string): string {
@@ -51,35 +75,27 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, "")
 }
 
-export function truncateText(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text
-  return text.slice(0, maxLength).trim() + "..."
+export function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0))
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
 }
 
-export function getInitials(firstName?: string, lastName?: string): string {
-  const first = firstName?.charAt(0)?.toUpperCase() || ""
-  const last = lastName?.charAt(0)?.toUpperCase() || ""
-  return `${first}${last}` || "?"
-}
+export function calculateAge(birthDate: Date | string, deathDate?: Date | string): number {
+  const birth = typeof birthDate === "string" ? new Date(birthDate) : birthDate
+  const death = deathDate ? (typeof deathDate === "string" ? new Date(deathDate) : deathDate) : new Date()
 
-export function calculateAge(birthDate: string, deathDate?: string): number {
-  const birth = new Date(birthDate)
-  const death = deathDate ? new Date(deathDate) : new Date()
-  const ageInMs = death.getTime() - birth.getTime()
-  return Math.floor(ageInMs / (1000 * 60 * 60 * 24 * 365.25))
-}
+  let age = death.getFullYear() - birth.getFullYear()
+  const monthDiff = death.getMonth() - birth.getMonth()
 
-export function formatPhoneNumber(phone: string): string {
-  // Remove all non-digit characters
-  const digits = phone.replace(/\D/g, "")
-
-  // Format as (XXX) XXX-XXXX for US numbers
-  if (digits.length === 10) {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
+  if (monthDiff < 0 || (monthDiff === 0 && death.getDate() < birth.getDate())) {
+    age--
   }
 
-  // Return original if not a standard US number
-  return phone
+  return age
 }
 
 export function isValidUrl(url: string): boolean {
@@ -91,15 +107,37 @@ export function isValidUrl(url: string): boolean {
   }
 }
 
-export function getRelativeTime(date: string | Date): string {
-  const now = new Date()
-  const past = new Date(date)
-  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000)
+export function getFileExtension(filename: string): string {
+  return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2)
+}
 
-  if (diffInSeconds < 60) return "just now"
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`
-  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`
-  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`
-  return `${Math.floor(diffInSeconds / 31536000)} years ago`
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return "0 Bytes"
+
+  const k = 1024
+  const sizes = ["Bytes", "KB", "MB", "GB"]
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+}
+
+export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null
+
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
+}
+
+export function throttle<T extends (...args: any[]) => any>(func: T, limit: number): (...args: Parameters<T>) => void {
+  let inThrottle: boolean
+
+  return (...args: Parameters<T>) => {
+    if (!inThrottle) {
+      func(...args)
+      inThrottle = true
+      setTimeout(() => (inThrottle = false), limit)
+    }
+  }
 }
