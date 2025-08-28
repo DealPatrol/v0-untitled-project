@@ -1,59 +1,69 @@
 "use client"
 
+import { useState } from "react"
 import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface StarRatingProps {
-  rating: number
-  maxRating?: number
-  size?: "sm" | "md" | "lg"
-  readonly?: boolean
+  rating?: number
   onRatingChange?: (rating: number) => void
+  readonly?: boolean
+  size?: "sm" | "md" | "lg"
   className?: string
 }
 
-export function StarRating({
-  rating,
-  maxRating = 5,
-  size = "md",
-  readonly = false,
-  onRatingChange,
-  className,
-}: StarRatingProps) {
+export function StarRating({ rating = 0, onRatingChange, readonly = false, size = "md", className }: StarRatingProps) {
+  const [hoverRating, setHoverRating] = useState(0)
+  const [currentRating, setCurrentRating] = useState(rating)
+
   const sizeClasses = {
     sm: "h-4 w-4",
     md: "h-5 w-5",
     lg: "h-6 w-6",
   }
 
-  const handleStarClick = (starRating: number) => {
-    if (!readonly && onRatingChange) {
-      onRatingChange(starRating)
-    }
+  const handleClick = (value: number) => {
+    if (readonly) return
+    setCurrentRating(value)
+    onRatingChange?.(value)
   }
 
-  return (
-    <div className={cn("flex items-center space-x-1", className)}>
-      {Array.from({ length: maxRating }, (_, index) => {
-        const starRating = index + 1
-        const isFilled = starRating <= rating
+  const handleMouseEnter = (value: number) => {
+    if (readonly) return
+    setHoverRating(value)
+  }
 
-        return (
-          <button
-            key={index}
-            type="button"
-            onClick={() => handleStarClick(starRating)}
-            disabled={readonly}
+  const handleMouseLeave = () => {
+    if (readonly) return
+    setHoverRating(0)
+  }
+
+  const displayRating = readonly ? rating : hoverRating || currentRating
+
+  return (
+    <div className={cn("flex items-center gap-1", className)}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          className={cn(
+            "transition-colors",
+            readonly ? "cursor-default" : "cursor-pointer hover:scale-110",
+            sizeClasses[size],
+          )}
+          onClick={() => handleClick(star)}
+          onMouseEnter={() => handleMouseEnter(star)}
+          onMouseLeave={handleMouseLeave}
+          disabled={readonly}
+        >
+          <Star
             className={cn(
               "transition-colors",
-              readonly ? "cursor-default" : "cursor-pointer hover:scale-110",
-              isFilled ? "text-yellow-400" : "text-gray-300",
+              star <= displayRating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200",
             )}
-          >
-            <Star className={cn(sizeClasses[size], isFilled && "fill-current")} />
-          </button>
-        )
-      })}
+          />
+        </button>
+      ))}
     </div>
   )
 }
