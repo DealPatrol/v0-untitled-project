@@ -71,7 +71,7 @@ export default function PricingPage() {
                     asChild
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 text-lg font-semibold"
                   >
-                    <Link href="/create-profile?plan=basic">Select Basic Plan</Link>
+                    <Link href="/checkout?plan=basic">Select Basic Plan</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -124,7 +124,7 @@ export default function PricingPage() {
                     asChild
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 text-lg font-semibold"
                   >
-                    <Link href="/create-profile?plan=premium">Select Premium Plan</Link>
+                    <Link href="/checkout?plan=premium">Select Premium Plan</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -173,7 +173,7 @@ export default function PricingPage() {
                     asChild
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 text-lg font-semibold"
                   >
-                    <Link href="/create-profile?plan=family">Select Family Plan</Link>
+                    <Link href="/checkout?plan=family">Select Family Plan</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -303,7 +303,7 @@ export default function PricingPage() {
               size="lg"
               className="bg-white text-purple-600 hover:bg-gray-100 px-12 py-4 text-xl font-bold"
             >
-              <Link href="/create-profile">Get Started Today</Link>
+              <Link href="/checkout">Get Started Today</Link>
             </Button>
 
             <Button

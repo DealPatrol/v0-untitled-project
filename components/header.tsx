@@ -23,7 +23,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <Star className="h-8 w-8 text-purple-600" />
+            <Star className="h-8 w-8 text-yellow-500" />
             <span className="text-xl font-bold text-gray-900">Memorial QR</span>
           </Link>
 
@@ -42,7 +42,7 @@ export function Header() {
               asChild
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
             >
-              <Link href="/create-profile">Create Memorial</Link>
+              <Link href="/pricing">View Pricing</Link>
             </Button>
           </div>
 
@@ -77,8 +77,8 @@ export function Header() {
                   asChild
                   className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white mt-4"
                 >
-                  <Link href="/create-profile" onClick={() => setIsOpen(false)}>
-                    Create Memorial
+                  <Link href="/pricing" onClick={() => setIsOpen(false)}>
+                    View Pricing
                   </Link>
                 </Button>
               </div>

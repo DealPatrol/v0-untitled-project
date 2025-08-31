@@ -170,7 +170,7 @@ export default function HomePage() {
                   asChild
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  <Link href="/create-profile?plan=basic">Select Plan</Link>
+                  <Link href="/checkout?plan=basic">Select Plan</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -202,7 +202,7 @@ export default function HomePage() {
                   asChild
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  <Link href="/create-profile?plan=premium">Select Plan</Link>
+                  <Link href="/checkout?plan=premium">Select Plan</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -233,7 +233,7 @@ export default function HomePage() {
                   asChild
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  <Link href="/create-profile?plan=family">Select Plan</Link>
+                  <Link href="/checkout?plan=family">Select Plan</Link>
                 </Button>
               </CardContent>
             </Card>
