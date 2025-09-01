@@ -1,5 +1,3 @@
-"use client"
-
 import { Star } from "lucide-react"
 
 interface StarRatingProps {
@@ -18,7 +16,7 @@ export function StarRating({ rating, maxRating = 5, size = 20, showRating = fals
           <Star
             key={index}
             size={size}
-            className={`${index < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+            className={`${index < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"} transition-colors`}
           />
         ))}
       </div>
