@@ -68,21 +68,22 @@
   }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar styles */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full;
+  background: #c1c1c1;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
+  background: #a8a8a8;
 }
 
 /* Smooth scrolling */
@@ -90,46 +91,88 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Focus styles */
-.focus-visible:focus-visible {
-  @apply outline-2 outline-offset-2 outline-orange-500;
+/* Focus styles for accessibility */
+.focus-visible:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
-/* Animation utilities */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
+/* Animation for loading states */
+@keyframes spin {
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotate(360deg);
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out;
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
-/* Print styles */
+/* Custom gradient backgrounds */
+.gradient-purple-blue {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-slate-purple {
+  background: linear-gradient(135deg, #f8fafc 0%, #f3e8ff 100%);
+}
+
+/* Memorial card hover effects */
+.memorial-card {
+  transition: all 0.3s ease;
+}
+
+.memorial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* QR code container styles */
+.qr-container {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Print styles for QR codes */
 @media print {
   .no-print {
     display: none !important;
+  }
+
+  .qr-container {
+    box-shadow: none;
+    border: 2px solid #000;
+  }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .mobile-padding {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .mobile-text-sm {
+    font-size: 0.875rem;
   }
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .border {
-    @apply border-2;
+  .card {
+    border: 2px solid currentColor;
+  }
+
+  .button {
+    border: 2px solid currentColor;
   }
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
