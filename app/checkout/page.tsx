@@ -1,161 +1,144 @@
-"use client"
-
-import { useState } from "react"
-import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { StripeCheckoutForm } from "@/components/stripe-checkout-form"
-import { CheckCircle, Shield, Clock } from "lucide-react"
-import { Suspense } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
+import { CheckCircle, CreditCard, Shield } from "lucide-react"
 
 export default function CheckoutPage() {
-  const searchParams = useSearchParams()
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "US",
-    agreeToTerms: false,
-    subscribeNewsletter: false,
-  })
-
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required"
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required"
-    if (!formData.email.trim()) newErrors.email = "Email is required"
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid"
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required"
-    if (!formData.address.trim()) newErrors.address = "Address is required"
-    if (!formData.city.trim()) newErrors.city = "City is required"
-    if (!formData.state.trim()) newErrors.state = "State is required"
-    if (!formData.zipCode.trim()) newErrors.zipCode = "ZIP code is required"
-    if (!formData.agreeToTerms) newErrors.agreeToTerms = "You must agree to the terms"
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }))
-    }
-  }
-
-  const subtotal = 149
-  const shipping = 0
-  const tax = 0
-  const total = subtotal + shipping + tax
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
       <Header />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Complete Your Memorial Order</h1>
-          <p className="text-lg text-gray-600">Secure checkout for your Memorial QR Package - ${total}</p>
-        </div>
-
-        {/* Trust Indicators */}
-        <div className="flex flex-wrap justify-center gap-6 mb-12 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-green-600" />
-            <span>Secure SSL Encryption</span>
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Complete Your Memorial Order</h1>
+            <p className="text-lg text-gray-600">You're just one step away from creating a beautiful memorial</p>
           </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-green-600" />
-            <span>30-Day Money Back Guarantee</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-green-600" />
-            <span>Ready in 3-5 Business Days</span>
-          </div>
-        </div>
 
-        {/* Checkout Form */}
-        <Suspense
-          fallback={
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-            </div>
-          }
-        >
-          <StripeCheckoutForm amount={total} customerInfo={formData} onValidationRequired={validateForm} />
-        </Suspense>
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Order Summary */}
+            <Card className="h-fit">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  Order Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Memorial QR Package</span>
+                  <span className="font-bold">$149.00</span>
+                </div>
 
-        {/* What Happens Next */}
-        <div className="mt-16">
-          <Card className="max-w-2xl mx-auto">
-            <CardHeader>
-              <CardTitle className="text-center">What Happens Next?</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    1
+                <Separator />
+
+                <div className="space-y-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Custom QR Memorial Plaque</span>
                   </div>
-                  <div>
-                    <h4 className="font-semibold">Instant Access</h4>
-                    <p className="text-sm text-gray-600">
-                      After payment, you'll be redirected to create your memorial profile immediately.
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Digital Memorial Website</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Lifetime Hosting Included</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Free Shipping</span>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    2
+                <Separator />
+
+                <div className="flex justify-between items-center text-lg font-bold">
+                  <span>Total</span>
+                  <span>$149.00</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
+                  <Shield className="h-4 w-4 text-green-600" />
+                  <span>30-day money-back guarantee</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Payment Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" />
+                  Payment Information
+                </CardTitle>
+                <CardDescription>Your payment is secure and encrypted</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input id="firstName" placeholder="John" />
                   </div>
-                  <div>
-                    <h4 className="font-semibold">Add Your Content</h4>
-                    <p className="text-sm text-gray-600">
-                      Upload photos, videos, and stories using our simple guided form.
-                    </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input id="lastName" placeholder="Doe" />
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    3
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input id="email" type="email" placeholder="john@example.com" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input id="phone" type="tel" placeholder="(555) 123-4567" />
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Shipping Address</h3>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Street Address</Label>
+                    <Input id="address" placeholder="123 Main Street" />
                   </div>
-                  <div>
-                    <h4 className="font-semibold">Receive Your Plaque</h4>
-                    <p className="text-sm text-gray-600">
-                      Your custom QR memorial plaque ships free within 3-5 business days.
-                    </p>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input id="city" placeholder="New York" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Input id="state" placeholder="NY" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="zipCode">ZIP Code</Label>
+                    <Input id="zipCode" placeholder="10001" />
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Support */}
-        <div className="text-center mt-12">
-          <p className="text-sm text-gray-600">
-            Need help? Contact our support team at{" "}
-            <a href="mailto:support@memorialqr.com" className="text-purple-600 hover:underline">
-              support@memorialqr.com
-            </a>{" "}
-            or call{" "}
-            <a href="tel:1-800-MEMORIAL" className="text-purple-600 hover:underline">
-              1-800-MEMORIAL
-            </a>
-          </p>
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg py-3">
+                  Complete Order - $149
+                </Button>
+
+                <p className="text-xs text-gray-500 text-center">
+                  By completing your order, you agree to our Terms of Service and Privacy Policy. Your memorial will be
+                  created within 24 hours of payment.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

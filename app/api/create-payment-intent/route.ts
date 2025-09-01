@@ -1,32 +1,44 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { stripe } from "@/lib/stripe"
+import Stripe from "stripe"
 import { z } from "zod"
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-06-20",
+})
 
 const createPaymentIntentSchema = z.object({
   amount: z.number().min(1),
   currency: z.string().default("usd"),
-  customerName: z.string().min(1),
-  customerEmail: z.string().email(),
-  customerPhone: z.string().optional(),
-  plan: z.enum(["basic", "premium", "family"]),
+  customerInfo: z.object({
+    name: z.string(),
+    email: z.string().email(),
+    phone: z.string().optional(),
+    address: z.object({
+      line1: z.string(),
+      city: z.string(),
+      state: z.string(),
+      postal_code: z.string(),
+      country: z.string().default("US"),
+    }),
+  }),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const validatedData = createPaymentIntentSchema.parse(body)
+    const { amount, currency, customerInfo } = createPaymentIntentSchema.parse(body)
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: validatedData.amount,
-      currency: validatedData.currency,
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
       automatic_payment_methods: {
         enabled: true,
       },
       metadata: {
-        customerName: validatedData.customerName,
-        customerEmail: validatedData.customerEmail,
-        customerPhone: validatedData.customerPhone || "",
-        plan: validatedData.plan,
+        customer_name: customerInfo.name,
+        customer_email: customerInfo.email,
+        customer_phone: customerInfo.phone || "",
+        customer_address: JSON.stringify(customerInfo.address),
       },
     })
 
@@ -41,6 +53,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid request data", details: error.errors }, { status: 400 })
     }
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to create payment intent" }, { status: 500 })
   }
 }
