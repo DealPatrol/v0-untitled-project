@@ -3,11 +3,9 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, X } from "lucide-react"
 
 export function HomepageStickyCTA() {
   const [isVisible, setIsVisible] = useState(false)
-  const [isDismissed, setIsDismissed] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,47 +13,26 @@ export function HomepageStickyCTA() {
       const windowHeight = window.innerHeight
 
       // Show CTA after scrolling down 50% of viewport height
-      if (scrollPosition > windowHeight * 0.5 && !isDismissed) {
-        setIsVisible(true)
-      } else {
-        setIsVisible(false)
-      }
+      setIsVisible(scrollPosition > windowHeight * 0.5)
     }
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [isDismissed])
+  }, [])
 
-  const handleDismiss = () => {
-    setIsDismissed(true)
-    setIsVisible(false)
-  }
-
-  if (!isVisible || isDismissed) {
-    return null
-  }
+  if (!isVisible) return null
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm">
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-lg p-4 relative">
-        <button
-          onClick={handleDismiss}
-          className="absolute top-2 right-2 text-white/80 hover:text-white"
-          aria-label="Dismiss"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        <div className="pr-6">
-          <h3 className="font-bold text-lg mb-2">Create Their Memorial</h3>
-          <p className="text-sm text-white/90 mb-3">
-            Honor your loved one with a beautiful digital memorial - only $149
-          </p>
-          <Button asChild size="sm" className="bg-white text-purple-600 hover:bg-gray-100 w-full">
-            <Link href="/pricing">
-              Get Started
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Link>
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-bottom-2">
+      <div className="bg-white shadow-lg rounded-full px-6 py-3 border border-gray-200">
+        <div className="flex items-center space-x-4">
+          <span className="text-sm font-medium text-gray-700">Ready to create a memorial?</span>
+          <Button
+            asChild
+            size="sm"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          >
+            <Link href="/pricing">Get Started - $149</Link>
           </Button>
         </div>
       </div>
@@ -63,5 +40,4 @@ export function HomepageStickyCTA() {
   )
 }
 
-// Add default export
 export default HomepageStickyCTA

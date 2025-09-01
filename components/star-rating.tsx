@@ -5,46 +5,34 @@ import { Star } from "lucide-react"
 interface StarRatingProps {
   rating: number
   maxRating?: number
-  size?: "sm" | "md" | "lg"
-  showRating?: boolean
+  size?: number
   className?: string
+  showRating?: boolean
 }
 
-export function StarRating({
-  rating,
-  maxRating = 5,
-  size = "md",
-  showRating = false,
-  className = "",
-}: StarRatingProps) {
-  const sizeClasses = {
-    sm: "w-4 h-4",
-    md: "w-5 h-5",
-    lg: "w-6 h-6",
+export function StarRating({ rating, maxRating = 5, size = 20, className = "", showRating = false }: StarRatingProps) {
+  const stars = []
+
+  for (let i = 1; i <= maxRating; i++) {
+    stars.push(
+      <Star
+        key={i}
+        size={size}
+        className={`${i <= rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"} ${className}`}
+      />,
+    )
   }
 
-  const stars = Array.from({ length: maxRating }, (_, index) => {
-    const starNumber = index + 1
-    const isFilled = starNumber <= rating
-    const isHalfFilled = starNumber - 0.5 <= rating && starNumber > rating
-
-    return (
-      <Star
-        key={index}
-        className={`${sizeClasses[size]} ${
-          isFilled || isHalfFilled ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"
-        }`}
-      />
-    )
-  })
-
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div className="flex items-center space-x-1">
       <div className="flex">{stars}</div>
-      {showRating && <span className="text-sm font-medium text-gray-600 ml-1">{rating.toFixed(1)}</span>}
+      {showRating && (
+        <span className="text-sm text-gray-600 ml-2">
+          {rating}/{maxRating}
+        </span>
+      )}
     </div>
   )
 }
 
-// Add default export
 export default StarRating

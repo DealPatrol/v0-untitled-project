@@ -1,20 +1,13 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 
 interface CountdownTimerProps {
+  targetDate?: string
   className?: string
 }
 
-export function CountdownTimer({ className }: CountdownTimerProps) {
-  // Memoize the target date to prevent re-creation on every render
-  const targetDate = useMemo(() => {
-    const now = new Date()
-    const target = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
-    return target
-  }, [])
-
+export function CountdownTimer({ targetDate = "2024-12-31T23:59:59", className = "" }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -22,63 +15,52 @@ export function CountdownTimer({ className }: CountdownTimerProps) {
     seconds: 0,
   })
 
+  // Use useMemo to create a stable target date
+  const target = useMemo(() => new Date(targetDate).getTime(), [targetDate])
+
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date().getTime()
-      const difference = targetDate.getTime() - now
+      const difference = target - now
 
       if (difference > 0) {
-        return {
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000),
-        }
-      }
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000)
 
-      return { days: 0, hours: 0, minutes: 0, seconds: 0 }
+        setTimeLeft({ days, hours, minutes, seconds })
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      }
     }
 
-    // Set initial time
-    setTimeLeft(calculateTimeLeft())
-
-    // Update every second
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft())
-    }, 1000)
+    calculateTimeLeft()
+    const timer = setInterval(calculateTimeLeft, 1000)
 
     return () => clearInterval(timer)
-  }, [targetDate])
+  }, [target])
 
   return (
-    <div className={`flex justify-center gap-4 ${className || ""}`}>
-      <Card className="bg-white/20 border-white/30">
-        <CardContent className="p-3 text-center">
-          <div className="text-2xl font-bold text-white">{timeLeft.days}</div>
-          <div className="text-xs text-white/80">Days</div>
-        </CardContent>
-      </Card>
-      <Card className="bg-white/20 border-white/30">
-        <CardContent className="p-3 text-center">
-          <div className="text-2xl font-bold text-white">{timeLeft.hours}</div>
-          <div className="text-xs text-white/80">Hours</div>
-        </CardContent>
-      </Card>
-      <Card className="bg-white/20 border-white/30">
-        <CardContent className="p-3 text-center">
-          <div className="text-2xl font-bold text-white">{timeLeft.minutes}</div>
-          <div className="text-xs text-white/80">Minutes</div>
-        </CardContent>
-      </Card>
-      <Card className="bg-white/20 border-white/30">
-        <CardContent className="p-3 text-center">
-          <div className="text-2xl font-bold text-white">{timeLeft.seconds}</div>
-          <div className="text-xs text-white/80">Seconds</div>
-        </CardContent>
-      </Card>
+    <div className={`flex space-x-4 ${className}`}>
+      <div className="text-center">
+        <div className="text-2xl font-bold text-purple-600">{timeLeft.days}</div>
+        <div className="text-sm text-gray-600">Days</div>
+      </div>
+      <div className="text-center">
+        <div className="text-2xl font-bold text-purple-600">{timeLeft.hours}</div>
+        <div className="text-sm text-gray-600">Hours</div>
+      </div>
+      <div className="text-center">
+        <div className="text-2xl font-bold text-purple-600">{timeLeft.minutes}</div>
+        <div className="text-sm text-gray-600">Minutes</div>
+      </div>
+      <div className="text-center">
+        <div className="text-2xl font-bold text-purple-600">{timeLeft.seconds}</div>
+        <div className="text-sm text-gray-600">Seconds</div>
+      </div>
     </div>
   )
 }
 
-// Add default export
 export default CountdownTimer
