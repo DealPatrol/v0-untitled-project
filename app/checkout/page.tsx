@@ -1,18 +1,15 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
-import { ArrowLeft, CreditCard, Shield, Check } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { StripeCheckoutForm } from "@/components/stripe-checkout-form"
+import { CheckCircle, Shield, Clock } from "lucide-react"
+import { Suspense } from "react"
 
 export default function CheckoutPage() {
+  const searchParams = useSearchParams()
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -22,276 +19,141 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     zipCode: "",
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    nameOnCard: "",
+    country: "US",
+    agreeToTerms: false,
+    subscribeNewsletter: false,
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.firstName.trim()) newErrors.firstName = "First name is required"
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required"
+    if (!formData.email.trim()) newErrors.email = "Email is required"
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid"
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required"
+    if (!formData.address.trim()) newErrors.address = "Address is required"
+    if (!formData.city.trim()) newErrors.city = "City is required"
+    if (!formData.state.trim()) newErrors.state = "State is required"
+    if (!formData.zipCode.trim()) newErrors.zipCode = "ZIP code is required"
+    if (!formData.agreeToTerms) newErrors.agreeToTerms = "You must agree to the terms"
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission
-    console.log("Form submitted:", formData)
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }))
+    }
   }
+
+  const subtotal = 149
+  const shipping = 0
+  const tax = 0
+  const total = subtotal + shipping + tax
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-12">
       <Header />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <Link href="/pricing" className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Pricing
-            </Link>
-            <h1 className="text-3xl font-bold text-gray-900">Complete Your Memorial Order</h1>
-            <p className="text-gray-600 mt-2">Secure checkout for your Memorial QR package</p>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Complete Your Memorial Order</h1>
+          <p className="text-lg text-gray-600">Secure checkout for your Memorial QR Package - ${total}</p>
+        </div>
+
+        {/* Trust Indicators */}
+        <div className="flex flex-wrap justify-center gap-6 mb-12 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-green-600" />
+            <span>Secure SSL Encryption</span>
           </div>
-
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Order Form */}
-            <div>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Contact Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Contact Information</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="firstName">First Name</Label>
-                        <Input
-                          id="firstName"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="lastName">Last Name</Label>
-                        <Input
-                          id="lastName"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Shipping Address */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Shipping Address</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <Label htmlFor="address">Street Address</Label>
-                      <Input
-                        id="address"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="city">City</Label>
-                        <Input id="city" name="city" value={formData.city} onChange={handleInputChange} required />
-                      </div>
-                      <div>
-                        <Label htmlFor="state">State</Label>
-                        <Input id="state" name="state" value={formData.state} onChange={handleInputChange} required />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="zipCode">ZIP Code</Label>
-                      <Input
-                        id="zipCode"
-                        name="zipCode"
-                        value={formData.zipCode}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Payment Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <CreditCard className="w-5 h-5" />
-                      Payment Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <Label htmlFor="nameOnCard">Name on Card</Label>
-                      <Input
-                        id="nameOnCard"
-                        name="nameOnCard"
-                        value={formData.nameOnCard}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="cardNumber">Card Number</Label>
-                      <Input
-                        id="cardNumber"
-                        name="cardNumber"
-                        placeholder="1234 5678 9012 3456"
-                        value={formData.cardNumber}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="expiryDate">Expiry Date</Label>
-                        <Input
-                          id="expiryDate"
-                          name="expiryDate"
-                          placeholder="MM/YY"
-                          value={formData.expiryDate}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="cvv">CVV</Label>
-                        <Input
-                          id="cvv"
-                          name="cvv"
-                          placeholder="123"
-                          value={formData.cvv}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Button type="submit" size="lg" className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-6">
-                  Complete Order - $149
-                </Button>
-              </form>
-            </div>
-
-            {/* Order Summary */}
-            <div>
-              <Card className="sticky top-8">
-                <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg">Memorial QR Package</h3>
-                      <p className="text-sm text-gray-600">Complete digital memorial solution</p>
-                      <ul className="text-sm text-gray-600 mt-2 space-y-1">
-                        <li>• Custom QR Memorial Plaque (8x6")</li>
-                        <li>• Digital Memorial Page</li>
-                        <li>• Unlimited Photos & Videos</li>
-                        <li>• Guest Message Book</li>
-                        <li>• Family Collaboration Tools</li>
-                        <li>• Lifetime Hosting</li>
-                        <li>• Free Shipping & Setup</li>
-                      </ul>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-lg">$149</p>
-                      <p className="text-sm text-gray-500 line-through">$199</p>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Subtotal:</span>
-                      <span>$149.00</span>
-                    </div>
-                    <div className="flex justify-between text-green-600">
-                      <span>Shipping:</span>
-                      <span>FREE</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tax:</span>
-                      <span>$0.00</span>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span>Total:</span>
-                    <span>$149.00</span>
-                  </div>
-
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <p className="text-green-800 font-medium text-center">You saved $50!</p>
-                  </div>
-
-                  {/* Trust Indicators */}
-                  <div className="pt-4 border-t space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Shield className="w-4 h-4 text-green-600" />
-                      <span>Secure SSL encryption</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Check className="w-4 h-4 text-green-600" />
-                      <span>30-day money-back guarantee</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Check className="w-4 h-4 text-green-600" />
-                      <span>Free shipping included</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Check className="w-4 h-4 text-green-600" />
-                      <span>Lifetime hosting included</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <span>30-Day Money Back Guarantee</span>
           </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-green-600" />
+            <span>Ready in 3-5 Business Days</span>
+          </div>
+        </div>
+
+        {/* Checkout Form */}
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            </div>
+          }
+        >
+          <StripeCheckoutForm amount={total} customerInfo={formData} onValidationRequired={validateForm} />
+        </Suspense>
+
+        {/* What Happens Next */}
+        <div className="mt-16">
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader>
+              <CardTitle className="text-center">What Happens Next?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    1
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Instant Access</h4>
+                    <p className="text-sm text-gray-600">
+                      After payment, you'll be redirected to create your memorial profile immediately.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    2
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Add Your Content</h4>
+                    <p className="text-sm text-gray-600">
+                      Upload photos, videos, and stories using our simple guided form.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    3
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Receive Your Plaque</h4>
+                    <p className="text-sm text-gray-600">
+                      Your custom QR memorial plaque ships free within 3-5 business days.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Support */}
+        <div className="text-center mt-12">
+          <p className="text-sm text-gray-600">
+            Need help? Contact our support team at{" "}
+            <a href="mailto:support@memorialqr.com" className="text-purple-600 hover:underline">
+              support@memorialqr.com
+            </a>{" "}
+            or call{" "}
+            <a href="tel:1-800-MEMORIAL" className="text-purple-600 hover:underline">
+              1-800-MEMORIAL
+            </a>
+          </p>
         </div>
       </div>
     </div>

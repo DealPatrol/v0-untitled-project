@@ -16,17 +16,10 @@ import { Loader2, CreditCard, Shield, Lock } from "lucide-react"
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 interface CheckoutFormProps {
-  plan: "basic" | "premium" | "family"
   amount: number
 }
 
-const planDetails = {
-  basic: { name: "Basic Memorial", price: 149, originalPrice: 199 },
-  premium: { name: "Premium Memorial", price: 299, originalPrice: 399 },
-  family: { name: "Family Memorial", price: 499, originalPrice: 699 },
-}
-
-function CheckoutForm({ plan, amount }: CheckoutFormProps) {
+function CheckoutForm({ amount }: CheckoutFormProps) {
   const stripe = useStripe()
   const elements = useElements()
   const router = useRouter()
@@ -62,7 +55,6 @@ function CheckoutForm({ plan, amount }: CheckoutFormProps) {
           customerName: customerInfo.name,
           customerEmail: customerInfo.email,
           customerPhone: customerInfo.phone,
-          plan: plan,
         }),
       })
 
@@ -93,7 +85,7 @@ function CheckoutForm({ plan, amount }: CheckoutFormProps) {
         setError(stripeError.message || "Payment failed")
       } else if (paymentIntent?.status === "succeeded") {
         // Redirect to memorial creation with order ID
-        router.push(`/create-profile?order_id=${paymentIntent.id}&plan=${plan}`)
+        router.push(`/create-profile?order_id=${paymentIntent.id}`)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
@@ -102,8 +94,7 @@ function CheckoutForm({ plan, amount }: CheckoutFormProps) {
     }
   }
 
-  const planInfo = planDetails[plan]
-  const savings = planInfo.originalPrice - planInfo.price
+  const savings = 50 // $199 - $149
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -119,12 +110,12 @@ function CheckoutForm({ plan, amount }: CheckoutFormProps) {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-semibold">{planInfo.name}</h3>
-                <p className="text-sm text-gray-600">Digital Memorial Package</p>
+                <h3 className="font-semibold">Memorial QR Package</h3>
+                <p className="text-sm text-gray-600">Complete Digital Memorial Solution</p>
               </div>
               <div className="text-right">
-                <p className="font-semibold">${planInfo.price}</p>
-                <p className="text-sm text-gray-500 line-through">${planInfo.originalPrice}</p>
+                <p className="font-semibold">${amount}</p>
+                <p className="text-sm text-gray-500 line-through">$199</p>
               </div>
             </div>
 
@@ -139,7 +130,7 @@ function CheckoutForm({ plan, amount }: CheckoutFormProps) {
 
             <div className="flex justify-between items-center text-lg font-semibold">
               <span>Total:</span>
-              <span>${planInfo.price}</span>
+              <span>${amount}</span>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-600 mt-4">
@@ -222,7 +213,7 @@ function CheckoutForm({ plan, amount }: CheckoutFormProps) {
                     Processing Payment...
                   </>
                 ) : (
-                  `Pay $${planInfo.price}`
+                  `Pay $${amount}`
                 )}
               </Button>
 
@@ -237,10 +228,12 @@ function CheckoutForm({ plan, amount }: CheckoutFormProps) {
   )
 }
 
-export default function StripeCheckoutForm({ plan, amount }: CheckoutFormProps) {
+export function StripeCheckoutForm({ amount }: CheckoutFormProps) {
   return (
     <Elements stripe={stripePromise}>
-      <CheckoutForm plan={plan} amount={amount} />
+      <CheckoutForm amount={amount} />
     </Elements>
   )
 }
+
+export default StripeCheckoutForm
