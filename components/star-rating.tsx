@@ -6,28 +6,24 @@ interface StarRatingProps {
   rating: number
   maxRating?: number
   size?: number
-  className?: string
   showRating?: boolean
+  className?: string
 }
 
-export function StarRating({ rating, maxRating = 5, size = 20, className = "", showRating = false }: StarRatingProps) {
-  const stars = []
-
-  for (let i = 1; i <= maxRating; i++) {
-    stars.push(
-      <Star
-        key={i}
-        size={size}
-        className={`${i <= rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"} ${className}`}
-      />,
-    )
-  }
-
+export function StarRating({ rating, maxRating = 5, size = 20, showRating = false, className = "" }: StarRatingProps) {
   return (
-    <div className="flex items-center space-x-1">
-      <div className="flex">{stars}</div>
+    <div className={`flex items-center ${className}`}>
+      <div className="flex">
+        {[...Array(maxRating)].map((_, index) => (
+          <Star
+            key={index}
+            size={size}
+            className={`${index < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+          />
+        ))}
+      </div>
       {showRating && (
-        <span className="text-sm text-gray-600 ml-2">
+        <span className="ml-2 text-sm text-gray-600">
           {rating}/{maxRating}
         </span>
       )}
