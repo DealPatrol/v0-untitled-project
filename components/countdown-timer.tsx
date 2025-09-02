@@ -33,30 +33,22 @@ export function CountdownTimer() {
   }, [])
 
   return (
-    <div className="flex justify-center gap-4 text-white">
+    <div className="flex justify-center space-x-4 text-white">
       <div className="text-center">
-        <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
-          <div className="text-2xl font-bold">{timeLeft.days}</div>
-        </div>
-        <div className="text-sm mt-1 opacity-80">Days</div>
+        <div className="text-3xl font-bold">{timeLeft.days}</div>
+        <div className="text-sm opacity-75">Days</div>
       </div>
       <div className="text-center">
-        <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
-          <div className="text-2xl font-bold">{timeLeft.hours}</div>
-        </div>
-        <div className="text-sm mt-1 opacity-80">Hours</div>
+        <div className="text-3xl font-bold">{timeLeft.hours}</div>
+        <div className="text-sm opacity-75">Hours</div>
       </div>
       <div className="text-center">
-        <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
-          <div className="text-2xl font-bold">{timeLeft.minutes}</div>
-        </div>
-        <div className="text-sm mt-1 opacity-80">Minutes</div>
+        <div className="text-3xl font-bold">{timeLeft.minutes}</div>
+        <div className="text-sm opacity-75">Minutes</div>
       </div>
       <div className="text-center">
-        <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
-          <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-        </div>
-        <div className="text-sm mt-1 opacity-80">Seconds</div>
+        <div className="text-3xl font-bold">{timeLeft.seconds}</div>
+        <div className="text-sm opacity-75">Seconds</div>
       </div>
     </div>
   )

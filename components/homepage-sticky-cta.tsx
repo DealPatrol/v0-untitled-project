@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, X } from "lucide-react"
+import { Heart, X } from "lucide-react"
+import Link from "next/link"
 
 export function HomepageStickyCTA() {
   const [isVisible, setIsVisible] = useState(false)
@@ -12,10 +12,8 @@ export function HomepageStickyCTA() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY
-      const windowHeight = window.innerHeight
-
-      // Show CTA after scrolling down 100vh (one full screen)
-      setIsVisible(scrollPosition > windowHeight && !isDismissed)
+      const shouldShow = scrollPosition > 800 && !isDismissed
+      setIsVisible(shouldShow)
     }
 
     window.addEventListener("scroll", handleScroll)
@@ -25,25 +23,25 @@ export function HomepageStickyCTA() {
   if (!isVisible) return null
 
   return (
-    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4">
-      <div className="bg-orange-600 text-white px-6 py-4 rounded-full shadow-lg flex items-center gap-4 max-w-sm">
-        <div className="flex-1">
-          <div className="font-semibold text-sm">Special Offer</div>
-          <div className="text-xs opacity-90">Memorial Plaque - $119.99</div>
+    <div className="fixed bottom-4 left-4 right-4 z-50 max-w-sm mx-auto">
+      <div className="bg-purple-600 text-white rounded-lg shadow-lg p-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <Heart className="w-5 h-5" />
+          <div>
+            <div className="font-semibold text-sm">Create Memorial</div>
+            <div className="text-xs opacity-90">Starting at $149</div>
+          </div>
         </div>
-        <Button asChild size="sm" className="bg-white text-orange-600 hover:bg-gray-100 rounded-full">
+        <div className="flex items-center space-x-2">
           <Link href="/pricing">
-            Order Now
-            <ArrowRight className="w-4 h-4 ml-1" />
+            <Button size="sm" className="bg-white text-purple-600 hover:bg-gray-100">
+              Start Now
+            </Button>
           </Link>
-        </Button>
-        <button
-          onClick={() => setIsDismissed(true)}
-          className="text-white/70 hover:text-white transition-colors"
-          aria-label="Dismiss"
-        >
-          <X className="w-4 h-4" />
-        </button>
+          <button onClick={() => setIsDismissed(true)} className="p-1 hover:bg-purple-700 rounded">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   )
