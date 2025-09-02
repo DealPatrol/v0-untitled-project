@@ -1,13 +1,8 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 
 export function CountdownTimer() {
-  const targetDate = useMemo(() => {
-    const now = new Date()
-    return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
-  }, [])
-
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -16,6 +11,10 @@ export function CountdownTimer() {
   })
 
   useEffect(() => {
+    // Set target date to 7 days from now
+    const targetDate = new Date()
+    targetDate.setDate(targetDate.getDate() + 7)
+
     const timer = setInterval(() => {
       const now = new Date().getTime()
       const distance = targetDate.getTime() - now
@@ -31,28 +30,34 @@ export function CountdownTimer() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [targetDate])
+  }, [])
 
   return (
-    <div className="flex justify-center space-x-4 mb-8">
-      <div className="bg-purple-600 text-white p-4 rounded-lg text-center min-w-[80px]">
-        <div className="text-2xl font-bold">{timeLeft.days}</div>
-        <div className="text-sm">Days</div>
+    <div className="flex justify-center gap-4 text-white">
+      <div className="text-center">
+        <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
+          <div className="text-2xl font-bold">{timeLeft.days}</div>
+        </div>
+        <div className="text-sm mt-1 opacity-80">Days</div>
       </div>
-      <div className="bg-purple-600 text-white p-4 rounded-lg text-center min-w-[80px]">
-        <div className="text-2xl font-bold">{timeLeft.hours}</div>
-        <div className="text-sm">Hours</div>
+      <div className="text-center">
+        <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
+          <div className="text-2xl font-bold">{timeLeft.hours}</div>
+        </div>
+        <div className="text-sm mt-1 opacity-80">Hours</div>
       </div>
-      <div className="bg-purple-600 text-white p-4 rounded-lg text-center min-w-[80px]">
-        <div className="text-2xl font-bold">{timeLeft.minutes}</div>
-        <div className="text-sm">Minutes</div>
+      <div className="text-center">
+        <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
+          <div className="text-2xl font-bold">{timeLeft.minutes}</div>
+        </div>
+        <div className="text-sm mt-1 opacity-80">Minutes</div>
       </div>
-      <div className="bg-purple-600 text-white p-4 rounded-lg text-center min-w-[80px]">
-        <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-        <div className="text-sm">Seconds</div>
+      <div className="text-center">
+        <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
+          <div className="text-2xl font-bold">{timeLeft.seconds}</div>
+        </div>
+        <div className="text-sm mt-1 opacity-80">Seconds</div>
       </div>
     </div>
   )
 }
-
-export default CountdownTimer

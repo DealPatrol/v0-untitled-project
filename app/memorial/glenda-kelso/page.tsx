@@ -6,6 +6,10 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Header } from "@/components/header"
 import {
   Heart,
@@ -22,48 +26,147 @@ import {
   Star,
   BookOpen,
   Home,
+  MessageCircle,
+  Upload,
+  Video,
+  Music,
+  Send,
+  User,
+  LogIn,
+  Play,
+  Pause,
 } from "lucide-react"
 
 const memorialUrl = typeof window !== "undefined" ? `${window.location.origin}/memorial/glenda-jane-kelso` : ""
 
-const generateQrCode = async () => {
-  // Use QR Server API to generate a real QR code
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(memorialUrl)}&format=png&margin=10`
-  // Fallback to Google Charts API
-  const fallbackUrl = `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${encodeURIComponent(memorialUrl)}&choe=UTF-8`
-}
+// Mock data for comments and stories
+const mockComments = [
+  {
+    id: 1,
+    author: "Sarah Mitchell",
+    date: "2 days ago",
+    content:
+      "Glenda was such a wonderful woman. She always had a smile and a kind word for everyone. I'll never forget her chocolate gravy - it was legendary!",
+    avatar: "SM",
+  },
+  {
+    id: 2,
+    author: "Michael Johnson",
+    date: "1 week ago",
+    content:
+      "I remember when Glenda dressed up as a witch for Halloween and scared all the neighborhood kids. She was laughing harder than anyone! Such a fun spirit.",
+    avatar: "MJ",
+  },
+]
 
-const downloadQrCode = async () => {
-  if (!memorialUrl) return
+const mockStories = [
+  {
+    id: 1,
+    author: "Lisa Rodriguez",
+    title: "The Great Chocolate Gravy Recipe Hunt",
+    date: "3 days ago",
+    content:
+      "For years, we all begged Glenda for her chocolate gravy recipe. She would just smile and say 'a little of this, a little of that.' Finally, last Christmas, she wrote it down for all of us. It was her way of making sure her legacy would live on in our kitchens. Every time I make it now, I can hear her laughing and telling me I'm doing it wrong!",
+    avatar: "LR",
+  },
+]
 
-  try {
-    const response = await fetch(memorialUrl)
-    const blob = await response.blob()
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "glenda-jane-kelso-memorial-qr.png"
-    document.body.appendChild(a)
-    a.click()
-    window.URL.revokeObjectURL(url)
-    document.body.removeChild(a)
-  } catch (error) {
-    console.error("Error downloading QR code:", error)
-  }
-}
-
-const copyMemorialUrl = async () => {
-  try {
-    await navigator.clipboard.writeText(memorialUrl)
-    // You could add a toast notification here
-  } catch (error) {
-    console.error("Error copying URL:", error)
-  }
-}
+const mockMedia = [
+  {
+    id: 1,
+    type: "image",
+    url: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_2181-W2nQQTXll54HpT6hDYhnsFVDRgelfh.jpeg",
+    title: "Memorial Portrait",
+    author: "Family",
+  },
+  {
+    id: 2,
+    type: "video",
+    url: "/placeholder-video.mp4",
+    title: "Birthday Celebration 2022",
+    author: "Eddie Kelso",
+  },
+  {
+    id: 3,
+    type: "audio",
+    url: "/placeholder-audio.mp3",
+    title: "Glenda's Favorite Song",
+    author: "Lynn Kelso",
+  },
+]
 
 export default function GlendaJaneKelsoMemorial() {
   const [qrCodeUrl, setQrCodeUrl] = useState("")
   const [isGeneratingQr, setIsGeneratingQr] = useState(false)
+  const [isSignedIn, setIsSignedIn] = useState(false)
+  const [showSignIn, setShowSignIn] = useState(false)
+  const [newComment, setNewComment] = useState("")
+  const [newStoryTitle, setNewStoryTitle] = useState("")
+  const [newStoryContent, setNewStoryContent] = useState("")
+  const [playingAudio, setPlayingAudio] = useState<number | null>(null)
+
+  const generateQrCode = async () => {
+    setIsGeneratingQr(true)
+    // Simulate QR code generation
+    setTimeout(() => {
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(memorialUrl)}&format=png&margin=10`
+      setQrCodeUrl(qrUrl)
+      setIsGeneratingQr(false)
+    }, 1000)
+  }
+
+  const downloadQrCode = async () => {
+    if (!qrCodeUrl) return
+    try {
+      const response = await fetch(qrCodeUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "glenda-jane-kelso-memorial-qr.png"
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error("Error downloading QR code:", error)
+    }
+  }
+
+  const copyMemorialUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(memorialUrl)
+    } catch (error) {
+      console.error("Error copying URL:", error)
+    }
+  }
+
+  const handleSignIn = () => {
+    setIsSignedIn(true)
+    setShowSignIn(false)
+  }
+
+  const handleSubmitComment = () => {
+    if (newComment.trim() && isSignedIn) {
+      // In a real app, this would submit to a backend
+      console.log("Submitting comment:", newComment)
+      setNewComment("")
+    }
+  }
+
+  const handleSubmitStory = () => {
+    if (newStoryTitle.trim() && newStoryContent.trim() && isSignedIn) {
+      // In a real app, this would submit to a backend
+      console.log("Submitting story:", { title: newStoryTitle, content: newStoryContent })
+      setNewStoryTitle("")
+      setNewStoryContent("")
+    }
+  }
+
+  const handleFileUpload = (type: string) => {
+    // In a real app, this would handle file uploads
+    console.log(`Uploading ${type} file`)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -166,6 +269,256 @@ export default function GlendaJaneKelsoMemorial() {
                     mama, Desmer McAnnally, in Heaven keeping check on us.
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Interactive Section */}
+            <Card>
+              <CardContent className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <MessageCircle className="w-6 h-6 text-orange-600" />
+                    Share Your Memories
+                  </h3>
+                  {!isSignedIn && (
+                    <Button onClick={() => setShowSignIn(true)} variant="outline" size="sm">
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Sign In to Contribute
+                    </Button>
+                  )}
+                  {isSignedIn && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <User className="w-4 h-4" />
+                      <span>Signed in as Guest User</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Sign In Modal */}
+                {showSignIn && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <Card className="w-full max-w-md mx-4">
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold mb-4">Sign In to Contribute</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" type="email" placeholder="your@email.com" />
+                          </div>
+                          <div>
+                            <Label htmlFor="name">Full Name</Label>
+                            <Input id="name" placeholder="Your full name" />
+                          </div>
+                          <div className="flex gap-2">
+                            <Button onClick={handleSignIn} className="flex-1">
+                              <LogIn className="w-4 h-4 mr-2" />
+                              Sign In
+                            </Button>
+                            <Button variant="outline" onClick={() => setShowSignIn(false)}>
+                              Cancel
+                            </Button>
+                          </div>
+                          <p className="text-xs text-gray-500 text-center">
+                            By signing in, you agree to our terms and can contribute memories to this memorial.
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+
+                <Tabs defaultValue="comments" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="comments">Comments</TabsTrigger>
+                    <TabsTrigger value="stories">Stories</TabsTrigger>
+                    <TabsTrigger value="media">Media</TabsTrigger>
+                    <TabsTrigger value="upload">Upload</TabsTrigger>
+                  </TabsList>
+
+                  {/* Comments Tab */}
+                  <TabsContent value="comments" className="space-y-6">
+                    {isSignedIn && (
+                      <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                        <Label htmlFor="comment">Leave a Comment</Label>
+                        <Textarea
+                          id="comment"
+                          placeholder="Share a memory or leave a message for the family..."
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                          rows={3}
+                        />
+                        <Button onClick={handleSubmitComment} disabled={!newComment.trim()}>
+                          <Send className="w-4 h-4 mr-2" />
+                          Post Comment
+                        </Button>
+                      </div>
+                    )}
+
+                    <div className="space-y-4">
+                      {mockComments.map((comment) => (
+                        <div key={comment.id} className="border-l-4 border-orange-200 pl-4 py-2">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                              <span className="text-orange-600 text-sm font-semibold">{comment.avatar}</span>
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-900">{comment.author}</div>
+                              <div className="text-sm text-gray-500">{comment.date}</div>
+                            </div>
+                          </div>
+                          <p className="text-gray-700">{comment.content}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  {/* Stories Tab */}
+                  <TabsContent value="stories" className="space-y-6">
+                    {isSignedIn && (
+                      <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                        <Label htmlFor="story-title">Share a Story</Label>
+                        <Input
+                          id="story-title"
+                          placeholder="Story title..."
+                          value={newStoryTitle}
+                          onChange={(e) => setNewStoryTitle(e.target.value)}
+                        />
+                        <Textarea
+                          placeholder="Tell us about a special memory with Glenda..."
+                          value={newStoryContent}
+                          onChange={(e) => setNewStoryContent(e.target.value)}
+                          rows={5}
+                        />
+                        <Button onClick={handleSubmitStory} disabled={!newStoryTitle.trim() || !newStoryContent.trim()}>
+                          <BookOpen className="w-4 h-4 mr-2" />
+                          Share Story
+                        </Button>
+                      </div>
+                    )}
+
+                    <div className="space-y-6">
+                      {mockStories.map((story) => (
+                        <Card key={story.id} className="border-l-4 border-orange-600">
+                          <CardContent className="p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                                <span className="text-orange-600 font-semibold">{story.avatar}</span>
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-gray-900">{story.title}</h4>
+                                <div className="text-sm text-gray-500">
+                                  by {story.author} • {story.date}
+                                </div>
+                              </div>
+                            </div>
+                            <p className="text-gray-700 leading-relaxed">{story.content}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  {/* Media Tab */}
+                  <TabsContent value="media" className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {mockMedia.map((item) => (
+                        <Card key={item.id}>
+                          <CardContent className="p-4">
+                            {item.type === "image" && (
+                              <div className="relative h-48 rounded-lg overflow-hidden mb-3">
+                                <Image
+                                  src={item.url || "/placeholder.svg"}
+                                  alt={item.title}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
+                            {item.type === "video" && (
+                              <div className="relative h-48 bg-gray-100 rounded-lg flex items-center justify-center mb-3">
+                                <Video className="w-12 h-12 text-gray-400" />
+                                <Button size="sm" className="absolute" onClick={() => console.log("Play video")}>
+                                  <Play className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            )}
+                            {item.type === "audio" && (
+                              <div className="bg-gray-100 rounded-lg p-6 mb-3">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <Music className="w-6 h-6 text-gray-600" />
+                                    <div>
+                                      <div className="font-medium">{item.title}</div>
+                                      <div className="text-sm text-gray-500">Audio Recording</div>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setPlayingAudio(playingAudio === item.id ? null : item.id)}
+                                  >
+                                    {playingAudio === item.id ? (
+                                      <Pause className="w-4 h-4" />
+                                    ) : (
+                                      <Play className="w-4 h-4" />
+                                    )}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                            <div className="text-sm">
+                              <div className="font-medium">{item.title}</div>
+                              <div className="text-gray-500">Shared by {item.author}</div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  {/* Upload Tab */}
+                  <TabsContent value="upload" className="space-y-6">
+                    {!isSignedIn ? (
+                      <div className="text-center py-8">
+                        <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <h4 className="text-lg font-semibold text-gray-900 mb-2">Sign In to Upload</h4>
+                        <p className="text-gray-600 mb-4">
+                          Please sign in to share photos, videos, and audio recordings.
+                        </p>
+                        <Button onClick={() => setShowSignIn(true)}>
+                          <LogIn className="w-4 h-4 mr-2" />
+                          Sign In
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="grid md:grid-cols-3 gap-6">
+                        <Card className="border-dashed border-2 border-gray-300 hover:border-orange-400 transition-colors cursor-pointer">
+                          <CardContent className="p-8 text-center" onClick={() => handleFileUpload("image")}>
+                            <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <h4 className="font-semibold text-gray-900 mb-2">Upload Photos</h4>
+                            <p className="text-sm text-gray-600">Share favorite photos and memories</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-dashed border-2 border-gray-300 hover:border-orange-400 transition-colors cursor-pointer">
+                          <CardContent className="p-8 text-center" onClick={() => handleFileUpload("video")}>
+                            <Video className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <h4 className="font-semibold text-gray-900 mb-2">Upload Videos</h4>
+                            <p className="text-sm text-gray-600">Share video memories and messages</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-dashed border-2 border-gray-300 hover:border-orange-400 transition-colors cursor-pointer">
+                          <CardContent className="p-8 text-center" onClick={() => handleFileUpload("audio")}>
+                            <Music className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <h4 className="font-semibold text-gray-900 mb-2">Upload Audio</h4>
+                            <p className="text-sm text-gray-600">Share voice messages or favorite songs</p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
 
@@ -413,6 +766,13 @@ export default function GlendaJaneKelsoMemorial() {
                       <span className="text-gray-700">Stories</span>
                     </div>
                     <span className="font-semibold text-gray-900">12</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5 text-orange-600" />
+                      <span className="text-gray-700">Comments</span>
+                    </div>
+                    <span className="font-semibold text-gray-900">24</span>
                   </div>
                 </div>
               </CardContent>

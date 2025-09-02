@@ -8,9 +8,10 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Memorial QR - Digital Memorial Tributes",
+  title: "Memorial QR - Digital Memorial Plaques",
   description:
-    "Create beautiful, lasting digital memorials with QR codes. Share memories, photos, and stories with family and friends instantly.",
+    "Create lasting digital memorials with QR codes. Honor your loved ones with beautiful memorial plaques that connect to digital memories.",
+  keywords: "memorial, QR code, digital memorial, memorial plaque, remembrance, obituary",
     generator: 'v0.app'
 }
 
@@ -21,11 +22,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet" />
-      </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
