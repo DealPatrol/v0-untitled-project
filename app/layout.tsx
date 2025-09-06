@@ -9,7 +9,9 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Memorial QR - Digital Memorial Plaques",
-  description: "Create beautiful digital memorial plaques with QR codes to honor your loved ones",
+  description:
+    "Create lasting digital memorials with beautiful QR code plaques. Honor your loved ones with photos, stories, and memories that last forever.",
+  keywords: "memorial, QR code, digital memorial, memorial plaque, remembrance, tribute",
     generator: 'v0.app'
 }
 
