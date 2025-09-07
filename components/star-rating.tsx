@@ -1,16 +1,15 @@
 "use client"
 
 import { Star } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 interface StarRatingProps {
   rating: number
   maxRating?: number
   size?: "sm" | "md" | "lg"
-  className?: string
+  showNumber?: boolean
 }
 
-export function StarRating({ rating, maxRating = 5, size = "md", className }: StarRatingProps) {
+export function StarRating({ rating, maxRating = 5, size = "sm", showNumber = false }: StarRatingProps) {
   const sizeClasses = {
     sm: "w-4 h-4",
     md: "w-5 h-5",
@@ -18,22 +17,18 @@ export function StarRating({ rating, maxRating = 5, size = "md", className }: St
   }
 
   return (
-    <div className={cn("flex items-center", className)}>
-      {Array.from({ length: maxRating }, (_, i) => {
-        const filled = i < Math.floor(rating)
-        const halfFilled = i === Math.floor(rating) && rating % 1 !== 0
-
-        return (
-          <Star
-            key={i}
-            className={cn(
-              sizeClasses[size],
-              filled || halfFilled ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200",
-            )}
-          />
-        )
-      })}
-      <span className="ml-2 text-sm text-gray-600">({rating})</span>
+    <div className="flex items-center gap-1">
+      {Array.from({ length: maxRating }, (_, i) => (
+        <Star
+          key={i}
+          className={`${sizeClasses[size]} ${i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+        />
+      ))}
+      {showNumber && (
+        <span className="ml-1 text-sm font-medium text-gray-600">
+          {rating}/{maxRating}
+        </span>
+      )}
     </div>
   )
 }
