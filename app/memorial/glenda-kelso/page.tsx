@@ -225,7 +225,7 @@ export default function GlendaKelsoMemorial() {
               />
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Glenda Mae Kelso</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Glenda Jane Kelso</h1>
 
             <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-lg text-purple-100 mb-6">
               <div className="flex items-center gap-2">
@@ -234,13 +234,12 @@ export default function GlendaKelsoMemorial() {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5" />
-                <span>Beloved of Springfield, Illinois</span>
+                <span>Beloved of Hanceville, Alabama</span>
               </div>
             </div>
 
             <p className="text-xl text-purple-100 max-w-2xl mx-auto leading-relaxed">
-              A devoted mother, grandmother, and nurse who touched countless lives with her compassion, wisdom, and
-              endless capacity for love. Her stories and spirit live on in all who knew her.
+              A life so beautifully lived deserves to be beautifully remembered.
             </p>
           </div>
         </div>
@@ -286,43 +285,74 @@ export default function GlendaKelsoMemorial() {
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Heart className="w-5 h-5 text-red-500" />
-                          Life Story
+                          In Loving Memory of Glenda Jane Kelso
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="prose prose-lg max-w-none">
                         <p className="text-gray-700 leading-relaxed mb-6">
-                          Glenda Mae Kelso was born on March 15, 1945, in Springfield, Illinois, to loving parents
-                          Robert and Mary Thompson. From an early age, Glenda showed a natural inclination toward caring
-                          for others, often tending to injured animals and comforting friends in need.
+                          A life so beautifully lived deserves to be beautifully remembered. Today, we gather not only
+                          in sorrow but in profound gratitude for the extraordinary woman we were blessed to know—Glenda
+                          Jane Kelso.
                         </p>
 
                         <p className="text-gray-700 leading-relaxed mb-6">
-                          After graduating from Springfield High School in 1963, Glenda pursued her calling in nursing,
-                          earning her RN degree from St. John's School of Nursing in 1966. She dedicated over 40 years
-                          of her life to caring for patients at Springfield General Hospital, where she was known for
-                          her gentle touch, warm smile, and ability to make even the most anxious patients feel at ease.
+                          Glenda was the heart of her home and a force of nature in the lives of all who knew her. She
+                          left this world as she lived in it: on her own terms, with a quick wit, and likely planning a
+                          joke we have yet to discover. For 57 years, she was the devoted and loving partner to her
+                          husband, Lynn. She was a selfless homemaker who dedicated her life to her children, Eddie and
+                          Penny, and to countless others she welcomed into her heart and home as her own.
                         </p>
 
                         <p className="text-gray-700 leading-relaxed mb-6">
-                          In 1968, Glenda married the love of her life, Harold Kelso, and together they built a
-                          beautiful family. She was a devoted mother to her three children: Robert, Susan, and Michael,
-                          and later became a cherished grandmother to seven grandchildren who were the light of her
-                          life.
+                          To know Glenda was to be loved fiercely, laugh loudly, and feel truly spoiled. She was a woman
+                          of beautiful contrasts: patient and kind, yet tough as nails. Her fanatic sense of humor was a
+                          light that could cut through the hardest days, and her legendary chocolate gravy was a taste
+                          of her deep, abiding love. She never let anyone forget who was really in charge, but she also
+                          never wavered in her loyalty, sticking by her family even when the world said no.
                         </p>
 
                         <p className="text-gray-700 leading-relaxed mb-6">
-                          Beyond her professional life, Glenda was passionate about gardening, cooking, and
-                          storytelling. Her garden was a neighborhood treasure, and her Sunday dinners brought family
-                          and friends together for decades. She had an incredible gift for making everyone feel welcome
-                          and loved.
+                          Glenda found pure joy in the magic of the ordinary, especially when it brought smiles to the
+                          faces of children. She delighted in dressing up for holidays, with Halloween holding a special
+                          place in her heart, creating moments of wonder that will be cherished forever. Her happiness
+                          was found in the noisy, loving chaos of being surrounded by family, though the steady chatter
+                          of the police scanner was a close second.
+                        </p>
+
+                        <p className="text-gray-700 leading-relaxed mb-6">
+                          She was a curator of joy, a teller of hard truths, and the unwavering glue that held her
+                          family together through good times and bad. Glenda's love was a vibrant tapestry woven with
+                          threads of laughter, music, fierce protection, and an occasional, loving dose of stubbornness.
+                        </p>
+
+                        <p className="text-gray-700 leading-relaxed mb-6">
+                          We are certain that her reunion in Heaven with her beloved mother, Desmer, is filled with
+                          laughter and a heavenly plan to keep a loving, watchful eye on us all.
+                        </p>
+
+                        <p className="text-gray-700 leading-relaxed mb-6">
+                          Glenda's incredible legacy lives on in her husband, Lynn; her children, Eddie Kelso and Penny
+                          Collins; her cherished grandchildren, Cole Collins, Kristin Kelso, Gracie Dean, Braxton
+                          Phillips, Weston Green, Addalynn Rassman, Wrenley Hunter, and Ridge Thompson; her beautiful
+                          French daughter-in-love, Caroline; her god-sent angels, Colton, Anzlie, and Remi; her children
+                          of the heart, Savannah (Bo) Pitts, Bama Thompson, Taylor (Kelly) Hunter, and Jordan Thompson;
+                          and her special friends.
+                        </p>
+
+                        <p className="text-gray-700 leading-relaxed mb-6">
+                          We are fortunate, blessed, and endlessly grateful to have been loved by her. Though our hearts
+                          are broken and we will miss her beyond measure, we find comfort in knowing that her spirit—her
+                          laughter, her love, and her legendary chocolate gravy—will forever be a part of us.
+                        </p>
+
+                        <p className="text-gray-700 leading-relaxed mb-6">
+                          Rest easy, dear Glenda. Your work here was a masterpiece.
                         </p>
 
                         <p className="text-gray-700 leading-relaxed">
-                          Glenda passed peacefully on November 28, 2023, surrounded by her loving family. She is
-                          preceded in death by her beloved husband Harold and her dear mother, Desmer McAnnally. Her
-                          legacy of love, compassion, and service continues to inspire all who were blessed to know her.
-                          She is now reunited with her mama, Desmer McAnnally, in Heaven, where her stories continue
-                          forever.
+                          The family extends their deepest gratitude to the compassionate staff at Cullman Regional
+                          Medical Center, Folsom Center Nursing Home, Cullman Dialysis Clinic, and Southern Care Hospice
+                          for the dignity, kindness, and peace they provided in her final days.
                         </p>
                       </CardContent>
                     </Card>
@@ -340,17 +370,22 @@ export default function GlendaKelsoMemorial() {
                         <div className="space-y-4">
                           <div>
                             <h4 className="font-semibold text-gray-900">Preceded in Death</h4>
-                            <p className="text-gray-600">Harold Kelso (Husband)</p>
                             <p className="text-gray-600">Desmer McAnnally (Mother)</p>
                           </div>
 
                           <div>
                             <h4 className="font-semibold text-gray-900">Survived By</h4>
-                            <p className="text-gray-600">Robert Kelso (Son)</p>
-                            <p className="text-gray-600">Susan Mitchell (Daughter)</p>
-                            <p className="text-gray-600">Michael Kelso (Son)</p>
-                            <p className="text-gray-600">7 Grandchildren</p>
-                            <p className="text-gray-600">3 Great-Grandchildren</p>
+                            <p className="text-gray-600">Lynn Kelso (Husband)</p>
+                            <p className="text-gray-600">Eddie Kelso (Son)</p>
+                            <p className="text-gray-600">Penny Collins (Daughter)</p>
+                            <p className="text-gray-600">Cole Collins (Grandson)</p>
+                            <p className="text-gray-600">Kristin Kelso (Granddaughter)</p>
+                            <p className="text-gray-600">Gracie Dean (Granddaughter)</p>
+                            <p className="text-gray-600">Braxton Phillips (Grandson)</p>
+                            <p className="text-gray-600">Weston Green (Grandson)</p>
+                            <p className="text-gray-600">Addalynn Rassman (Granddaughter)</p>
+                            <p className="text-gray-600">Wrenley Hunter (Granddaughter)</p>
+                            <p className="text-gray-600">Ridge Thompson (Grandson)</p>
                           </div>
                         </div>
                       </CardContent>
@@ -398,13 +433,13 @@ export default function GlendaKelsoMemorial() {
                   {[
                     { src: "/glenda-memorial-portrait.jpeg", title: "Portrait", year: "2020" },
                     { src: "/glenda-garden-couple.jpeg", title: "In the Garden", year: "2019" },
-                    { src: "/glenda-christmas-daughter.jpeg", title: "Christmas with Susan", year: "2022" },
+                    { src: "/glenda-christmas-daughter.jpeg", title: "Christmas with Family", year: "2022" },
                     { src: "/glenda-hospital-visit.jpeg", title: "Hospital Visit", year: "2018" },
                     { src: "/glenda-family-baseball.jpeg", title: "Family Baseball Game", year: "2021" },
                     { src: "/glenda-restaurant-couple.jpeg", title: "Anniversary Dinner", year: "2020" },
-                    { src: "/glenda-hospital-bedside.jpeg", title: "With Patient", year: "2017" },
+                    { src: "/glenda-hospital-bedside.jpeg", title: "With Family", year: "2017" },
                     { src: "/glenda-beach-walk.jpeg", title: "Beach Walk", year: "2019" },
-                    { src: "/glenda-hospital-final.jpeg", title: "Last Day at Hospital", year: "2018" },
+                    { src: "/glenda-hospital-final.jpeg", title: "Family Gathering", year: "2018" },
                   ].map((photo, index) => (
                     <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="aspect-square relative">
@@ -618,21 +653,21 @@ export default function GlendaKelsoMemorial() {
                           <Camera className="w-5 h-5 text-blue-500" />
                           <div className="flex-1">
                             <p className="font-medium">Family Christmas 2022</p>
-                            <p className="text-sm text-gray-500">Uploaded by Susan Mitchell • 2 days ago</p>
+                            <p className="text-sm text-gray-500">Uploaded by Penny Collins • 2 days ago</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                           <Video className="w-5 h-5 text-green-500" />
                           <div className="flex-1">
-                            <p className="font-medium">Glenda's Garden Tour</p>
-                            <p className="text-sm text-gray-500">Uploaded by Robert Kelso • 1 week ago</p>
+                            <p className="font-medium">Glenda's Halloween Costume</p>
+                            <p className="text-sm text-gray-500">Uploaded by Eddie Kelso • 1 week ago</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                           <Music className="w-5 h-5 text-purple-500" />
                           <div className="flex-1">
-                            <p className="font-medium">Glenda Singing Lullaby</p>
-                            <p className="text-sm text-gray-500">Uploaded by Michael Kelso • 2 weeks ago</p>
+                            <p className="font-medium">Glenda Singing Favorite Song</p>
+                            <p className="text-sm text-gray-500">Uploaded by Cole Collins • 2 weeks ago</p>
                           </div>
                         </div>
                       </div>
@@ -774,7 +809,7 @@ export default function GlendaKelsoMemorial() {
             </div>
 
             <p className="text-slate-400 mb-6">
-              Honoring the memory of Glenda Mae Kelso with love and digital preservation.
+              Honoring the memory of Glenda Jane Kelso with love and digital preservation.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-slate-400">

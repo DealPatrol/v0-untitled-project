@@ -9,6 +9,7 @@ const config: Config = {
     "./src/**/*.{ts,tsx}",
     "*.{js,ts,jsx,tsx,mdx}",
   ],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -19,8 +20,9 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        cursive: ["Dancing Script", "Great Vibes", "cursive"],
-        elegant: ["Great Vibes", "Dancing Script", "cursive"],
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        cursive: ["var(--font-dancing-script)", "cursive"],
+        script: ["var(--font-great-vibes)", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",
