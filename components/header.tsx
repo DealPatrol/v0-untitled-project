@@ -1,87 +1,82 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const navigation = [
-    { name: "Home", href: "/" },
-    { name: "How It Works", href: "/how-it-works" },
-    { name: "Programs", href: "/programs" },
-    { name: "Browse Memorials", href: "/browse-memorials" },
-    { name: "Our Story", href: "/our-story" },
-    { name: "Contact", href: "/contact" },
-  ]
-
   return (
-    <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <Image
-              src="/memorial-qr-logo.png"
-              alt="Memorial QR"
-              width={180}
-              height={40}
-              priority
-              className="h-8 w-auto sm:h-10"
-            />
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <div className="mr-4 hidden md:flex">
+          <Link href="/" className="mr-6 flex items-center space-x-2">
+            <span className="hidden font-script text-2xl font-bold sm:inline-block text-purple-600">Memorial QR</span>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors"
-              >
-                {item.name}
-              </Link>
-            ))}
-            <Button asChild className="bg-purple-600 hover:bg-purple-700">
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+            <Link href="/browse-memorials" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Browse Memorials
+            </Link>
+            <Link href="/programs" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Programs
+            </Link>
+            <Link href="/how-it-works" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              How It Works
+            </Link>
+            <Link href="/our-story" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Our Story
+            </Link>
+            <Link href="/contact" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Contact
+            </Link>
+          </nav>
+        </div>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="pr-0">
+            <Link href="/" className="flex items-center">
+              <span className="font-script text-2xl font-bold text-purple-600">Memorial QR</span>
+            </Link>
+            <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
+              <div className="flex flex-col space-y-3">
+                <Link href="/browse-memorials" className="text-foreground/60">
+                  Browse Memorials
+                </Link>
+                <Link href="/programs" className="text-foreground/60">
+                  Programs
+                </Link>
+                <Link href="/how-it-works" className="text-foreground/60">
+                  How It Works
+                </Link>
+                <Link href="/our-story" className="text-foreground/60">
+                  Our Story
+                </Link>
+                <Link href="/contact" className="text-foreground/60">
+                  Contact
+                </Link>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none">
+            <Link href="/" className="flex items-center md:hidden">
+              <span className="font-script text-xl font-bold text-purple-600">Memorial QR</span>
+            </Link>
+          </div>
+          <nav className="flex items-center">
+            <Button asChild>
               <Link href="/pricing">Get Started</Link>
             </Button>
           </nav>
-
-          {/* Mobile menu button */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-              <div className="flex flex-col space-y-4 mt-8">
-                <div className="flex items-center justify-between mb-8">
-                  <Image src="/memorial-qr-logo.png" alt="Memorial QR" width={150} height={35} className="h-8 w-auto" />
-                </div>
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-gray-700 hover:text-purple-600 px-3 py-2 text-base font-medium transition-colors border-b border-gray-100"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-                <Button asChild className="bg-purple-600 hover:bg-purple-700 mt-4">
-                  <Link href="/pricing" onClick={() => setIsOpen(false)}>
-                    Get Started
-                  </Link>
-                </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
     </header>

@@ -4,273 +4,211 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Star, Heart, Users, Camera, Music, Share2, QrCode, Smartphone, Globe } from "lucide-react"
+import { Check, Star, Heart, Users, Music, ImageIcon, MessageCircle, Share2, Download, Smartphone } from "lucide-react"
 import Link from "next/link"
 
-export default function ProgramsPage() {
+export default function Programs() {
+  const features = [
+    { icon: Heart, title: "Beautiful Memorial Page", description: "Personalized tribute with photos and memories" },
+    { icon: Users, title: "Family Tree Display", description: "Visual representation of family connections" },
+    { icon: Music, title: "Memorial Music", description: "Add meaningful songs and audio memories" },
+    { icon: ImageIcon, title: "Photo Gallery", description: "Unlimited photo uploads and organization" },
+    { icon: MessageCircle, title: "Guest Messages", description: "Allow visitors to leave condolences and memories" },
+    { icon: Share2, title: "Easy Sharing", description: "Share memorial link with family and friends" },
+    { icon: Download, title: "QR Code Generation", description: "Custom QR codes for easy access" },
+    { icon: Smartphone, title: "Mobile Optimized", description: "Perfect viewing on all devices" },
+  ]
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12 sm:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Memorial Programs</h1>
-            <p className="text-lg sm:text-xl text-purple-100 max-w-3xl mx-auto">
-              Create a lasting digital memorial that celebrates your loved one's life and keeps their memory alive
-              forever
-            </p>
-          </div>
+      <div className="relative bg-slate-900 text-white py-16">
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 to-slate-800/90" />
+        <div className="relative container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Memorial Programs</h1>
+          <p className="text-xl text-slate-200 max-w-2xl mx-auto">
+            Create a lasting digital tribute to honor your loved one's memory
+          </p>
         </div>
       </div>
 
       {/* Main Program */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="text-center mb-12">
-          <Badge className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 mb-4">Most Popular</Badge>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Complete Digital Memorial Package</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Everything you need to create a beautiful, lasting tribute to your loved one
-          </p>
-        </div>
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <Badge className="bg-blue-500 text-white px-4 py-2 text-sm mb-4">
+              <Star className="h-4 w-4 mr-2" />
+              Most Popular
+            </Badge>
+            <h2 className="text-3xl font-bold mb-4">Complete Memorial Package</h2>
+            <p className="text-gray-600 text-lg">Everything you need to create a beautiful digital memorial</p>
+          </div>
 
-        <Card className="shadow-xl border-2 border-purple-200 relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 to-blue-600"></div>
-
-          <CardHeader className="text-center pb-8 pt-8">
-            <div className="flex items-center justify-center mb-4">
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 fill-current" />
-                ))}
-              </div>
-              <span className="ml-2 text-sm text-gray-600">(4.9/5 from 500+ families)</span>
-            </div>
-
-            <CardTitle className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">$149</CardTitle>
-            <p className="text-gray-600">One-time payment • Lifetime access</p>
-          </CardHeader>
-
-          <CardContent className="px-6 sm:px-8 pb-8">
-            {/* Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900 flex items-center">
-                  <Heart className="h-5 w-5 text-red-500 mr-2" />
-                  Memorial Features
-                </h3>
-                <ul className="space-y-3">
-                  {[
-                    "Beautiful memorial website",
-                    "Photo & video galleries",
-                    "Life story & biography",
-                    "Family tree display",
-                    "Memorial guestbook",
-                    "Music & audio memories",
-                  ].map((feature, index) => (
-                    <li key={index} className="flex items-center text-gray-700">
-                      <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900 flex items-center">
-                  <QrCode className="h-5 w-5 text-purple-500 mr-2" />
-                  QR Code & Sharing
-                </h3>
-                <ul className="space-y-3">
-                  {[
-                    "Custom QR code generation",
-                    "High-resolution downloads",
-                    "Social media sharing",
-                    "Email invitations",
-                    "Mobile-friendly access",
-                    "Search engine optimization",
-                  ].map((feature, index) => (
-                    <li key={index} className="flex items-center text-gray-700">
-                      <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900 flex items-center">
-                  <Users className="h-5 w-5 text-blue-500 mr-2" />
-                  Family Collaboration
-                </h3>
-                <ul className="space-y-3">
-                  {[
-                    "Multiple family contributors",
-                    "Story & memory sharing",
-                    "Photo upload permissions",
-                    "Comment moderation",
-                    "Private family sections",
-                    "Notification system",
-                  ].map((feature, index) => (
-                    <li key={index} className="flex items-center text-gray-700">
-                      <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900 flex items-center">
-                  <Globe className="h-5 w-5 text-green-500 mr-2" />
-                  Premium Support
-                </h3>
-                <ul className="space-y-3">
-                  {[
-                    "Lifetime hosting included",
-                    "24/7 technical support",
-                    "Regular backups",
-                    "SSL security certificate",
-                    "Custom domain option",
-                    "Professional design themes",
-                  ].map((feature, index) => (
-                    <li key={index} className="flex items-center text-gray-700">
-                      <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* What's Included Highlight */}
-            <div className="bg-purple-50 rounded-lg p-6 mb-8">
-              <h3 className="font-semibold text-gray-900 mb-4 text-center">Everything Included - No Hidden Fees</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                <div className="flex flex-col items-center">
-                  <Camera className="h-8 w-8 text-purple-600 mb-2" />
-                  <span className="text-sm font-medium">Unlimited Photos</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Music className="h-8 w-8 text-purple-600 mb-2" />
-                  <span className="text-sm font-medium">Audio Memories</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Share2 className="h-8 w-8 text-purple-600 mb-2" />
-                  <span className="text-sm font-medium">Easy Sharing</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Smartphone className="h-8 w-8 text-purple-600 mb-2" />
-                  <span className="text-sm font-medium">Mobile Ready</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Call to Action */}
-            <div className="text-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg font-semibold w-full sm:w-auto"
-              >
-                <Link href="/pricing">Create Memorial Now - $149</Link>
-              </Button>
-              <p className="text-sm text-gray-600 mt-4">30-day money-back guarantee • Secure payment processing</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Testimonials */}
-        <div className="mt-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-12">What Families Are Saying</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Sarah Johnson",
-                relation: "Daughter",
-                text: "Creating mom's memorial was so easy and meaningful. The QR code at the funeral allowed everyone to share their memories instantly.",
-                rating: 5,
-              },
-              {
-                name: "Michael Chen",
-                relation: "Son",
-                text: "The family collaboration features let all of us contribute photos and stories. It's become a place we visit to remember dad.",
-                rating: 5,
-              },
-              {
-                name: "Lisa Rodriguez",
-                relation: "Wife",
-                text: "The support team helped us every step of the way. The memorial is beautiful and will preserve his memory forever.",
-                rating: 5,
-              },
-            ].map((testimonial, index) => (
-              <Card key={index} className="bg-white">
-                <CardContent className="p-6">
-                  <div className="flex text-yellow-400 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-current" />
+          <Card className="border-2 border-blue-200 shadow-xl">
+            <CardHeader className="text-center bg-gradient-to-r from-blue-50 to-slate-50 pb-8">
+              <CardTitle className="text-4xl font-bold text-slate-900 mb-2">$149</CardTitle>
+              <p className="text-gray-600">One-time payment • Lifetime access</p>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-xl font-semibold mb-6">What's Included:</h3>
+                  <div className="space-y-4">
+                    {features.map((feature, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <Check className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-slate-900">{feature.title}</h4>
+                          <p className="text-sm text-gray-600">{feature.description}</p>
+                        </div>
+                      </div>
                     ))}
                   </div>
-                  <p className="text-gray-700 mb-4 italic">"{testimonial.text}"</p>
-                  <div>
-                    <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                    <p className="text-sm text-gray-600">{testimonial.relation}</p>
+                </div>
+
+                <div className="bg-slate-50 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold mb-4">Perfect For:</h3>
+                  <ul className="space-y-3 text-gray-700">
+                    <li className="flex items-center gap-2">
+                      <Heart className="h-4 w-4 text-red-500" />
+                      Families wanting to honor a loved one
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-blue-500" />
+                      Sharing memories with distant relatives
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Share2 className="h-4 w-4 text-green-500" />
+                      Creating a lasting digital legacy
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Smartphone className="h-4 w-4 text-purple-500" />
+                      Easy access via QR codes
+                    </li>
+                  </ul>
+
+                  <div className="mt-6 p-4 bg-white rounded-lg border">
+                    <h4 className="font-medium text-slate-900 mb-2">Lifetime Benefits:</h4>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• No monthly fees or subscriptions</li>
+                      <li>• Unlimited photo and story uploads</li>
+                      <li>• 24/7 access from anywhere</li>
+                      <li>• Mobile-friendly design</li>
+                      <li>• Secure and private</li>
+                    </ul>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+              </div>
+
+              <div className="mt-8 text-center">
+                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
+                  <Link href="/pricing">Get Started - $149</Link>
+                </Button>
+                <p className="text-sm text-gray-500 mt-3">30-day money-back guarantee • Secure payment processing</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Additional Information */}
+          <div className="mt-16 grid md:grid-cols-3 gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-red-500" />
+                  Easy Setup
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Our simple step-by-step process helps you create a beautiful memorial in minutes, not hours.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-blue-500" />
+                  Family Collaboration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Multiple family members can contribute photos, stories, and memories to create a complete tribute.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-green-500" />
+                  QR Code Access
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Generate custom QR codes for headstones, funeral programs, or sharing with family and friends.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
 
-        {/* FAQ Section */}
-        <div className="mt-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-12">Frequently Asked Questions</h2>
-          <div className="space-y-6">
-            {[
-              {
-                question: "How long does it take to create a memorial?",
-                answer:
-                  "Most families complete their memorial in 30-60 minutes. You can always add more content later.",
-              },
-              {
-                question: "Can multiple family members contribute?",
-                answer: "Yes! Family members can sign in to add photos, stories, and memories to the memorial.",
-              },
-              {
-                question: "Is the memorial website permanent?",
-                answer:
-                  "Yes, your memorial includes lifetime hosting. It will remain online permanently at no additional cost.",
-              },
-              {
-                question: "Can I customize the design?",
-                answer:
-                  "Yes, we offer several professional design themes and customization options to match your preferences.",
-              },
-            ].map((faq, index) => (
-              <Card key={index}>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-2">{faq.question}</h3>
-                  <p className="text-gray-700">{faq.answer}</p>
-                </CardContent>
-              </Card>
-            ))}
+      {/* FAQ Section */}
+      <div className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">How long does it take to set up a memorial?</h3>
+                <p className="text-gray-600">
+                  Most families complete their memorial setup in 15-30 minutes. You can always add more content later.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Can multiple family members contribute?</h3>
+                <p className="text-gray-600">
+                  Yes! Family members can sign in and add photos, stories, and messages to the memorial.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Is there a limit on photos or content?</h3>
+                <p className="text-gray-600">No limits! Upload as many photos, stories, and memories as you'd like.</p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">How do QR codes work?</h3>
+                <p className="text-gray-600">
+                  We generate a custom QR code that links directly to the memorial. Perfect for headstones, programs, or
+                  sharing.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Is my memorial private or public?</h3>
+                <p className="text-gray-600">
+                  You control the privacy settings. Make it public for anyone to view, or private for family only.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Final CTA */}
-        <div className="mt-16 text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg p-8 sm:p-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">Honor Their Memory Today</h2>
-          <p className="text-lg text-purple-100 mb-8 max-w-2xl mx-auto">
-            Create a beautiful, lasting tribute that celebrates their life and keeps their memory alive for generations
-            to come.
+      {/* Call to Action */}
+      <div className="bg-slate-900 text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to Honor Your Loved One?</h2>
+          <p className="text-xl text-slate-200 mb-8 max-w-2xl mx-auto">
+            Create a beautiful, lasting memorial that celebrates their life and keeps their memory alive forever.
           </p>
-          <Button
-            asChild
-            size="lg"
-            className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
-          >
-            <Link href="/pricing">Get Started Now - $149</Link>
+          <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
+            <Link href="/pricing">Start Creating Memorial - $149</Link>
           </Button>
         </div>
       </div>

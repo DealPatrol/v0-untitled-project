@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Clock } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 
 export function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState({
@@ -12,13 +12,13 @@ export function CountdownTimer() {
   })
 
   useEffect(() => {
-    // Set target date to end of current month
-    const now = new Date()
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+    // Set target date to 30 days from now
+    const targetDate = new Date()
+    targetDate.setDate(targetDate.getDate() + 30)
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
-      const distance = endOfMonth.getTime() - now
+      const distance = targetDate.getTime() - now
 
       if (distance > 0) {
         setTimeLeft({
@@ -34,40 +34,33 @@ export function CountdownTimer() {
   }, [])
 
   return (
-    <div className="text-center">
-      <div className="flex items-center justify-center gap-2 mb-4">
-        <Clock className="h-5 w-5 text-yellow-400" />
-        <span className="text-yellow-400 font-semibold">Limited Time Offer</span>
-      </div>
-
-      <div className="flex justify-center gap-4 text-white">
-        <div className="text-center">
-          <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
-            <div className="text-2xl font-bold">{timeLeft.days}</div>
+    <Card className="countdown-bg border-white/20">
+      <CardContent className="p-4">
+        <div className="text-center text-white">
+          <div className="text-sm font-medium mb-2">Limited Time Offer</div>
+          <div className="grid grid-cols-4 gap-2 text-xs">
+            <div>
+              <div className="text-lg font-bold">{timeLeft.days}</div>
+              <div>Days</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold">{timeLeft.hours}</div>
+              <div>Hours</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold">{timeLeft.minutes}</div>
+              <div>Min</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold">{timeLeft.seconds}</div>
+              <div>Sec</div>
+            </div>
           </div>
-          <div className="text-sm mt-1">Days</div>
+          <div className="text-xs mt-2 opacity-90">Save 30% Today!</div>
         </div>
-        <div className="text-center">
-          <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
-            <div className="text-2xl font-bold">{timeLeft.hours}</div>
-          </div>
-          <div className="text-sm mt-1">Hours</div>
-        </div>
-        <div className="text-center">
-          <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
-            <div className="text-2xl font-bold">{timeLeft.minutes}</div>
-          </div>
-          <div className="text-sm mt-1">Minutes</div>
-        </div>
-        <div className="text-center">
-          <div className="bg-white/20 rounded-lg p-3 min-w-[60px]">
-            <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-          </div>
-          <div className="text-sm mt-1">Seconds</div>
-        </div>
-      </div>
-
-      <p className="text-purple-200 mt-4">Get your memorial package at this special price before it expires!</p>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
+
+export default CountdownTimer
