@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Header } from "@/components/header"
@@ -37,6 +37,7 @@ export default function GlendaMemorial() {
   const [showSignIn, setShowSignIn] = useState(false)
   const [volume, setVolume] = useState(0.5)
   const [isMuted, setIsMuted] = useState(false)
+  const [playbackTime, setPlaybackTime] = useState(0)
   const [stories, setStories] = useState<
     Array<{ id: number; author: string; title: string; content: string; date: string }>
   >([])
@@ -52,13 +53,12 @@ export default function GlendaMemorial() {
     { src: "/glenda-beach-walk.jpeg", caption: "Beach walk with family" },
   ])
   const [currentUser, setCurrentUser] = useState("")
-  const audioRef = useRef<HTMLAudioElement>(null)
   const { toast } = useToast()
 
   const songs = [
-    { title: "Amazing Grace", artist: "Traditional", duration: "3:45", url: "/audio/amazing-grace.mp3" },
-    { title: "How Great Thou Art", artist: "Traditional", duration: "4:12", url: "/audio/how-great-thou-art.mp3" },
-    { title: "In the Garden", artist: "Traditional", duration: "3:28", url: "/audio/in-the-garden.mp3" },
+    { title: "Amazing Grace", artist: "Traditional", duration: "3:45", totalSeconds: 225 },
+    { title: "How Great Thou Art", artist: "Traditional", duration: "4:12", totalSeconds: 252 },
+    { title: "In the Garden", artist: "Traditional", duration: "3:28", totalSeconds: 208 },
   ]
 
   const familyTree = [
@@ -91,18 +91,46 @@ export default function GlendaMemorial() {
     if (currentSong !== songIndex) {
       setCurrentSong(songIndex)
       setIsPlaying(true)
+      setPlaybackTime(0)
+      toast({
+        title: "Now Playing",
+        description: `${songs[songIndex].title} by ${songs[songIndex].artist}`,
+      })
     } else {
       setIsPlaying(!isPlaying)
-    }
-
-    // Simulate audio playback
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause()
+      if (!isPlaying) {
+        toast({
+          title: "Music Resumed",
+          description: `${songs[songIndex].title}`,
+        })
       } else {
-        audioRef.current.play()
+        toast({
+          title: "Music Paused",
+          description: `${songs[songIndex].title}`,
+        })
       }
     }
+
+    // Simulate playback progress
+    if (!isPlaying && currentSong === songIndex) {
+      const interval = setInterval(() => {
+        setPlaybackTime((prev) => {
+          const newTime = prev + 1
+          if (newTime >= songs[songIndex].totalSeconds) {
+            setIsPlaying(false)
+            clearInterval(interval)
+            return 0
+          }
+          return newTime
+        })
+      }, 1000)
+    }
+  }
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
   const handleAddStory = (title: string, content: string) => {
@@ -128,6 +156,12 @@ export default function GlendaMemorial() {
       title: "Story Added",
       description: "Your story has been added to Glenda's memorial.",
     })
+
+    // Clear the form
+    const titleInput = document.getElementById("story-title") as HTMLInputElement
+    const contentInput = document.getElementById("story-content") as HTMLTextAreaElement
+    if (titleInput) titleInput.value = ""
+    if (contentInput) contentInput.value = ""
   }
 
   const handleAddMessage = (content: string) => {
@@ -152,6 +186,10 @@ export default function GlendaMemorial() {
       title: "Message Added",
       description: "Your message has been added to Glenda's memorial.",
     })
+
+    // Clear the form
+    const messageInput = document.getElementById("message-content") as HTMLTextAreaElement
+    if (messageInput) messageInput.value = ""
   }
 
   const handleAddPhoto = (files: FileList | null, caption: string) => {
@@ -177,19 +215,17 @@ export default function GlendaMemorial() {
       title: "Photos Added",
       description: `${files.length} photo(s) have been added to Glenda's memorial.`,
     })
+
+    // Clear the form
+    const photoInput = document.getElementById("photo-upload") as HTMLInputElement
+    const captionInput = document.getElementById("photo-caption") as HTMLTextAreaElement
+    if (photoInput) photoInput.value = ""
+    if (captionInput) captionInput.value = ""
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-
-      {/* Hidden audio element for music playback */}
-      <audio
-        ref={audioRef}
-        src={songs[currentSong]?.url}
-        volume={isMuted ? 0 : volume}
-        onEnded={() => setIsPlaying(false)}
-      />
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-slate-900 to-slate-700 text-white">
@@ -472,6 +508,11 @@ export default function GlendaMemorial() {
                           <div>
                             <h4 className="font-medium">{song.title}</h4>
                             <p className="text-sm text-gray-600">{song.artist}</p>
+                            {currentSong === index && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                {isPlaying ? "Playing..." : "Paused"} - {formatTime(playbackTime)} / {song.duration}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center space-x-4">
@@ -484,7 +525,7 @@ export default function GlendaMemorial() {
                               min="0"
                               max="1"
                               step="0.1"
-                              value={volume}
+                              value={isMuted ? 0 : volume}
                               onChange={(e) => setVolume(Number.parseFloat(e.target.value))}
                               className="w-16"
                             />
