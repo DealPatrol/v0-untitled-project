@@ -2,32 +2,37 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { QrCode, Menu } from "lucide-react"
+import { Menu } from "lucide-react"
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
 
   const navigation = [
+    { name: "Home", href: "/" },
     { name: "How It Works", href: "/how-it-works" },
-    { name: "Pricing", href: "/pricing" },
+    { name: "Programs", href: "/programs" },
     { name: "Browse Memorials", href: "/browse-memorials" },
     { name: "Our Story", href: "/our-story" },
-    { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/contact" },
   ]
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+    <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-              <QrCode className="w-5 h-5 text-white" />
-            </div>
-            <span className="memorial-logo text-xl font-bold">Memorial QR</span>
+            <Image
+              src="/memorial-qr-logo.png"
+              alt="Memorial QR"
+              width={180}
+              height={40}
+              priority
+              className="h-8 w-auto sm:h-10"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -36,52 +41,44 @@ export function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors"
               >
                 {item.name}
               </Link>
             ))}
-          </nav>
-
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button
-              asChild
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-            >
+            <Button asChild className="bg-purple-600 hover:bg-purple-700">
               <Link href="/pricing">Get Started</Link>
             </Button>
-          </div>
+          </nav>
 
-          {/* Mobile Menu */}
+          {/* Mobile menu button */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon">
-                <Menu className="w-6 h-6" />
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col space-y-4 mt-8">
+                <div className="flex items-center justify-between mb-8">
+                  <Image src="/memorial-qr-logo.png" alt="Memorial QR" width={150} height={35} className="h-8 w-auto" />
+                </div>
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-gray-600 hover:text-gray-900 font-medium py-2 transition-colors"
+                    className="text-gray-700 hover:text-purple-600 px-3 py-2 text-base font-medium transition-colors border-b border-gray-100"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}
                   </Link>
                 ))}
-                <div className="pt-4 border-t">
-                  <Button
-                    asChild
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  >
-                    <Link href="/pricing" onClick={() => setIsOpen(false)}>
-                      Get Started
-                    </Link>
-                  </Button>
-                </div>
+                <Button asChild className="bg-purple-600 hover:bg-purple-700 mt-4">
+                  <Link href="/pricing" onClick={() => setIsOpen(false)}>
+                    Get Started
+                  </Link>
+                </Button>
               </div>
             </SheetContent>
           </Sheet>
@@ -90,5 +87,3 @@ export function Header() {
     </header>
   )
 }
-
-export default Header
