@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -6,9 +9,138 @@ import { Header } from "@/components/header"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { StarRating } from "@/components/star-rating"
 import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
-import { Heart, QrCode, Shield, Clock, Users, Star, ArrowRight, Play, Smartphone, Globe, Lock } from "lucide-react"
+import {
+  Heart,
+  QrCode,
+  Shield,
+  Clock,
+  Users,
+  ArrowRight,
+  Play,
+  Smartphone,
+  Globe,
+  Lock,
+  Pause,
+  Volume2,
+  VolumeX,
+} from "lucide-react"
+import { useAnalytics } from "@/lib/analytics"
+import { useToast } from "@/hooks/use-toast"
+import dynamic from "next/dynamic"
+
+// Dynamic imports for better performance
+const PreservationInfo = dynamic(() => import("@/components/preservation-info"), {
+  loading: () => <div className="animate-pulse bg-gray-200 h-32 rounded-lg"></div>,
+})
+const TestimonialSection = dynamic(() => import("@/components/testimonial-section"), {
+  loading: () => <div className="animate-pulse bg-gray-200 h-96 rounded-lg"></div>,
+})
 
 export default function HomePage() {
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [isMuted, setIsMuted] = useState(true)
+  const [videoStartTime, setVideoStartTime] = useState<number | null>(null)
+
+  const { trackEvent } = useAnalytics()
+  const { toast } = useToast()
+
+  useEffect(() => {
+    try {
+      // Track page view
+      trackEvent("homepage_view", {
+        timestamp: new Date().toISOString(),
+        userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+        referrer: typeof document !== "undefined" ? document.referrer : "",
+      })
+
+      // Register performance check (server-side only)
+      const registerCheck = async () => {
+        try {
+          await fetch("/api/register-check", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: "homepage_load",
+              externalId: `homepage-${Date.now()}`,
+            }),
+          })
+        } catch (error) {
+          console.error("Failed to register homepage check:", error)
+        }
+      }
+
+      registerCheck()
+    } catch (error) {
+      console.error("Homepage initialization error:", error)
+    }
+  }, [trackEvent])
+
+  const handleVideoPlay = () => {
+    try {
+      const newPlayState = !isVideoPlaying
+      setIsVideoPlaying(newPlayState)
+
+      if (newPlayState) {
+        setVideoStartTime(Date.now())
+        trackEvent("video_play", {
+          video_id: "memorial_demo",
+          timestamp: new Date().toISOString(),
+          muted: isMuted,
+        })
+      } else {
+        const watchTime = videoStartTime ? Date.now() - videoStartTime : 0
+        trackEvent("video_pause", {
+          video_id: "memorial_demo",
+          watch_time_ms: watchTime,
+          timestamp: new Date().toISOString(),
+        })
+      }
+    } catch (error) {
+      console.error("Video play error:", error)
+    }
+  }
+
+  const handleVideoMute = () => {
+    try {
+      const newMuteState = !isMuted
+      setIsMuted(newMuteState)
+
+      trackEvent("video_mute_toggle", {
+        video_id: "memorial_demo",
+        muted: newMuteState,
+        timestamp: new Date().toISOString(),
+      })
+    } catch (error) {
+      console.error("Video mute error:", error)
+    }
+  }
+
+  const handleMemorialCreation = () => {
+    try {
+      trackEvent("cta_click", {
+        button: "create_memorial_now",
+        location: "hero_section",
+        timestamp: new Date().toISOString(),
+      })
+    } catch (error) {
+      console.error("CTA click tracking error:", error)
+    }
+  }
+
+  const handleViewExamples = () => {
+    try {
+      trackEvent("cta_click", {
+        button: "view_examples",
+        location: "hero_section",
+        timestamp: new Date().toISOString(),
+      })
+    } catch (error) {
+      console.error("CTA click tracking error:", error)
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -38,16 +170,42 @@ export default function HomePage() {
               <StarRating rating={5} showReviews={true} reviewCount={10247} size="lg" />
             </div>
 
-            {/* YouTube Video - Centered */}
+            {/* YouTube Video - Centered with Enhanced Controls */}
             <div className="mb-8 flex justify-center">
-              <div className="video-container rounded-lg overflow-hidden shadow-2xl border-2 border-white/20 max-w-md w-full">
-                <iframe
-                  src="https://www.youtube.com/embed/XsWR_-Yv96Y?autoplay=1&mute=0&controls=1&rel=0"
-                  title="Memorial QR Video"
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+              <div className="relative bg-black/20 backdrop-blur-sm rounded-2xl p-6 border border-white/10 max-w-2xl w-full">
+                <h3 className="text-xl font-semibold mb-4 text-white">See How Memorial QR Works</h3>
+                <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
+                  <iframe
+                    src={`https://www.youtube.com/embed/XsWR_-Yv96Y?autoplay=${isVideoPlaying ? 1 : 0}&mute=${isMuted ? 1 : 0}&controls=1&rel=0&modestbranding=1`}
+                    title="Memorial QR Video"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+
+                  {/* Custom Video Controls */}
+                  <div className="absolute bottom-4 right-4 flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={handleVideoPlay}
+                      className="bg-black/50 hover:bg-black/70 text-white border-white/20 backdrop-blur-sm"
+                    >
+                      {isVideoPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={handleVideoMute}
+                      className="bg-black/50 hover:bg-black/70 text-white border-white/20 backdrop-blur-sm"
+                    >
+                      {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-sm text-white/70 mt-2 text-center">
+                  Watch how families create lasting digital memorials
+                </p>
               </div>
             </div>
 
@@ -57,6 +215,7 @@ export default function HomePage() {
                 asChild
                 size="lg"
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8 py-4 btn-hover-lift"
+                onClick={handleMemorialCreation}
               >
                 <Link href="/pricing">
                   Create Memorial Now
@@ -69,6 +228,7 @@ export default function HomePage() {
                 variant="outline"
                 size="lg"
                 className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4 bg-transparent"
+                onClick={handleViewExamples}
               >
                 <Link href="/browse-memorials">
                   <Play className="mr-2 w-5 h-5" />
@@ -146,7 +306,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Everything You Need</h2>
@@ -207,65 +367,17 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Preservation Info Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <PreservationInfo />
+        </div>
+      </section>
+
       {/* Testimonials Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Families Say</h2>
-            <p className="text-xl text-gray-600">
-              Hear from families who have honored their loved ones with Memorial QR
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4">
-                  "Memorial QR helped us create a beautiful tribute to my father. The QR code on his headstone allows
-                  visitors to see his life story and photos."
-                </p>
-                <div className="font-semibold text-gray-900">Sarah Johnson</div>
-                <div className="text-sm text-gray-500">Verified Customer</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4">
-                  "The process was so easy and the support team was incredibly helpful. Our family can now share
-                  memories and photos in one place."
-                </p>
-                <div className="font-semibold text-gray-900">Michael Chen</div>
-                <div className="text-sm text-gray-500">Verified Customer</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4">
-                  "What a wonderful way to keep mom's memory alive. Friends and family love being able to access her
-                  photos and stories anytime."
-                </p>
-                <div className="font-semibold text-gray-900">Lisa Rodriguez</div>
-                <div className="text-sm text-gray-500">Verified Customer</div>
-              </CardContent>
-            </Card>
-          </div>
+          <TestimonialSection />
         </div>
       </section>
 

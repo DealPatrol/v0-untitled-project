@@ -1,57 +1,88 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { Header } from "@/components/header"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function CreateProfileLoading() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100">
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+
       {/* Progress Header Skeleton */}
-      <section className="py-8 bg-white border-b">
-        <div className="container mx-auto px-4">
+      <div className="bg-white border-b">
+        <div className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <div className="h-8 bg-gray-200 rounded animate-pulse mb-2 max-w-md mx-auto" />
-              <div className="h-4 bg-gray-200 rounded animate-pulse max-w-sm mx-auto" />
+            <div className="flex items-center justify-between mb-4">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-4 w-20" />
             </div>
 
-            <Progress value={0} className="mb-8" />
+            <Skeleton className="h-2 w-full mb-4" />
 
-            <div className="flex justify-between items-center">
-              {[1, 2, 3, 4, 5, 6].map((step) => (
-                <div key={step} className="flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-full bg-gray-200 animate-pulse mb-2" />
-                  <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+            <div className="flex items-center justify-between">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className={`flex items-center ${i < 4 ? "flex-1" : ""}`}>
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <Skeleton className="ml-2 h-4 w-24" />
+                  {i < 4 && <Skeleton className="flex-1 h-0.5 mx-4" />}
                 </div>
               ))}
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Form Content Skeleton */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <Card>
-              <CardHeader>
-                <div className="h-6 bg-gray-200 rounded animate-pulse" />
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="h-10 bg-gray-200 rounded animate-pulse" />
-                  <div className="h-10 bg-gray-200 rounded animate-pulse" />
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg border">
+            {/* Card Header Skeleton */}
+            <div className="p-6 border-b">
+              <Skeleton className="h-6 w-48" />
+            </div>
+
+            {/* Card Content Skeleton */}
+            <div className="p-6 space-y-6">
+              {/* Form Fields Skeleton */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <Skeleton className="h-4 w-20 mb-2" />
+                  <Skeleton className="h-10 w-full" />
                 </div>
-                <div className="h-10 bg-gray-200 rounded animate-pulse" />
-                <div className="h-24 bg-gray-200 rounded animate-pulse" />
-              </CardContent>
-            </Card>
+                <div>
+                  <Skeleton className="h-4 w-20 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
 
-            <div className="flex justify-between mt-8">
-              <div className="h-10 w-24 bg-gray-200 rounded animate-pulse" />
-              <div className="h-10 w-24 bg-gray-200 rounded animate-pulse" />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div>
+                  <Skeleton className="h-4 w-28 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div>
+                  <Skeleton className="h-4 w-28 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
+
+              {/* Navigation Buttons Skeleton */}
+              <div className="flex justify-between pt-6 border-t">
+                <Skeleton className="h-10 w-24" />
+                <Skeleton className="h-10 w-20" />
+              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   )
 }

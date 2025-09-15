@@ -1,325 +1,241 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
-import { Search, Phone, Mail, MessageCircle, Book, Video, FileText, Users, HelpCircle } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import Link from "next/link"
+import {
+  Search,
+  BookOpen,
+  Video,
+  MessageCircle,
+  Phone,
+  Mail,
+  HelpCircle,
+  FileText,
+  Settings,
+  CreditCard,
+  Truck,
+  Shield,
+} from "lucide-react"
 
 const helpCategories = [
   {
     title: "Getting Started",
-    icon: Book,
+    icon: BookOpen,
+    description: "Learn how to create your first memorial",
     articles: [
-      "How to create your first memorial",
-      "Understanding QR code plaques",
-      "Setting up memorial privacy",
-      "Adding photos and stories",
+      "How to create a memorial account",
+      "Uploading your first photos and videos",
+      "Customizing your memorial design",
+      "Understanding QR codes",
     ],
   },
   {
-    title: "Account Management",
-    icon: Users,
+    title: "Account & Settings",
+    icon: Settings,
+    description: "Manage your account and memorial settings",
     articles: [
-      "Managing your memorial account",
-      "Updating memorial information",
-      "Adding family administrators",
-      "Changing notification settings",
+      "Updating your account information",
+      "Privacy and sharing settings",
+      "Inviting family members",
+      "Changing memorial themes",
+    ],
+  },
+  {
+    title: "Billing & Payments",
+    icon: CreditCard,
+    description: "Questions about payments and billing",
+    articles: [
+      "Understanding our pricing",
+      "Payment methods accepted",
+      "Refund policy and process",
+      "Billing questions and receipts",
+    ],
+  },
+  {
+    title: "Shipping & Delivery",
+    icon: Truck,
+    description: "Information about your memorial plaque",
+    articles: [
+      "Shipping times and tracking",
+      "International shipping options",
+      "Plaque customization options",
+      "Replacement and warranty",
     ],
   },
   {
     title: "Technical Support",
-    icon: HelpCircle,
+    icon: Shield,
+    description: "Technical issues and troubleshooting",
     articles: [
-      "QR code not scanning properly",
-      "Memorial page loading issues",
-      "Photo upload problems",
-      "Mobile device compatibility",
+      "QR code not working",
+      "Upload issues and solutions",
+      "Browser compatibility",
+      "Mobile app troubleshooting",
     ],
   },
   {
-    title: "Billing & Orders",
+    title: "Memorial Management",
     icon: FileText,
+    description: "Managing your memorial content",
     articles: [
-      "Understanding your invoice",
-      "Tracking your QR plaque order",
-      "Requesting refunds",
-      "Updating billing information",
+      "Adding and organizing photos",
+      "Creating photo albums",
+      "Managing family contributions",
+      "Editing memorial information",
     ],
   },
 ]
 
-const quickLinks = [
-  {
-    title: "Video Tutorials",
-    description: "Step-by-step video guides",
-    icon: Video,
-    href: "#",
-  },
-  {
-    title: "Live Chat",
-    description: "Chat with our support team",
-    icon: MessageCircle,
-    href: "/contact",
-  },
-  {
-    title: "Phone Support",
-    description: "Call 1-800-MEMORIAL",
-    icon: Phone,
-    href: "tel:1-800-MEMORIAL",
-  },
-  {
-    title: "Email Support",
-    description: "Send us your questions",
-    icon: Mail,
-    href: "mailto:support@memorialqr.com",
-  },
+const popularArticles = [
+  "How to create your first memorial",
+  "Understanding QR code technology",
+  "Inviting family members to contribute",
+  "Customizing your memorial design",
+  "Shipping and delivery information",
+  "Privacy settings and controls",
+  "Troubleshooting QR code issues",
+  "Managing memorial content",
 ]
 
-export default function HelpPage() {
+export default function Help() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Header />
 
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-orange-50 to-orange-100">
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-6 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-lg">
-            <HelpCircle className="w-4 h-4 mr-2" />
-            Help Center
-          </Badge>
-
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">How Can We Help You?</h1>
-
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Find answers to your questions, learn how to use our platform, or get in touch with our support team.
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Help Center</h1>
+          <p className="text-xl text-purple-100 max-w-2xl mx-auto mb-8">
+            Find answers to your questions and get the help you need
           </p>
 
           {/* Search Bar */}
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              placeholder="Search for help articles..."
-              className="pl-12 pr-4 py-4 text-lg border-2 border-orange-200 focus:border-orange-500"
-            />
+          <div className="max-w-2xl mx-auto">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                placeholder="Search for help articles..."
+                className="pl-12 py-4 text-lg bg-white/10 border-white/20 text-white placeholder-white/70"
+              />
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Quick Links */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Quick Support Options</h2>
+      <div className="container mx-auto px-4 py-16">
+        {/* Quick Actions */}
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
+          <Card className="text-center hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Video className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <CardTitle>Video Tutorials</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">Watch step-by-step video guides</p>
+              <Button className="w-full">Watch Videos</Button>
+            </CardContent>
+          </Card>
 
-          <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {quickLinks.map((link, index) => (
-              <Card key={index} className="border-2 border-orange-100 hover:border-orange-300 transition-colors">
-                <CardContent className="p-6 text-center">
-                  <link.icon className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{link.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{link.description}</p>
-                  <Button asChild size="sm" className="bg-orange-600 hover:bg-orange-700">
-                    <Link href={link.href}>Get Help</Link>
+          <Card className="text-center hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <MessageCircle className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <CardTitle>Live Chat</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">Chat with our support team</p>
+              <Button className="w-full">Start Chat</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Phone className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <CardTitle>Phone Support</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">Call us for immediate help</p>
+              <Button variant="outline" className="w-full bg-transparent">
+                1-800-MEMORIAL
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Help Categories */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Browse Help Topics</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {helpCategories.map((category, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <category.icon className="w-8 h-8 text-purple-600 mb-2" />
+                  <CardTitle className="text-xl">{category.title}</CardTitle>
+                  <p className="text-gray-600">{category.description}</p>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {category.articles.map((article, articleIndex) => (
+                      <li key={articleIndex}>
+                        <Link href="#" className="text-purple-600 hover:text-purple-800 text-sm hover:underline">
+                          {article}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button variant="outline" className="w-full mt-4 bg-transparent">
+                    View All Articles
                   </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* Help Categories */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Browse Help Topics</h2>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {helpCategories.map((category, index) => (
-              <Card key={index} className="border-2 border-gray-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <category.icon className="w-6 h-6 text-orange-600" />
-                    {category.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    {category.articles.map((article, articleIndex) => (
-                      <li key={articleIndex}>
-                        <Link
-                          href="#"
-                          className="text-gray-700 hover:text-orange-600 transition-colors flex items-center gap-2"
-                        >
-                          <span className="w-2 h-2 bg-orange-600 rounded-full" />
-                          {article}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        {/* Popular Articles */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Popular Articles</h2>
+          <Card>
+            <CardContent className="p-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                {popularArticles.map((article, index) => (
+                  <Link
+                    key={index}
+                    href="#"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <HelpCircle className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                    <span className="text-gray-700 hover:text-purple-600">{article}</span>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </section>
 
-      {/* Popular Articles */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Popular Help Articles</h2>
-
-          <div className="max-w-4xl mx-auto space-y-6">
-            <Card className="border-2 border-gray-200">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  How long does it take to receive my QR code plaque?
-                </h3>
-                <p className="text-gray-600">
-                  QR code plaques are professionally engraved and ship within 3-5 business days via USPS Priority Mail.
-                  You'll receive tracking information once your order ships.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-gray-200">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Can I update the memorial after it's created?
-                </h3>
-                <p className="text-gray-600">
-                  Yes! You can log into your account anytime to add photos, update information, moderate messages, and
-                  make changes to your memorial. There are no limits on updates.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-gray-200">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">What if the QR code gets damaged?</h3>
-                <p className="text-gray-600">
-                  Our QR codes are weatherproof and designed to last for decades. If your plaque is damaged within 5
-                  years, we'll replace it free of charge under our durability guarantee.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-gray-200">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  How do I make my memorial private or public?
-                </h3>
-                <p className="text-gray-600">
-                  You can control privacy settings in your memorial dashboard. Choose to make it completely public,
-                  password-protected, or restricted to specific people you invite.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact CTA */}
-      <section className="py-20 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Still Need Help?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Our compassionate support team is available 24/7 to help you create the perfect memorial for your loved one.
+        {/* Contact Support */}
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Still Need Help?</h2>
+          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            Can't find what you're looking for? Our support team is here to help you every step of the way.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              asChild
-              size="lg"
-              className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-xl font-bold"
-            >
-              <Link href="/contact">Contact Support</Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg">
+              <Link href="/contact">
+                <Mail className="w-4 h-4 mr-2" />
+                Contact Support
+              </Link>
             </Button>
 
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="border-white text-white hover:bg-white hover:text-orange-600 px-8 py-4 text-lg bg-transparent"
-            >
-              <Link href="tel:1-800-MEMORIAL">Call 1-800-MEMORIAL</Link>
+            <Button variant="outline" size="lg">
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Start Live Chat
             </Button>
           </div>
         </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
-              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <Link href="/how-it-works" className="hover:text-white">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pricing" className="hover:text-white">
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/browse-memorials" className="hover:text-white">
-                    Sample Memorials
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <Link href="/help" className="hover:text-white">
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-white">
-                    Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/faq" className="hover:text-white">
-                    FAQ
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <Link href="/privacy-policy" className="hover:text-white">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms-of-service" className="hover:text-white">
-                    Terms of Service
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   )
 }

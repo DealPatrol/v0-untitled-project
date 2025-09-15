@@ -30,6 +30,7 @@ export default function CreateMemorialPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [orderId, setOrderId] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [hasCheckedOrder, setHasCheckedOrder] = useState(false)
 
   const [formData, setFormData] = useState({
     // Step 1: Basic Information
@@ -61,20 +62,23 @@ export default function CreateMemorialPage() {
   })
 
   useEffect(() => {
-    const order = searchParams.get("order")
+    if (!hasCheckedOrder) {
+      const order = searchParams.get("order")
 
-    if (!order) {
-      toast({
-        title: "Access Denied",
-        description: "Please complete your purchase first to create your memorial.",
-        variant: "destructive",
-      })
-      router.push("/products")
-      return
+      if (!order) {
+        toast({
+          title: "Access Denied",
+          description: "Please complete your purchase first to create your memorial.",
+          variant: "destructive",
+        })
+        router.push("/products")
+        return
+      }
+
+      setOrderId(order)
+      setHasCheckedOrder(true)
     }
-
-    setOrderId(order)
-  }, [searchParams, router, toast])
+  }, [searchParams, router, toast, hasCheckedOrder])
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -126,6 +130,14 @@ export default function CreateMemorialPage() {
   }
 
   const progress = (currentStep / steps.length) * 100
+
+  if (!hasCheckedOrder) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
+      </div>
+    )
+  }
 
   if (!orderId) {
     return (

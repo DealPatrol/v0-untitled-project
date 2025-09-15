@@ -15,7 +15,6 @@ export function Header() {
     { name: "Programs", href: "/programs" },
     { name: "How It Works", href: "/how-it-works" },
     { name: "Our Story", href: "/our-story" },
-    { name: "QR Generator", href: "/qr-generator" },
     { name: "Contact", href: "/contact" },
   ]
 
@@ -23,7 +22,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center">
-          <span className="font-script text-2xl text-slate-800">Memorial QR</span>
+          <span className="memorial-logo memorial-logo-text font-dancing text-2xl text-slate-800">Memorial QR</span>
         </Link>
 
         {/* Desktop Navigation */}

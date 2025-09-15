@@ -1,13 +1,13 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
+import { Loader2 } from "lucide-react"
 
 interface StripeCheckoutFormProps {
   clientSecret: string
@@ -38,7 +38,7 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/create-profile`,
+          return_url: `${window.location.origin}/checkout/success`,
         },
         redirect: "if_required",
       })
@@ -59,9 +59,6 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
           title: "Payment Successful",
           description: "Your memorial order has been processed.",
         })
-
-        // Redirect to memorial creation
-        window.location.href = `/create-profile?payment_intent=${paymentIntent.id}`
       }
     } catch (err) {
       const errorMessage = "An unexpected error occurred during payment processing."
@@ -82,7 +79,7 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
             <span className="ml-2 text-gray-600">Loading payment form...</span>
           </div>
         </CardContent>
@@ -142,7 +139,7 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
           >
             {isLoading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing...
               </>
             ) : (
