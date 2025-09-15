@@ -18,11 +18,11 @@
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
@@ -59,11 +59,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --radius: 0.5rem;
   }
 }
 
@@ -131,9 +127,21 @@ body {
 
 .memorial-logo-text {
   position: relative;
+  display: inline-block;
   letter-spacing: 0.05em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   animation: gentle-glow 4s ease-in-out infinite;
+}
+
+.memorial-logo-underline {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #a855f7, #ec4899, #3b82f6);
+  opacity: 0.6;
+  border-radius: 9999px;
 }
 
 .memorial-logo-text::before {
@@ -272,6 +280,10 @@ body {
   .no-print {
     display: none !important;
   }
+  .memorial-logo-underline {
+    background: #000;
+    opacity: 0.8;
+  }
 }
 
 /* Animation keyframes */
@@ -312,6 +324,25 @@ body {
 
 .animate-gentle-pulse {
   animation: gentle-pulse 2s ease-in-out infinite;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .animate-gentle-pulse {
+    animation: none;
+  }
+
+  .memorial-logo-text {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .memorial-logo-underline {
+    opacity: 1;
+    height: 3px;
+  }
 }
 
 /* Memorial specific styles */
@@ -480,28 +511,6 @@ body {
 @media (max-width: 640px) {
   .memorial-logo-text {
     letter-spacing: 0.02em;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .memorial-logo-text {
-    text-shadow: none;
-    font-weight: 700;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .memorial-logo-text,
-  .memorial-flourish::before,
-  .memorial-flourish::after,
-  .animate-pulse {
-    animation: none;
-  }
-
-  .memorial-logo:hover {
-    transform: none;
   }
 }
 

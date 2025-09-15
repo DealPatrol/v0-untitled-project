@@ -1,7 +1,4 @@
-"use client"
-
 import { Heart, Sparkles } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 interface MemorialLogoProps {
   size?: "sm" | "md" | "lg" | "xl"
@@ -10,53 +7,45 @@ interface MemorialLogoProps {
   className?: string
 }
 
+const sizeClasses = {
+  sm: "text-lg",
+  md: "text-2xl",
+  lg: "text-4xl",
+  xl: "text-6xl",
+}
+
+const iconSizes = {
+  sm: "w-3 h-3",
+  md: "w-4 h-4",
+  lg: "w-5 h-5",
+  xl: "w-6 h-6",
+}
+
+const variantClasses = {
+  default: "text-slate-800",
+  light: "text-white",
+  dark: "text-slate-900",
+  gradient: "gradient-text",
+}
+
 export function MemorialLogo({
   size = "md",
   variant = "default",
   showDecorations = true,
-  className,
+  className = "",
 }: MemorialLogoProps) {
-  const sizeClasses = {
-    sm: "text-lg",
-    md: "text-2xl",
-    lg: "text-4xl",
-    xl: "text-6xl",
-  }
-
-  const iconSizes = {
-    sm: "w-3 h-3",
-    md: "w-4 h-4",
-    lg: "w-5 h-5",
-    xl: "w-6 h-6",
-  }
-
-  const variantClasses = {
-    default: "text-slate-800",
-    light: "text-white",
-    dark: "text-slate-900",
-    gradient: "gradient-text",
-  }
+  const baseClasses = `memorial-logo memorial-logo-text font-dancing font-semibold ${sizeClasses[size]} ${variantClasses[variant]} ${className}`
 
   return (
-    <div className={cn("memorial-logo flex items-center gap-2", className)}>
-      {showDecorations && <Heart className={cn(iconSizes[size], "text-rose-400 animate-gentle-pulse")} />}
-
-      <span
-        className={cn(
-          "memorial-logo-text font-dancing font-semibold tracking-wide relative",
-          sizeClasses[size],
-          variantClasses[variant],
-        )}
-      >
+    <div className="relative inline-flex items-center">
+      {showDecorations && <Heart className={`${iconSizes[size]} text-pink-400 animate-gentle-pulse mr-2`} />}
+      <span className={baseClasses}>
         Memorial QR
+        <div className="memorial-logo-underline"></div>
       </span>
-
-      {showDecorations && (
-        <Sparkles
-          className={cn(iconSizes[size], "text-purple-400 animate-gentle-pulse")}
-          style={{ animationDelay: "1s" }}
-        />
-      )}
+      {showDecorations && <Sparkles className={`${iconSizes[size]} text-purple-400 animate-gentle-pulse ml-2`} />}
     </div>
   )
 }
+
+export default MemorialLogo
