@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,21 +12,7 @@ import { StarRating } from "@/components/star-rating"
 import { HomepageStickyCTA } from "@/components/homepage-sticky-cta"
 import PreservationInfo from "@/components/preservation-info"
 import TestimonialSection from "@/components/testimonial-section"
-import {
-  Heart,
-  QrCode,
-  Smartphone,
-  Clock,
-  Shield,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  RotateCcw,
-  CheckCircle,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react"
+import { Heart, QrCode, Smartphone, Clock, Shield, CheckCircle, ArrowRight, Sparkles } from "lucide-react"
 
 // Analytics tracking function
 const trackEvent = async (eventName: string, data: any) => {
@@ -41,100 +27,21 @@ const trackEvent = async (eventName: string, data: any) => {
   }
 }
 
-// Video interaction tracking
-const trackVideoInteraction = (action: string, videoId: string) => {
-  try {
-    trackEvent("video_interaction", {
-      action,
-      videoId,
-      timestamp: new Date().toISOString(),
-    })
-  } catch (error) {
-    console.error("Video tracking failed:", error)
-  }
-}
-
 export default function HomePage() {
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const [isVideoMuted, setIsVideoMuted] = useState(true)
-  const [videoCurrentTime, setVideoCurrentTime] = useState(0)
-  const [videoDuration, setVideoDuration] = useState(0)
-  const [showVideoControls, setShowVideoControls] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
-
   // Track homepage view
   useEffect(() => {
     try {
       trackEvent("homepage_view", {
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        referrer: document.referrer,
+        userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+        referrer: typeof document !== "undefined" ? document.referrer : "",
         page: "/",
-        url: window.location.href,
+        url: typeof window !== "undefined" ? window.location.href : "",
       })
     } catch (error) {
       console.error("Homepage view tracking failed:", error)
     }
   }, [])
-
-  // Video control functions with analytics
-  const handlePlayPause = () => {
-    try {
-      if (videoRef.current) {
-        if (isVideoPlaying) {
-          videoRef.current.pause()
-          trackVideoInteraction("pause", "homepage-hero-video")
-        } else {
-          videoRef.current.play()
-          trackVideoInteraction("play", "homepage-hero-video")
-        }
-        setIsVideoPlaying(!isVideoPlaying)
-      }
-    } catch (error) {
-      console.error("Video play/pause failed:", error)
-    }
-  }
-
-  const handleMuteToggle = () => {
-    try {
-      if (videoRef.current) {
-        videoRef.current.muted = !isVideoMuted
-        setIsVideoMuted(!isVideoMuted)
-        trackVideoInteraction(isVideoMuted ? "unmute" : "mute", "homepage-hero-video")
-      }
-    } catch (error) {
-      console.error("Video mute toggle failed:", error)
-    }
-  }
-
-  const handleVideoRestart = () => {
-    try {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0
-        setVideoCurrentTime(0)
-        trackVideoInteraction("restart", "homepage-hero-video")
-      }
-    } catch (error) {
-      console.error("Video restart failed:", error)
-    }
-  }
-
-  const handleTimeUpdate = () => {
-    try {
-      if (videoRef.current) {
-        setVideoCurrentTime(videoRef.current.currentTime)
-        setVideoDuration(videoRef.current.duration)
-      }
-    } catch (error) {
-      console.error("Video time update failed:", error)
-    }
-  }
-
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60)
-    const seconds = Math.floor(time % 60)
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`
-  }
 
   const features = [
     {
@@ -156,55 +63,6 @@ export default function HomePage() {
       icon: Shield,
       title: "Secure & Private",
       description: "Your memorial content is protected with enterprise-grade security and privacy controls",
-    },
-  ]
-
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      location: "Denver, CO",
-      text: "Memorial QR helped us create a beautiful tribute for my father. The QR plaque at his gravesite allows visitors to see his life story and photos.",
-      rating: 5,
-    },
-    {
-      name: "Michael Chen",
-      location: "Seattle, WA",
-      text: "The digital memorial has brought our family closer together. We can all contribute memories and stories in one place.",
-      rating: 5,
-    },
-    {
-      name: "Lisa Rodriguez",
-      location: "Austin, TX",
-      text: "Professional service and beautiful results. The memorial plaque looks elegant and the digital content is easy to manage.",
-      rating: 5,
-    },
-  ]
-
-  const faqs = [
-    {
-      question: "How long do the QR codes last?",
-      answer:
-        "Our QR codes are designed to last indefinitely. The physical plaques are made from weather-resistant materials, and your digital memorial is hosted on our secure servers with 99.9% uptime guarantee.",
-    },
-    {
-      question: "Can family members add content to the memorial?",
-      answer:
-        "Yes! You can invite family members and friends to contribute photos, videos, stories, and memories. You maintain full control over what gets published to the memorial.",
-    },
-    {
-      question: "What happens if someone scans the QR code?",
-      answer:
-        "When someone scans the QR code with their smartphone, they'll be taken directly to your loved one's digital memorial page where they can view photos, read stories, and learn about their life.",
-    },
-    {
-      question: "Is there a monthly fee?",
-      answer:
-        "No monthly fees! You pay once for the memorial plaque and digital memorial setup. Your memorial will remain active indefinitely at no additional cost.",
-    },
-    {
-      question: "How do I update the memorial content?",
-      answer:
-        "You'll receive login credentials to easily update your memorial anytime. Add new photos, stories, or information through our user-friendly dashboard.",
     },
   ]
 
@@ -236,81 +94,21 @@ export default function HomePage() {
               of your loved one's life.
             </p>
 
-            {/* Enhanced Video Section */}
+            {/* YouTube Video Section */}
             <div className="mb-8 max-w-2xl mx-auto">
               <div className="relative bg-black/20 rounded-2xl p-4 backdrop-blur-sm">
-                <div
-                  className="relative video-container rounded-xl overflow-hidden cursor-pointer"
-                  onMouseEnter={() => setShowVideoControls(true)}
-                  onMouseLeave={() => setShowVideoControls(false)}
-                >
-                  <video
-                    ref={videoRef}
-                    className="w-full h-full object-cover"
-                    poster="/military-veterans-memorial-ceremony.png"
-                    muted={isVideoMuted}
-                    onTimeUpdate={handleTimeUpdate}
-                    onLoadedMetadata={handleTimeUpdate}
-                    onPlay={() => setIsVideoPlaying(true)}
-                    onPause={() => setIsVideoPlaying(false)}
-                  >
-                    <source src="/memorial-demo-video.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-
-                  {/* Video Controls Overlay */}
-                  <div
-                    className={`absolute inset-0 bg-black/30 flex items-center justify-center transition-opacity duration-300 ${showVideoControls ? "opacity-100" : "opacity-0"}`}
-                  >
-                    <div className="flex items-center space-x-4">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={handlePlayPause}
-                        className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                      >
-                        {isVideoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                      </Button>
-
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={handleMuteToggle}
-                        className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                      >
-                        {isVideoMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                      </Button>
-
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={handleVideoRestart}
-                        className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Video Progress Bar */}
-                  {videoDuration > 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-2">
-                      <div className="flex items-center space-x-2 text-white text-xs">
-                        <span>{formatTime(videoCurrentTime)}</span>
-                        <div className="flex-1 bg-white/20 rounded-full h-1">
-                          <div
-                            className="bg-white rounded-full h-1 transition-all duration-300"
-                            style={{ width: `${(videoCurrentTime / videoDuration) * 100}%` }}
-                          ></div>
-                        </div>
-                        <span>{formatTime(videoDuration)}</span>
-                      </div>
-                    </div>
-                  )}
+                <h3 className="text-xl font-semibold mb-4 text-white">See How Memorial QR Works</h3>
+                <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
+                  <iframe
+                    src="https://www.youtube.com/embed/XsWR_-Yv96Y?autoplay=0&mute=1&controls=1&rel=0&modestbranding=1"
+                    title="Memorial QR Video"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
                 </div>
-
                 <p className="text-white/80 text-sm mt-3 text-center">
-                  See how Memorial QR plaques honor your loved ones
+                  Watch how families create lasting digital memorials
                 </p>
               </div>
             </div>
@@ -482,18 +280,55 @@ export default function HomePage() {
 
           <div className="max-w-3xl mx-auto">
             <Accordion type="single" collapsible className="space-y-4">
-              {faqs.map((faq, index) => (
-                <AccordionItem
-                  key={index}
-                  value={`item-${index}`}
-                  className="bg-white rounded-lg border border-slate-200"
-                >
-                  <AccordionTrigger className="px-6 py-4 text-left font-semibold text-slate-900 hover:no-underline">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-4 text-slate-600">{faq.answer}</AccordionContent>
-                </AccordionItem>
-              ))}
+              <AccordionItem value="item-0" className="bg-white rounded-lg border border-slate-200">
+                <AccordionTrigger className="px-6 py-4 text-left font-semibold text-slate-900 hover:no-underline">
+                  How long do the QR codes last?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-slate-600">
+                  Our QR codes are designed to last indefinitely. The physical plaques are made from weather-resistant
+                  materials, and your digital memorial is hosted on our secure servers with 99.9% uptime guarantee.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-1" className="bg-white rounded-lg border border-slate-200">
+                <AccordionTrigger className="px-6 py-4 text-left font-semibold text-slate-900 hover:no-underline">
+                  Can family members add content to the memorial?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-slate-600">
+                  Yes! You can invite family members and friends to contribute photos, videos, stories, and memories.
+                  You maintain full control over what gets published to the memorial.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2" className="bg-white rounded-lg border border-slate-200">
+                <AccordionTrigger className="px-6 py-4 text-left font-semibold text-slate-900 hover:no-underline">
+                  What happens if someone scans the QR code?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-slate-600">
+                  When someone scans the QR code with their smartphone, they'll be taken directly to your loved one's
+                  digital memorial page where they can view photos, read stories, and learn about their life.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3" className="bg-white rounded-lg border border-slate-200">
+                <AccordionTrigger className="px-6 py-4 text-left font-semibold text-slate-900 hover:no-underline">
+                  Is there a monthly fee?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-slate-600">
+                  No monthly fees! You pay once for the memorial plaque and digital memorial setup. Your memorial will
+                  remain active indefinitely at no additional cost.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4" className="bg-white rounded-lg border border-slate-200">
+                <AccordionTrigger className="px-6 py-4 text-left font-semibold text-slate-900 hover:no-underline">
+                  How do I update the memorial content?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-slate-600">
+                  You'll receive login credentials to easily update your memorial anytime. Add new photos, stories, or
+                  information through our user-friendly dashboard.
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
           </div>
         </div>
