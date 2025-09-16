@@ -1,142 +1,337 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Shield, Lock, Cloud, Clock, Award, CheckCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import {
+  Shield,
+  Server,
+  Globe,
+  Lock,
+  Database,
+  Cloud,
+  CheckCircle,
+  Award,
+  Clock,
+  Users,
+  FileText,
+  Zap,
+} from "lucide-react"
+import Link from "next/link"
 
 export default function PreservationInfo() {
-  const securityFeatures = [
-    {
-      icon: Shield,
-      title: "Enterprise Security",
-      description: "Bank-level encryption protects all memorial content and personal information",
-    },
-    {
-      icon: Cloud,
-      title: "Cloud Backup",
-      description: "Multiple redundant backups ensure your memories are never lost",
-    },
-    {
-      icon: Lock,
-      title: "Privacy Controls",
-      description: "You control who can view and contribute to your loved one's memorial",
-    },
-    {
-      icon: Clock,
-      title: "Lifetime Hosting",
-      description: "Your memorial will remain accessible forever with 99.9% uptime guarantee",
-    },
-  ]
-
-  const complianceFeatures = [
-    "GDPR Compliant",
-    "SOC 2 Certified",
-    "ISO 27001 Certified",
-    "HIPAA Compliant",
-    "PCI DSS Compliant",
-    "CCPA Compliant",
-  ]
-
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-16">
-        <Badge className="mb-4 bg-green-100 text-green-800 border-green-200">
-          <Award className="w-4 h-4 mr-2" />
-          Trusted & Secure
-        </Badge>
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Your Memories Are Safe With Us</h2>
-        <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-          We use enterprise-grade security and compliance standards to protect your family's precious memories and
-          ensure they're preserved for generations.
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Preservation Promise</h2>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          Your loved one's digital memorial is protected with enterprise-grade security and guaranteed to last forever
         </p>
       </div>
 
-      {/* Security Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {securityFeatures.map((feature, index) => (
-          <Card key={index} className="memorial-card text-center h-full">
-            <CardHeader>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <feature.icon className="w-6 h-6 text-green-600" />
-              </div>
-              <CardTitle className="text-lg mb-2">{feature.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-slate-600">{feature.description}</CardDescription>
-            </CardContent>
-          </Card>
-        ))}
+      {/* Security Features */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card className="border-green-200 bg-green-50">
+          <CardHeader>
+            <Shield className="h-8 w-8 text-green-600 mb-2" />
+            <CardTitle className="text-green-900">Enterprise Security</CardTitle>
+            <CardDescription className="text-green-700">
+              Bank-level encryption protects all memorial data
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-green-800">
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                AES-256 encryption at rest
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                TLS 1.3 encryption in transit
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Multi-factor authentication
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Regular security audits
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <Database className="h-8 w-8 text-blue-600 mb-2" />
+            <CardTitle className="text-blue-900">Redundant Backups</CardTitle>
+            <CardDescription className="text-blue-700">Multiple backup systems ensure data safety</CardDescription>
+          </CardHeader>
+          <CardContent className="text-blue-800">
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Real-time data replication
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Geographic distribution
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Daily automated backups
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                99.99% uptime guarantee
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card className="border-purple-200 bg-purple-50">
+          <CardHeader>
+            <Globe className="h-8 w-8 text-purple-600 mb-2" />
+            <CardTitle className="text-purple-900">Global CDN</CardTitle>
+            <CardDescription className="text-purple-700">Fast access from anywhere in the world</CardDescription>
+          </CardHeader>
+          <CardContent className="text-purple-800">
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                150+ global edge locations
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Sub-second load times
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Automatic failover
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                DDoS protection
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Compliance Section */}
-      <div className="bg-slate-50 rounded-2xl p-8">
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-slate-900 mb-4">Industry Compliance & Certifications</h3>
-          <p className="text-slate-600 max-w-2xl mx-auto">
-            We maintain the highest standards of data protection and privacy compliance to ensure your family's
-            information is secure.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {complianceFeatures.map((compliance, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-center p-4 bg-white rounded-lg border border-slate-200"
-            >
-              <div className="text-center">
-                <CheckCircle className="w-6 h-6 text-green-500 mx-auto mb-2" />
-                <span className="text-sm font-medium text-slate-700">{compliance}</span>
-              </div>
+      {/* Technical Specifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Server className="h-6 w-6" />
+            Technical Specifications
+          </CardTitle>
+          <CardDescription>Enterprise-grade infrastructure powering your memorial</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h4 className="font-semibold mb-3 flex items-center gap-2">
+                <Cloud className="h-5 w-5 text-blue-600" />
+                Infrastructure
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• AWS/Google Cloud multi-region deployment</li>
+                <li>• Kubernetes orchestration for scalability</li>
+                <li>• Load balancing across multiple servers</li>
+                <li>• Automatic scaling based on demand</li>
+                <li>• 24/7 monitoring and alerting</li>
+              </ul>
             </div>
-          ))}
-        </div>
-      </div>
+            <div>
+              <h4 className="font-semibold mb-3 flex items-center gap-2">
+                <Lock className="h-5 w-5 text-green-600" />
+                Security & Privacy
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Zero-knowledge architecture</li>
+                <li>• End-to-end encryption</li>
+                <li>• GDPR and CCPA compliant</li>
+                <li>• Regular penetration testing</li>
+                <li>• SOC 2 Type II certified</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Compliance Badges */}
+      <Card className="bg-gray-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Award className="h-6 w-6" />
+            Compliance & Certifications
+          </CardTitle>
+          <CardDescription>Trusted by families worldwide with industry-leading certifications</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-white rounded-lg border">
+              <Shield className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <Badge variant="secondary" className="mb-1">
+                SOC 2
+              </Badge>
+              <p className="text-xs text-gray-600">Type II Certified</p>
+            </div>
+            <div className="text-center p-4 bg-white rounded-lg border">
+              <Globe className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <Badge variant="secondary" className="mb-1">
+                GDPR
+              </Badge>
+              <p className="text-xs text-gray-600">Compliant</p>
+            </div>
+            <div className="text-center p-4 bg-white rounded-lg border">
+              <Lock className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <Badge variant="secondary" className="mb-1">
+                ISO 27001
+              </Badge>
+              <p className="text-xs text-gray-600">Certified</p>
+            </div>
+            <div className="text-center p-4 bg-white rounded-lg border">
+              <Users className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+              <Badge variant="secondary" className="mb-1">
+                WCAG 2.1
+              </Badge>
+              <p className="text-xs text-gray-600">AA Compliant</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Data Retention Policy */}
-      <div className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-2xl font-bold text-slate-900 mb-4">Forever Guarantee</h3>
-          <p className="text-lg text-slate-700 mb-6">
-            We guarantee that your memorial will remain accessible forever. Our redundant infrastructure and lifetime
-            commitment ensure your loved one's memory is preserved for future generations.
-          </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <Clock className="h-8 w-8 text-blue-600 mb-2" />
+            <CardTitle>Lifetime Guarantee</CardTitle>
+            <CardDescription>Your memorial will be preserved forever</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <p className="font-medium">Perpetual Storage</p>
+                  <p className="text-sm text-gray-600">
+                    Your memorial data is stored permanently with no expiration date
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <p className="font-medium">Future-Proof Technology</p>
+                  <p className="text-sm text-gray-600">Regular updates ensure compatibility with new devices</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <p className="font-medium">Legacy Protection</p>
+                  <p className="text-sm text-gray-600">
+                    Legal framework ensures memorial preservation even if ownership changes
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">99.9%</div>
-              <div className="text-slate-600">Uptime Guarantee</div>
+        <Card>
+          <CardHeader>
+            <FileText className="h-8 w-8 text-green-600 mb-2" />
+            <CardTitle>Data Rights</CardTitle>
+            <CardDescription>You maintain full control over your memorial</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <p className="font-medium">Full Ownership</p>
+                  <p className="text-sm text-gray-600">You own all content and can export it anytime</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <p className="font-medium">Privacy Controls</p>
+                  <p className="text-sm text-gray-600">Set who can view and contribute to the memorial</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <p className="font-medium">Transfer Rights</p>
+                  <p className="text-sm text-gray-600">Memorial ownership can be transferred to family members</p>
+                </div>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">∞</div>
-              <div className="text-slate-600">Lifetime Access</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">24/7</div>
-              <div className="text-slate-600">Support Available</div>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Data Rights Section */}
-      <div className="mt-12 text-center">
-        <h3 className="text-xl font-semibold text-slate-900 mb-4">Your Data Rights</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-slate-600">
-          <div className="flex items-center justify-center">
-            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-            Right to Access
+      {/* Performance Stats */}
+      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+        <CardContent className="pt-6">
+          <div className="text-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Trusted by Families Worldwide</h3>
+            <p className="text-gray-600">Real performance metrics from our memorial platform</p>
           </div>
-          <div className="flex items-center justify-center">
-            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-            Right to Portability
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Zap className="h-5 w-5 text-blue-600" />
+                <span className="text-2xl font-bold text-gray-900">99.99%</span>
+              </div>
+              <p className="text-sm text-gray-600">Uptime</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Clock className="h-5 w-5 text-green-600" />
+                <span className="text-2xl font-bold text-gray-900">0.8s</span>
+              </div>
+              <p className="text-sm text-gray-600">Load Time</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Users className="h-5 w-5 text-purple-600" />
+                <span className="text-2xl font-bold text-gray-900">10K+</span>
+              </div>
+              <p className="text-sm text-gray-600">Families Served</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Globe className="h-5 w-5 text-orange-600" />
+                <span className="text-2xl font-bold text-gray-900">150+</span>
+              </div>
+              <p className="text-sm text-gray-600">Countries</p>
+            </div>
           </div>
-          <div className="flex items-center justify-center">
-            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-            Right to Correction
-          </div>
-          <div className="flex items-center justify-center">
-            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-            Right to Deletion
-          </div>
+        </CardContent>
+      </Card>
+
+      {/* CTA */}
+      <div className="text-center">
+        <Separator className="mb-8" />
+        <h3 className="text-xl font-semibold text-gray-900 mb-4">Ready to Create a Lasting Memorial?</h3>
+        <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          Join thousands of families who trust Memorial QR to preserve their loved ones' memories with enterprise-grade
+          security and lifetime preservation.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button asChild size="lg">
+            <Link href="/pricing">Start Creating Memorial</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg">
+            <Link href="/contact">Contact Support</Link>
+          </Button>
         </div>
       </div>
     </div>
