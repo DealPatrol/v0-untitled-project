@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -189,12 +188,14 @@ export default function BrowseMemorials() {
             {filteredMemorials.map((memorial) => (
               <Card key={memorial.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
-                  <Image
+                  <img
                     src={memorial.image || "/placeholder.svg"}
                     alt={memorial.name}
-                    width={400}
-                    height={300}
                     className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.src = "/placeholder.svg?height=300&width=400&text=" + encodeURIComponent(memorial.name)
+                    }}
                   />
                   {memorial.featured && (
                     <Badge className="absolute top-2 right-2 bg-red-500">
@@ -235,12 +236,14 @@ export default function BrowseMemorials() {
                 <CardContent className="p-6">
                   <div className="flex gap-6">
                     <div className="relative flex-shrink-0">
-                      <Image
+                      <img
                         src={memorial.image || "/placeholder.svg"}
                         alt={memorial.name}
-                        width={120}
-                        height={120}
                         className="w-24 h-24 object-cover rounded-lg"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.src = "/placeholder.svg?height=120&width=120&text=" + encodeURIComponent(memorial.name)
+                        }}
                       />
                       {memorial.featured && (
                         <Badge className="absolute -top-2 -right-2 bg-red-500">
