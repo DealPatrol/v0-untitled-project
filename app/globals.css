@@ -160,6 +160,31 @@ body {
   background-attachment: fixed;
 }
 
+@media (max-width: 768px) {
+  .memorial-bg {
+    background-attachment: scroll;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memorial-bg {
+    background-attachment: scroll;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .memorial-bg::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+  }
+}
+
 .gradient-text {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
@@ -236,10 +261,10 @@ body {
 }
 
 .line-clamp-3 {
-  overflow: hidden;
   display: -webkit-box;
-  -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Custom scrollbar */
@@ -480,27 +505,5 @@ body {
 @media (max-width: 640px) {
   .memorial-logo-text {
     letter-spacing: 0.02em;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .memorial-logo-text {
-    text-shadow: none;
-    font-weight: 700;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .memorial-logo-text,
-  .memorial-flourish::before,
-  .memorial-flourish::after,
-  .animate-pulse {
-    animation: none;
-  }
-
-  .memorial-logo:hover {
-    transform: none;
   }
 }
