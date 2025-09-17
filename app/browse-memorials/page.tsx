@@ -196,10 +196,6 @@ export default function BrowseMemorials() {
                     height={300}
                     className="w-full h-48 object-cover"
                     unoptimized
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.src = `/placeholder.svg?height=300&width=400&text=${encodeURIComponent(memorial.name)}`
-                    }}
                   />
                   {memorial.featured && (
                     <Badge className="absolute top-2 right-2 bg-red-500">
@@ -247,10 +243,6 @@ export default function BrowseMemorials() {
                         height={120}
                         className="w-24 h-24 object-cover rounded-lg"
                         unoptimized
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.src = `/placeholder.svg?height=120&width=120&text=${encodeURIComponent(memorial.name)}`
-                        }}
                       />
                       {memorial.featured && (
                         <Badge className="absolute -top-2 -right-2 bg-red-500">
