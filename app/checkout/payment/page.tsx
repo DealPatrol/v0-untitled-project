@@ -1,26 +1,21 @@
 "use client"
-
-import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Elements } from "@stripe/react-stripe-js"
+import { stripePromise } from "@/lib/stripe"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
-import { CreditCard, Lock, ArrowLeft, CheckCircle } from "lucide-react"
+import { ArrowLeft, CheckCircle, Loader2 } from "lucide-react"
+import StripeCheckoutForm from "@/components/stripe-checkout-form"
 
 export default function PaymentPage() {
-  const [isProcessing, setIsProcessing] = useState(false)
   const [orderData, setOrderData] = useState<any>(null)
-  const [paymentData, setPaymentData] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    nameOnCard: "",
-  })
+  const [clientSecret, setClientSecret] = useState<string>("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string>("")
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -35,105 +30,96 @@ export default function PaymentPage() {
 
     // Get order data from session storage
     const storedOrderData = sessionStorage.getItem("orderData")
-    if (storedOrderData) {
-      setOrderData(JSON.parse(storedOrderData))
-    } else {
+    if (!storedOrderData) {
       router.push("/checkout")
+      return
     }
+
+    const data = JSON.parse(storedOrderData)
+    setOrderData(data)
+
+    // Create payment intent
+    createPaymentIntent(data)
   }, [orderId, router])
 
-  const handleInputChange = (field: string, value: string) => {
-    setPaymentData((prev) => ({ ...prev, [field]: value }))
-  }
-
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
-    const matches = v.match(/\d{4,16}/g)
-    const match = (matches && matches[0]) || ""
-    const parts = []
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4))
-    }
-    if (parts.length) {
-      return parts.join(" ")
-    } else {
-      return v
-    }
-  }
-
-  const formatExpiryDate = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
-    if (v.length >= 2) {
-      return v.substring(0, 2) + "/" + v.substring(2, 4)
-    }
-    return v
-  }
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value)
-    if (formatted.length <= 19) {
-      // 16 digits + 3 spaces
-      handleInputChange("cardNumber", formatted)
-    }
-  }
-
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatExpiryDate(e.target.value)
-    if (formatted.length <= 5) {
-      // MM/YY
-      handleInputChange("expiryDate", formatted)
-    }
-  }
-
-  const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, "")
-    if (value.length <= 4) {
-      handleInputChange("cvv", value)
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsProcessing(true)
-
+  const createPaymentIntent = async (orderData: any) => {
     try {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 3000))
+      setIsLoading(true)
+      setError("")
 
-      // Update order data with payment info
-      const updatedOrderData = {
-        ...orderData,
-        paymentStatus: "completed",
-        paymentMethod: "card",
-        transactionId: `TXN-${Date.now()}`,
-      }
-
-      sessionStorage.setItem("orderData", JSON.stringify(updatedOrderData))
-
-      toast({
-        title: "Payment Successful!",
-        description: "Your order has been processed. Redirecting to confirmation...",
+      const response = await fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: Math.round(orderData.amount * 100), // Convert to cents
+          currency: "usd",
+          customerInfo: {
+            name: `${orderData.customerInfo.firstName} ${orderData.customerInfo.lastName}`,
+            email: orderData.customerInfo.email,
+            phone: orderData.customerInfo.phone,
+            address: {
+              line1: orderData.customerInfo.address,
+              city: orderData.customerInfo.city,
+              state: orderData.customerInfo.state,
+              postal_code: orderData.customerInfo.zipCode,
+              country: "US",
+            },
+          },
+        }),
       })
 
-      // Redirect to success page
-      setTimeout(() => {
-        router.push(`/checkout/success?order=${orderId}`)
-      }, 1500)
-    } catch (error) {
+      if (!response.ok) {
+        throw new Error("Failed to create payment intent")
+      }
+
+      const { clientSecret: secret } = await response.json()
+      setClientSecret(secret)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to initialize payment"
+      setError(errorMessage)
       toast({
-        title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        title: "Payment Initialization Failed",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
-      setIsProcessing(false)
+      setIsLoading(false)
     }
+  }
+
+  const handlePaymentSuccess = (paymentIntentId: string) => {
+    // Update order data with payment info
+    const updatedOrderData = {
+      ...orderData,
+      paymentStatus: "completed",
+      paymentMethod: "stripe",
+      paymentIntentId,
+      transactionId: paymentIntentId,
+    }
+
+    sessionStorage.setItem("orderData", JSON.stringify(updatedOrderData))
+
+    // Redirect to success page
+    router.push(`/checkout/success?order=${orderId}&payment_intent=${paymentIntentId}`)
+  }
+
+  const handlePaymentError = (error: string) => {
+    toast({
+      title: "Payment Failed",
+      description: error,
+      variant: "destructive",
+    })
   }
 
   if (!orderData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
+        <div className="flex items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+          <span className="text-gray-600">Loading order details...</span>
+        </div>
       </div>
     )
   }
@@ -145,7 +131,7 @@ export default function PaymentPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
-            <Button variant="outline" onClick={() => router.back()} className="bg-transparent">
+            <Button variant="outline" onClick={() => router.back()} className="bg-white">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
@@ -157,82 +143,56 @@ export default function PaymentPage() {
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Payment Form */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="w-5 h-5" />
-                  Payment Information
-                </CardTitle>
-                <p className="text-sm text-gray-600 flex items-center gap-2">
-                  <Lock className="w-4 h-4" />
-                  Your payment information is secure and encrypted
-                </p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <Label htmlFor="cardNumber">Card Number</Label>
-                    <Input
-                      id="cardNumber"
-                      value={paymentData.cardNumber}
-                      onChange={handleCardNumberChange}
-                      placeholder="1234 5678 9012 3456"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="expiryDate">Expiry Date</Label>
-                      <Input
-                        id="expiryDate"
-                        value={paymentData.expiryDate}
-                        onChange={handleExpiryChange}
-                        placeholder="MM/YY"
-                        required
-                      />
+            <div>
+              {isLoading ? (
+                <Card>
+                  <CardContent className="p-8">
+                    <div className="flex items-center justify-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+                      <span className="ml-3 text-gray-600">Initializing secure payment...</span>
                     </div>
-                    <div>
-                      <Label htmlFor="cvv">CVV</Label>
-                      <Input id="cvv" value={paymentData.cvv} onChange={handleCvvChange} placeholder="123" required />
+                  </CardContent>
+                </Card>
+              ) : error ? (
+                <Card>
+                  <CardContent className="p-8">
+                    <div className="text-center">
+                      <div className="text-red-600 mb-4">Payment initialization failed</div>
+                      <p className="text-gray-600 mb-4">{error}</p>
+                      <Button onClick={() => createPaymentIntent(orderData)} variant="outline">
+                        Try Again
+                      </Button>
                     </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="nameOnCard">Name on Card</Label>
-                    <Input
-                      id="nameOnCard"
-                      value={paymentData.nameOnCard}
-                      onChange={(e) => handleInputChange("nameOnCard", e.target.value)}
-                      placeholder="John Doe"
-                      required
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={isProcessing}
-                    className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                        Processing Payment...
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="w-4 h-4 mr-2" />
-                        Complete Payment - ${orderData.amount}
-                      </>
-                    )}
-                  </Button>
-
-                  <p className="text-xs text-gray-500 text-center">
-                    By completing this purchase, you agree to our Terms of Service and Privacy Policy.
-                  </p>
-                </form>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ) : clientSecret ? (
+                <Elements
+                  stripe={stripePromise}
+                  options={{
+                    clientSecret,
+                    appearance: {
+                      theme: "stripe",
+                      variables: {
+                        colorPrimary: "#7c3aed",
+                        colorBackground: "#ffffff",
+                        colorText: "#1f2937",
+                        colorDanger: "#ef4444",
+                        fontFamily: "system-ui, sans-serif",
+                        spacingUnit: "4px",
+                        borderRadius: "8px",
+                      },
+                    },
+                  }}
+                >
+                  <StripeCheckoutForm
+                    clientSecret={clientSecret}
+                    amount={orderData.amount}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                  />
+                </Elements>
+              ) : null}
+            </div>
 
             {/* Order Summary */}
             <div className="space-y-6">
@@ -309,6 +269,10 @@ export default function PaymentPage() {
                     <div className="flex items-center gap-3">
                       <CheckCircle className="w-5 h-5 text-green-600" />
                       <span className="text-sm">PCI DSS Compliant</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span className="text-sm">Powered by Stripe</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle className="w-5 h-5 text-green-600" />

@@ -1,310 +1,324 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import Image from "next/image"
+import Link from "next/link"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Search, Grid, List, Heart, Calendar, MapPin } from "lucide-react"
+import { Separator } from "@/components/ui/separator"
+import { Search, Filter, Heart, Calendar, MapPin, Eye } from "lucide-react"
 
-const memorials = [
-  {
-    id: "glenda-kelso",
-    name: "Glenda Kelso",
-    dates: "July 27, 1952 - August 27, 2025",
-    location: "Cullman, AL",
-    image: "/glenda-memorial-portrait.jpeg",
-    description: "Beloved mother, grandmother, and friend who touched countless lives with her kindness and wisdom.",
-    tags: ["Mother", "Grandmother", "Teacher"],
-    featured: true,
-  },
-  {
-    id: "robert-johnson",
-    name: "Robert Johnson",
-    dates: "March 15, 1945 - December 10, 2024",
-    location: "Birmingham, AL",
-    image: "/elderly-man-smiling-portrait.png",
-    description: "Devoted father and veteran who served his country and community with honor.",
-    tags: ["Father", "Veteran", "Community Leader"],
-    featured: false,
-  },
-  {
-    id: "maria-gonzalez",
-    name: "Maria Gonzalez",
-    dates: "June 8, 1960 - November 22, 2024",
-    location: "Mobile, AL",
-    image: "/hispanic-woman-smiling-professional-portrait.png",
-    description: "Caring nurse and mother who dedicated her life to helping others heal.",
-    tags: ["Mother", "Nurse", "Caregiver"],
-    featured: false,
-  },
-  {
-    id: "james-williams",
-    name: "James Williams",
-    dates: "September 12, 1938 - October 5, 2024",
-    location: "Huntsville, AL",
-    image: "/elderly-veteran-man-uniform-portrait.png",
-    description: "Proud veteran and grandfather who shared his wisdom with three generations.",
-    tags: ["Grandfather", "Veteran", "Mentor"],
-    featured: false,
-  },
-  {
-    id: "sarah-davis",
-    name: "Dr. Sarah Davis",
-    dates: "April 3, 1955 - September 18, 2024",
-    location: "Montgomery, AL",
-    image: "/professional-woman-doctor-white-coat-smiling.png",
-    description: "Pioneering physician who broke barriers and saved countless lives.",
-    tags: ["Doctor", "Pioneer", "Healer"],
-    featured: false,
-  },
-  {
-    id: "michael-chen",
-    name: "Michael Chen",
-    dates: "January 20, 1962 - August 14, 2024",
-    location: "Tuscaloosa, AL",
-    image: "/asian-man-engineer-smiling-professional-portrait.png",
-    description: "Innovative engineer and loving father who built bridges both literal and metaphorical.",
-    tags: ["Father", "Engineer", "Innovator"],
-    featured: false,
-  },
-]
-
-export default function BrowseMemorials() {
+export default function BrowseMemorialsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("recent")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [filterTag, setFilterTag] = useState("all")
+  const [filterBy, setFilterBy] = useState("all")
 
-  const allTags = ["all", ...Array.from(new Set(memorials.flatMap((m) => m.tags)))]
+  const memorials = [
+    {
+      id: "maria-rodriguez",
+      name: "Maria Elena Rodriguez",
+      birthYear: 1952,
+      deathYear: 2023,
+      location: "San Antonio, Texas",
+      image: "/placeholder.svg?height=300&width=300&text=Maria+Rodriguez",
+      description:
+        "Beloved mother, grandmother, and community volunteer who dedicated her life to helping others. Maria was known for her warm smile, incredible cooking, and unwavering faith.",
+      memories: 47,
+      visitors: 1203,
+      recentActivity: "2 days ago",
+      tags: ["Mother", "Grandmother", "Volunteer"],
+      featured: true,
+    },
+    {
+      id: "james-wilson",
+      name: "James Robert Wilson",
+      birthYear: 1945,
+      deathYear: 2023,
+      location: "Denver, Colorado",
+      image: "/placeholder.svg?height=300&width=300&text=James+Wilson",
+      description:
+        "Proud veteran who served two tours in Vietnam, loving father of three, and retired firefighter who saved countless lives during his 30-year career.",
+      memories: 62,
+      visitors: 856,
+      recentActivity: "1 week ago",
+      tags: ["Veteran", "Father", "Firefighter"],
+      featured: false,
+    },
+    {
+      id: "sarah-chen",
+      name: "Sarah Michelle Chen",
+      birthYear: 1978,
+      deathYear: 2023,
+      location: "Portland, Oregon",
+      image: "/placeholder.svg?height=300&width=300&text=Sarah+Chen",
+      description:
+        "Passionate elementary school teacher who inspired hundreds of students over her 15-year career. Sarah was also an avid hiker and environmental advocate.",
+      memories: 89,
+      visitors: 2341,
+      recentActivity: "3 days ago",
+      tags: ["Teacher", "Environmentalist", "Hiker"],
+      featured: true,
+    },
+    {
+      id: "robert-johnson",
+      name: "Robert 'Bob' Johnson",
+      birthYear: 1938,
+      deathYear: 2023,
+      location: "Nashville, Tennessee",
+      image: "/placeholder.svg?height=300&width=300&text=Robert+Johnson",
+      description:
+        "Talented musician and songwriter who played in local bands for over 40 years. Bob was a mentor to young musicians and a pillar of the Nashville music community.",
+      memories: 73,
+      visitors: 1567,
+      recentActivity: "5 days ago",
+      tags: ["Musician", "Mentor", "Songwriter"],
+      featured: false,
+    },
+    {
+      id: "elizabeth-davis",
+      name: "Elizabeth 'Betty' Davis",
+      birthYear: 1941,
+      deathYear: 2023,
+      location: "Charleston, South Carolina",
+      image: "/placeholder.svg?height=300&width=300&text=Elizabeth+Davis",
+      description:
+        "Devoted nurse who worked in pediatric care for 35 years. Betty was known for her gentle touch with children and her ability to comfort families during difficult times.",
+      memories: 56,
+      visitors: 934,
+      recentActivity: "1 day ago",
+      tags: ["Nurse", "Caregiver", "Mother"],
+      featured: false,
+    },
+    {
+      id: "michael-thompson",
+      name: "Michael David Thompson",
+      birthYear: 1965,
+      deathYear: 2023,
+      location: "Seattle, Washington",
+      image: "/placeholder.svg?height=300&width=300&text=Michael+Thompson",
+      description:
+        "Innovative software engineer and loving father who balanced his passion for technology with his dedication to his family. Mike coached little league for 8 years.",
+      memories: 41,
+      visitors: 678,
+      recentActivity: "4 days ago",
+      tags: ["Engineer", "Father", "Coach"],
+      featured: false,
+    },
+  ]
 
-  const filteredMemorials = memorials
-    .filter((memorial) => {
-      const matchesSearch =
-        memorial.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        memorial.location.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesTag = filterTag === "all" || memorial.tags.includes(filterTag)
-      return matchesSearch && matchesTag
-    })
-    .sort((a, b) => {
-      if (sortBy === "recent")
-        return new Date(b.dates.split(" - ")[1]).getTime() - new Date(a.dates.split(" - ")[1]).getTime()
-      if (sortBy === "alphabetical") return a.name.localeCompare(b.name)
-      if (sortBy === "featured") return b.featured ? 1 : -1
-      return 0
-    })
+  const filteredMemorials = memorials.filter((memorial) => {
+    const matchesSearch =
+      memorial.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      memorial.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      memorial.location.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesFilter =
+      filterBy === "all" ||
+      (filterBy === "featured" && memorial.featured) ||
+      (filterBy === "recent" && memorial.recentActivity.includes("day"))
+
+    return matchesSearch && matchesFilter
+  })
+
+  const sortedMemorials = [...filteredMemorials].sort((a, b) => {
+    switch (sortBy) {
+      case "recent":
+        return new Date(b.deathYear).getTime() - new Date(a.deathYear).getTime()
+      case "visitors":
+        return b.visitors - a.visitors
+      case "memories":
+        return b.memories - a.memories
+      case "name":
+        return a.name.localeCompare(b.name)
+      default:
+        return 0
+    }
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Hero Section */}
-      <div className="relative bg-slate-900 text-white py-16">
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 to-slate-800/90" />
-        <div className="relative container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Browse Memorials</h1>
-          <p className="text-xl text-slate-200 max-w-2xl mx-auto">
-            Honor the memories of loved ones and discover the stories that shaped their lives
-          </p>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Memorial Gallery</h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Browse beautiful memorials created by families to honor their loved ones. Each memorial tells a unique
+              story of a life well-lived.
+            </p>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search by name or location..."
+                  placeholder="Search memorials by name, location, or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
               </div>
-            </div>
 
-            <div className="flex gap-4 items-center">
-              <Select value={filterTag} onValueChange={setFilterTag}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Filter by tag" />
-                </SelectTrigger>
-                <SelectContent>
-                  {allTags.map((tag) => (
-                    <SelectItem key={tag} value={tag}>
-                      {tag === "all" ? "All Tags" : tag}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex gap-4">
+                <Select value={filterBy} onValueChange={setFilterBy}>
+                  <SelectTrigger className="w-40">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Filter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Memorials</SelectItem>
+                    <SelectItem value="featured">Featured</SelectItem>
+                    <SelectItem value="recent">Recent Activity</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">Most Recent</SelectItem>
-                  <SelectItem value="alphabetical">Alphabetical</SelectItem>
-                  <SelectItem value="featured">Featured</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="flex border rounded-md">
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="rounded-r-none"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="rounded-l-none"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recent">Most Recent</SelectItem>
+                    <SelectItem value="visitors">Most Visited</SelectItem>
+                    <SelectItem value="memories">Most Memories</SelectItem>
+                    <SelectItem value="name">Name A-Z</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Showing {filteredMemorials.length} memorial{filteredMemorials.length !== 1 ? "s" : ""}
-          </p>
-        </div>
+          {/* Results Count */}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-gray-600">
+              Showing {sortedMemorials.length} of {memorials.length} memorials
+            </p>
+            <Link href="/create-memorial">
+              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                Create Memorial
+              </Button>
+            </Link>
+          </div>
 
-        {/* Memorials Grid/List */}
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMemorials.map((memorial) => (
-              <Card key={memorial.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+          {/* Memorial Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedMemorials.map((memorial) => (
+              <Card
+                key={memorial.id}
+                className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-white"
+              >
                 <div className="relative">
-                  <Image
-                    src={memorial.image || "/placeholder.svg"}
-                    alt={memorial.name}
-                    width={400}
-                    height={300}
-                    className="w-full h-48 object-cover"
-                    unoptimized
-                  />
+                  <div className="aspect-[4/3] relative">
+                    <Image
+                      src={memorial.image || "/placeholder.svg"}
+                      alt={memorial.name}
+                      fill
+                      className="object-cover"
+                      unoptimized={true}
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
                   {memorial.featured && (
-                    <Badge className="absolute top-2 right-2 bg-red-500">
-                      <Heart className="h-3 w-3 mr-1" />
-                      Featured
-                    </Badge>
+                    <Badge className="absolute top-3 left-3 bg-purple-600 text-white">Featured</Badge>
                   )}
+
+                  <div className="absolute bottom-3 left-3 right-3 text-white">
+                    <h3 className="font-semibold text-lg mb-1">{memorial.name}</h3>
+                    <div className="flex items-center text-sm opacity-90">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>
+                        {memorial.birthYear} - {memorial.deathYear}
+                      </span>
+                      <span className="mx-2">•</span>
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span>{memorial.location}</span>
+                    </div>
+                  </div>
                 </div>
+
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{memorial.name}</h3>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{memorial.dates}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600 mb-3">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{memorial.location}</span>
-                  </div>
-                  <p className="text-gray-700 text-sm mb-4 line-clamp-3">{memorial.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {memorial.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{memorial.description}</p>
+
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {memorial.tags.map((tag, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
                         {tag}
                       </Badge>
                     ))}
                   </div>
-                  <Button asChild className="w-full">
-                    <Link href={`/memorial/${memorial.id}`}>View Memorial</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredMemorials.map((memorial) => (
-              <Card key={memorial.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex gap-6">
-                    <div className="relative flex-shrink-0">
-                      <Image
-                        src={memorial.image || "/placeholder.svg"}
-                        alt={memorial.name}
-                        width={120}
-                        height={120}
-                        className="w-24 h-24 object-cover rounded-lg"
-                        unoptimized
-                      />
-                      {memorial.featured && (
-                        <Badge className="absolute -top-2 -right-2 bg-red-500">
-                          <Heart className="h-3 w-3" />
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-semibold">{memorial.name}</h3>
-                        <Button asChild>
-                          <Link href={`/memorial/${memorial.id}`}>View Memorial</Link>
-                        </Button>
+
+                  <Separator className="my-4" />
+
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center">
+                        <Heart className="h-4 w-4 mr-1" />
+                        <span>{memorial.memories}</span>
                       </div>
-                      <div className="flex items-center text-gray-600 mb-2">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <span className="text-sm mr-6">{memorial.dates}</span>
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{memorial.location}</span>
-                      </div>
-                      <p className="text-gray-700 text-sm mb-3">{memorial.description}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {memorial.tags.map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
+                      <div className="flex items-center">
+                        <Eye className="h-4 w-4 mr-1" />
+                        <span>{memorial.visitors.toLocaleString()}</span>
                       </div>
                     </div>
+                    <span>Updated {memorial.recentActivity}</span>
                   </div>
+
+                  <Link href={`/memorial/${memorial.id}`}>
+                    <Button className="w-full bg-transparent" variant="outline">
+                      View Memorial
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
           </div>
-        )}
 
-        {filteredMemorials.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No memorials found matching your criteria.</p>
-            <Button
-              onClick={() => {
-                setSearchTerm("")
-                setFilterTag("all")
-              }}
-              className="mt-4"
-            >
-              Clear Filters
-            </Button>
+          {/* Empty State */}
+          {sortedMemorials.length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="h-12 w-12 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No memorials found</h3>
+              <p className="text-gray-600 mb-6">
+                Try adjusting your search terms or filters to find what you're looking for.
+              </p>
+              <Button
+                onClick={() => {
+                  setSearchTerm("")
+                  setFilterBy("all")
+                  setSortBy("recent")
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
+          )}
+
+          {/* Call to Action */}
+          <div className="mt-16 text-center bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Create a Memorial for Your Loved One</h2>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              Honor their memory with a beautiful digital memorial that can be shared with family and friends. Get
+              started in just a few minutes.
+            </p>
+            <Link href="/create-memorial">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                Create Memorial Now
+              </Button>
+            </Link>
           </div>
-        )}
-      </div>
-
-      {/* Call to Action */}
-      <div className="bg-slate-900 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Create a Memorial</h2>
-          <p className="text-xl text-slate-200 mb-8 max-w-2xl mx-auto">
-            Honor your loved one with a beautiful digital memorial that can be shared with family and friends
-          </p>
-          <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-gray-100">
-            <Link href="/pricing">Get Started Today</Link>
-          </Button>
         </div>
       </div>
     </div>

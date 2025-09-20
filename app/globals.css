@@ -18,11 +18,11 @@
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
@@ -117,25 +117,6 @@ body {
   display: inline-block;
 }
 
-.memorial-logo-text {
-  position: relative;
-  letter-spacing: 0.05em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  animation: gentle-glow 4s ease-in-out infinite;
-  z-index: 1;
-}
-
-.memorial-logo-underline {
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-  opacity: 0.6;
-}
-
 .memorial-logo::after {
   content: "";
   position: absolute;
@@ -148,11 +129,48 @@ body {
   border-radius: 1px;
 }
 
+.memorial-logo-text {
+  position: relative;
+  display: inline-block;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  animation: gentle-glow 4s ease-in-out infinite;
+}
+
+.memorial-logo-underline {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #a855f7, #ec4899, #3b82f6);
+  opacity: 0.6;
+  border-radius: 9999px;
+}
+
+.memorial-logo-text::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.memorial-logo-text:hover::before {
+  opacity: 1;
+}
+
 .memorial-bg {
-  background-image: url("/military-veterans-memorial-ceremony.png");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url("/placeholder.svg?height=1080&width=1920&text=Cemetery Background");
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -162,157 +180,32 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-gentle-pulse {
-    animation: none;
-  }
-
-  .memorial-bg {
-    background-attachment: scroll;
-  }
+.memorial-logo {
+  font-family: "Dancing Script", cursive;
 }
 
-@media (prefers-contrast: high) {
-  .memorial-bg::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1;
-  }
+.text-shadow-lg {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
 
-  .memorial-card {
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(0, 0, 0, 0.3);
-  }
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .memorial-card {
-  transition: all 0.3s ease;
-  border: 1px solid #e5e7eb;
+  @apply transition-all duration-300 hover:shadow-lg hover:scale-[1.02];
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
 }
 
-.memorial-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-color: #d1d5db;
+.btn-hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
 }
 
-/* Video Container Styles */
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-}
-
-.video-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Responsive video adjustments */
-@media (max-width: 768px) {
-  .video-container {
-    max-width: 320px;
-    margin: 0 auto;
-  }
-}
-
-@media (min-width: 769px) {
-  .video-container {
-    max-width: 400px;
-  }
-}
-
-/* Line clamp utilities */
-.line-clamp-1 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-}
-
-.line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Focus styles for accessibility */
-.focus\:ring-2:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 2px #667eea;
-}
-
-/* Print styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-}
-
-/* Animation keyframes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
-}
-
-@keyframes gentle-glow {
-  0%,
-  100% {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    text-shadow: 0 2px 8px rgba(102, 126, 234, 0.2), 0 4px 16px rgba(118, 75, 162, 0.1);
-  }
-}
-
+/* Custom animations */
 @keyframes gentle-pulse {
   0%,
   100% {
@@ -323,11 +216,57 @@ body {
   }
 }
 
+@keyframes gentle-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
 .animate-gentle-pulse {
   animation: gentle-pulse 2s ease-in-out infinite;
 }
 
-/* Memorial specific styles */
+.animate-gentle-glow {
+  animation: gentle-glow 3s ease-in-out infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 1.5s ease-in-out infinite;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-gentle-pulse,
+  .animate-gentle-glow,
+  .animate-twinkle {
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .memorial-bg {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+      url("/military-veterans-memorial-ceremony.png");
+  }
+}
+
 .memorial-timeline {
   position: relative;
 }
@@ -477,18 +416,6 @@ body {
   animation: twinkle 3s ease-in-out infinite 1.5s;
 }
 
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.2);
-  }
-}
-
 /* Responsive logo adjustments */
 @media (max-width: 640px) {
   .memorial-logo-text {
@@ -496,15 +423,170 @@ body {
   }
 }
 
-/* Gradient text */
-.gradient-text {
+/* Smooth transitions for interactive elements */
+.memorial-interactive {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.memorial-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Elegant focus styles */
+.memorial-focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+/* Custom scrollbar for memorial content */
+.memorial-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.memorial-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.memorial-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.memorial-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Text utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Font families */
+.font-dancing-script {
+  font-family: "Dancing Script", cursive;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Focus styles for accessibility */
+.focus-visible:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Memorial-specific styles */
+.memorial-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.memorial-pattern {
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+.memorial-text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for floating elements */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Memorial-specific animations */
+@keyframes memorial-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.memorial-fade-in {
+  animation: memorial-fade-in 0.6s ease-out;
+}
+
+@keyframes memorial-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.memorial-scale-in {
+  animation: memorial-scale-in 0.4s ease-out;
+}
+
+/* Gradient text utilities */
+.gradient-text-purple-blue {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Text shadow for better readability on backgrounds */
-.text-shadow {
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+/* Memorial card hover effects */
+.memorial-card-hover {
+  transition: all 0.3s ease;
+}
+
+.memorial-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }

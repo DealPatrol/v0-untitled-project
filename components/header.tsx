@@ -4,89 +4,107 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, X } from "lucide-react"
 import { MemorialLogo } from "@/components/memorial-logo"
+import { Menu, X, Phone, Mail } from "lucide-react"
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "Browse Memorials", href: "/browse-memorials" },
-    { name: "Programs", href: "/programs" },
     { name: "How It Works", href: "/how-it-works" },
+    { name: "Browse Memorials", href: "/browse-memorials" },
+    { name: "Pricing", href: "/pricing" },
     { name: "Our Story", href: "/our-story" },
     { name: "Contact", href: "/contact" },
   ]
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="container flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center">
-          <MemorialLogo size="sm" />
-        </Link>
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <MemorialLogo size="sm" />
+          </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              {item.name}
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link href="/create-memorial">
+              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
+                Create Memorial
+              </Button>
             </Link>
-          ))}
-        </nav>
+          </div>
 
-        {/* Desktop CTA */}
-        <div className="hidden md:flex items-center space-x-4">
-          <Button asChild>
-            <Link href="/pricing">Get Started</Link>
-          </Button>
+          {/* Mobile Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="sm">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-80">
+              <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between py-4">
+                  <MemorialLogo size="sm" />
+                  <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                <nav className="flex flex-col space-y-4 mt-8">
+                  {navigation.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="text-lg font-medium text-gray-700 hover:text-purple-600 transition-colors py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="mt-8 space-y-4">
+                  <Link href="/create-memorial" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
+                      Create Memorial
+                    </Button>
+                  </Link>
+                </div>
+
+                <div className="mt-auto pt-8 border-t">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3 text-sm text-gray-600">
+                      <Phone className="h-4 w-4" />
+                      <span>(555) 123-4567</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-sm text-gray-600">
+                      <Mail className="h-4 w-4" />
+                      <span>support@memorialqr.com</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
-
-        {/* Mobile Navigation */}
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-            <div className="flex flex-col space-y-4 mt-4">
-              <div className="flex items-center justify-between">
-                <MemorialLogo size="sm" />
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-              <nav className="flex flex-col space-y-4">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </nav>
-              <div className="pt-4 border-t">
-                <Button asChild className="w-full">
-                  <Link href="/pricing" onClick={() => setIsOpen(false)}>
-                    Get Started
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
       </div>
     </header>
   )
 }
-
-export default Header

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Clock } from "lucide-react"
 
 export function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState({
@@ -12,9 +12,9 @@ export function CountdownTimer() {
   })
 
   useEffect(() => {
-    // Set target date to 30 days from now
+    // Set target date to 7 days from now
     const targetDate = new Date()
-    targetDate.setDate(targetDate.getDate() + 30)
+    targetDate.setDate(targetDate.getDate() + 7)
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
@@ -34,33 +34,22 @@ export function CountdownTimer() {
   }, [])
 
   return (
-    <Card className="countdown-bg border-white/20">
-      <CardContent className="p-4">
-        <div className="text-center text-white">
-          <div className="text-sm font-medium mb-2">Limited Time Offer</div>
-          <div className="grid grid-cols-4 gap-2 text-xs">
-            <div>
-              <div className="text-lg font-bold">{timeLeft.days}</div>
-              <div>Days</div>
+    <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div className="flex items-center justify-center mb-2">
+        <Clock className="h-4 w-4 text-red-600 mr-2" />
+        <span className="text-sm font-medium text-red-800">Limited Time Offer Ends In:</span>
+      </div>
+
+      <div className="flex justify-center space-x-4">
+        {Object.entries(timeLeft).map(([unit, value]) => (
+          <div key={unit} className="text-center">
+            <div className="bg-white rounded-lg px-3 py-2 shadow-sm border">
+              <div className="text-lg font-bold text-red-600">{value.toString().padStart(2, "0")}</div>
             </div>
-            <div>
-              <div className="text-lg font-bold">{timeLeft.hours}</div>
-              <div>Hours</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold">{timeLeft.minutes}</div>
-              <div>Min</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold">{timeLeft.seconds}</div>
-              <div>Sec</div>
-            </div>
+            <div className="text-xs text-red-600 mt-1 capitalize">{unit}</div>
           </div>
-          <div className="text-xs mt-2 opacity-90">Save 30% Today!</div>
-        </div>
-      </CardContent>
-    </Card>
+        ))}
+      </div>
+    </div>
   )
 }
-
-export default CountdownTimer
