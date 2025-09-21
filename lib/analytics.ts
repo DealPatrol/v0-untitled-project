@@ -113,14 +113,19 @@ function getAnalyticsManager(): AnalyticsManager {
 }
 
 export function useAnalytics() {
-  const trackEvent = useCallback((name: string, data?: Record<string, any>) => {
+  const trackEvent = async (eventName: string, data: any) => {
     try {
-      const manager = getAnalyticsManager()
-      manager.track(name, data)
+      // In a real implementation, this would send to your analytics service
+      console.log("Analytics Event:", eventName, data)
+
+      // Example: Send to Google Analytics, Mixpanel, etc.
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        ;(window as any).gtag("event", eventName, data)
+      }
     } catch (error) {
-      console.error("useAnalytics trackEvent error:", error)
+      console.error("Analytics tracking failed:", error)
     }
-  }, [])
+  }
 
   const trackPageView = useCallback((page?: string) => {
     try {

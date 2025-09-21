@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, CreditCard, Lock, Shield } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 interface StripeCheckoutFormProps {
   clientSecret: string
@@ -57,7 +57,7 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
         onSuccess?.(paymentIntent.id)
         toast({
           title: "Payment Successful",
-          description: "Your memorial order has been processed successfully.",
+          description: "Your memorial order has been processed.",
         })
       }
     } catch (err) {
@@ -77,10 +77,10 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
   if (!stripe || !elements) {
     return (
       <Card>
-        <CardContent className="p-8">
-          <div className="flex items-center justify-center">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-            <span className="ml-3 text-gray-600">Loading secure payment form...</span>
+            <span className="ml-2 text-gray-600">Loading payment form...</span>
           </div>
         </CardContent>
       </Card>
@@ -90,75 +90,43 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CreditCard className="w-5 h-5" />
-          Complete Your Payment
-        </CardTitle>
-        <CardDescription className="flex items-center gap-2">
-          <Lock className="w-4 h-4" />
-          Secure payment processing powered by Stripe
-        </CardDescription>
+        <CardTitle>Complete Your Payment</CardTitle>
+        <CardDescription>Secure payment processing powered by Stripe</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Order Summary */}
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border">
+          <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex justify-between items-center">
-              <div>
-                <span className="font-semibold text-gray-900">Memorial QR Package</span>
-                <p className="text-sm text-gray-600 mt-1">Includes QR code, memorial page, and physical plaque</p>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-bold text-purple-600">${amount}</span>
-                <p className="text-xs text-gray-500">One-time payment</p>
-              </div>
+              <span className="font-medium">Memorial QR Package</span>
+              <span className="font-bold">${amount}</span>
             </div>
+            <p className="text-sm text-gray-600 mt-1">Includes QR code, memorial page, and physical plaque</p>
           </div>
 
           <Separator />
 
           {/* Payment Element */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-green-600" />
-              <h3 className="font-semibold text-gray-900">Payment Information</h3>
-            </div>
-            <div className="border rounded-lg p-4 bg-white">
-              <PaymentElement
-                options={{
-                  layout: "tabs",
-                  defaultValues: {
-                    billingDetails: {
-                      name: "",
-                      email: "",
-                    },
-                  },
-                }}
-              />
-            </div>
+            <h3 className="font-medium">Payment Information</h3>
+            <PaymentElement
+              options={{
+                layout: "tabs",
+              }}
+            />
           </div>
 
           {/* Test Mode Banner */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-              <div>
-                <p className="text-sm font-medium text-yellow-800">Test Mode Active</p>
-                <p className="text-xs text-yellow-700 mt-1">
-                  Use card number <code className="bg-yellow-100 px-1 rounded">4242 4242 4242 4242</code> with any
-                  future date and CVC for testing.
-                </p>
-              </div>
-            </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p className="text-sm text-yellow-800">
+              <strong>Test Mode:</strong> Use card number 4242 4242 4242 4242 with any future date and CVC.
+            </p>
           </div>
 
           {/* Error Message */}
           {message && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
-                <p className="text-sm text-red-800">{message}</p>
-              </div>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-sm text-red-800">{message}</p>
             </div>
           )}
 
@@ -166,35 +134,18 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
           <Button
             type="submit"
             disabled={isLoading || !stripe || !elements}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 text-lg"
+            className="w-full bg-purple-600 hover:bg-purple-700"
             size="lg"
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Processing Payment...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
               </>
             ) : (
-              <>
-                <Lock className="mr-2 h-5 w-5" />
-                Pay ${amount} Securely
-              </>
+              `Pay $${amount}`
             )}
           </Button>
-
-          {/* Security Notice */}
-          <div className="text-center space-y-2">
-            <p className="text-xs text-gray-500">
-              Your payment information is secure and encrypted. We never store your card details.
-            </p>
-            <div className="flex items-center justify-center gap-4 text-xs text-gray-400">
-              <span>256-bit SSL</span>
-              <span>•</span>
-              <span>PCI Compliant</span>
-              <span>•</span>
-              <span>Stripe Secure</span>
-            </div>
-          </div>
         </form>
       </CardContent>
     </Card>

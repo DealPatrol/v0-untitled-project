@@ -7,15 +7,13 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle, Download, Mail, ArrowRight, Gift, Loader2 } from "lucide-react"
+import { CheckCircle, Download, Mail, ArrowRight, Gift } from "lucide-react"
 
 export default function CheckoutSuccessPage() {
   const [orderData, setOrderData] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
   const searchParams = useSearchParams()
   const orderId = searchParams.get("order")
-  const paymentIntentId = searchParams.get("payment_intent")
 
   useEffect(() => {
     if (!orderId) {
@@ -27,69 +25,20 @@ export default function CheckoutSuccessPage() {
     const storedOrderData = sessionStorage.getItem("orderData")
     if (storedOrderData) {
       const data = JSON.parse(storedOrderData)
-
-      // Update with payment intent ID if available
-      if (paymentIntentId && !data.paymentIntentId) {
-        data.paymentIntentId = paymentIntentId
-        data.transactionId = paymentIntentId
-        sessionStorage.setItem("orderData", JSON.stringify(data))
-      }
-
       setOrderData(data)
     } else {
       router.push("/checkout")
-      return
     }
-
-    setIsLoading(false)
-  }, [orderId, paymentIntentId, router])
+  }, [orderId, router])
 
   const handleCreateProfile = () => {
     router.push(`/create-profile?order=${orderId}&plan=${orderData?.plan || "premium"}`)
   }
 
-  const handleDownloadReceipt = () => {
-    // Generate and download receipt
-    const receiptData = {
-      orderId,
-      paymentIntentId: orderData?.paymentIntentId,
-      customerInfo: orderData?.customerInfo,
-      amount: orderData?.amount,
-      timestamp: orderData?.timestamp,
-    }
-
-    const dataStr = JSON.stringify(receiptData, null, 2)
-    const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr)
-
-    const exportFileDefaultName = `memorial-qr-receipt-${orderId}.json`
-
-    const linkElement = document.createElement("a")
-    linkElement.setAttribute("href", dataUri)
-    linkElement.setAttribute("download", exportFileDefaultName)
-    linkElement.click()
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-          <span className="text-gray-600">Loading order confirmation...</span>
-        </div>
-      </div>
-    )
-  }
-
   if (!orderData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-xl font-semibold mb-2">Order Not Found</h2>
-            <p className="text-gray-600 mb-4">We couldn't find your order details.</p>
-            <Button onClick={() => router.push("/checkout")}>Return to Checkout</Button>
-          </CardContent>
-        </Card>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
       </div>
     )
   }
@@ -105,7 +54,7 @@ export default function CheckoutSuccessPage() {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-12 h-12 text-green-600" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Successful!</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Confirmed!</h1>
             <p className="text-gray-600">Thank you for your purchase. Your memorial package is ready to be created.</p>
           </div>
 
@@ -121,14 +70,10 @@ export default function CheckoutSuccessPage() {
                   <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">{orderId}</span>
                 </div>
 
-                {orderData.paymentIntentId && (
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Payment ID:</span>
-                    <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
-                      {orderData.paymentIntentId.substring(0, 20)}...
-                    </span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Transaction ID:</span>
+                  <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">{orderData.transactionId}</span>
+                </div>
 
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Date:</span>
@@ -136,16 +81,8 @@ export default function CheckoutSuccessPage() {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Payment Method:</span>
-                  <span className="capitalize">{orderData.paymentMethod || "Stripe"}</span>
-                </div>
-
-                <div className="flex justify-between items-center">
                   <span className="font-medium">Status:</span>
-                  <span className="text-green-600 font-medium flex items-center gap-1">
-                    <CheckCircle className="w-4 h-4" />
-                    Confirmed
-                  </span>
+                  <span className="text-green-600 font-medium">Confirmed</span>
                 </div>
 
                 <Separator />
@@ -154,10 +91,6 @@ export default function CheckoutSuccessPage() {
                   <div className="flex justify-between">
                     <span>Premium Memorial Package</span>
                     <span>${orderData.amount}</span>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Processing Fee</span>
-                    <span>$0.00</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Tax</span>
@@ -173,7 +106,7 @@ export default function CheckoutSuccessPage() {
 
                 <div className="flex justify-between items-center font-semibold text-lg">
                   <span>Total Paid</span>
-                  <span className="text-green-600">${orderData.amount}</span>
+                  <span>${orderData.amount}</span>
                 </div>
               </CardContent>
             </Card>
@@ -195,7 +128,7 @@ export default function CheckoutSuccessPage() {
                     <div>
                       <h3 className="font-semibold">Create Your Memorial Profile</h3>
                       <p className="text-sm text-gray-600">
-                        Add photos, stories, and memories to create a beautiful memorial page.
+                        Add photos, stories, and memories to create a beautiful memorial.
                       </p>
                     </div>
                   </div>
@@ -207,7 +140,7 @@ export default function CheckoutSuccessPage() {
                     <div>
                       <h3 className="font-semibold">Receive Your QR Code</h3>
                       <p className="text-sm text-gray-600">
-                        Get your custom QR code instantly and physical plaque shipped within 3-5 business days.
+                        Get your custom QR code and physical plaque shipped to you.
                       </p>
                     </div>
                   </div>
@@ -218,9 +151,7 @@ export default function CheckoutSuccessPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold">Share with Family & Friends</h3>
-                      <p className="text-sm text-gray-600">
-                        Invite others to view and contribute memories to the memorial.
-                      </p>
+                      <p className="text-sm text-gray-600">Invite others to view and contribute to the memorial.</p>
                     </div>
                   </div>
                 </div>
@@ -228,7 +159,6 @@ export default function CheckoutSuccessPage() {
                 <Button
                   onClick={handleCreateProfile}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  size="lg"
                 >
                   Create Memorial Profile
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -287,11 +217,8 @@ export default function CheckoutSuccessPage() {
                     Contact Support
                   </Link>
                   <span className="text-gray-300">|</span>
-                  <button
-                    onClick={handleDownloadReceipt}
-                    className="text-purple-600 hover:text-purple-700 flex items-center gap-1"
-                  >
-                    <Download className="w-4 h-4" />
+                  <button className="text-purple-600 hover:text-purple-700">
+                    <Download className="w-4 h-4 inline mr-1" />
                     Download Receipt
                   </button>
                 </div>

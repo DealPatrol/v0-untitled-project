@@ -1,5 +1,3 @@
-"use client"
-
 import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -7,32 +5,48 @@ interface StarRatingProps {
   rating: number
   maxRating?: number
   size?: "sm" | "md" | "lg"
+  showReviews?: boolean
+  reviewCount?: number
   className?: string
-  showNumber?: boolean
 }
 
-export function StarRating({ rating, maxRating = 5, size = "md", className, showNumber = false }: StarRatingProps) {
+export function StarRating({
+  rating,
+  maxRating = 5,
+  size = "md",
+  showReviews = false,
+  reviewCount = 0,
+  className,
+}: StarRatingProps) {
   const sizeClasses = {
-    sm: "h-3 w-3",
-    md: "h-4 w-4",
-    lg: "h-5 w-5",
+    sm: "w-4 h-4",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
+  }
+
+  const textSizeClasses = {
+    sm: "text-sm",
+    md: "text-base",
+    lg: "text-lg",
   }
 
   return (
-    <div className={cn("flex items-center space-x-1", className)}>
+    <div className={cn("flex items-center", className)}>
       <div className="flex">
-        {Array.from({ length: maxRating }, (_, i) => (
+        {[...Array(maxRating)].map((_, index) => (
           <Star
-            key={i}
-            className={cn(sizeClasses[size], i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300")}
+            key={index}
+            className={cn(sizeClasses[size], index < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300")}
           />
         ))}
       </div>
-      {showNumber && (
-        <span className="text-sm text-gray-600 ml-2">
-          {rating}/{maxRating}
+      {showReviews && (
+        <span className={cn("ml-2 text-gray-600", textSizeClasses[size])}>
+          {rating} ({reviewCount?.toLocaleString()} reviews)
         </span>
       )}
     </div>
   )
 }
+
+export default StarRating

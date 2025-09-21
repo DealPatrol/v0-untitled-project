@@ -1,86 +1,64 @@
-"use client"
-
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { StarRating } from "@/components/star-rating"
 import { Quote } from "lucide-react"
 
-export function TestimonialSection() {
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      location: "Denver, CO",
-      avatar: "/placeholder.svg?height=60&width=60&text=SJ",
-      rating: 5,
-      text: "Creating a memorial for my mother was so meaningful. The QR code on her headstone allows visitors to see her beautiful life story and photos. It's brought our family so much comfort.",
-      relationship: "Daughter",
-    },
-    {
-      name: "Michael Chen",
-      location: "Austin, TX",
-      avatar: "/placeholder.svg?height=60&width=60&text=MC",
-      rating: 5,
-      text: "The process was incredibly easy during such a difficult time. The memorial page is beautiful and we've received so many touching messages from friends and family who found it through the QR code.",
-      relationship: "Son",
-    },
-    {
-      name: "Lisa Rodriguez",
-      location: "Miami, FL",
-      avatar: "/placeholder.svg?height=60&width=60&text=LR",
-      rating: 5,
-      text: "I was amazed by how professional and compassionate the team was. They helped us create something truly special that honors my husband's memory. The lifetime guarantee gives us peace of mind.",
-      relationship: "Widow",
-    },
-    {
-      name: "David Thompson",
-      location: "Seattle, WA",
-      avatar: "/placeholder.svg?height=60&width=60&text=DT",
-      rating: 5,
-      text: "We used this for my father's military memorial. Being able to include his service photos and stories from fellow veterans has created something really powerful. Highly recommend.",
-      relationship: "Son",
-    },
-    {
-      name: "Jennifer Williams",
-      location: "Chicago, IL",
-      avatar: "/placeholder.svg?height=60&width=60&text=JW",
-      rating: 5,
-      text: "The customer support was exceptional. They walked us through everything and even helped us organize old family photos. The final memorial exceeded our expectations.",
-      relationship: "Daughter",
-    },
-    {
-      name: "Robert Martinez",
-      location: "Phoenix, AZ",
-      avatar: "/placeholder.svg?height=60&width=60&text=RM",
-      rating: 5,
-      text: "What a beautiful way to celebrate my wife's life. Friends from around the world have been able to share memories and photos. It's become a gathering place for everyone who loved her.",
-      relationship: "Widower",
-    },
-  ]
+const testimonials = [
+  {
+    id: 1,
+    name: "Sarah Johnson",
+    location: "Denver, CO",
+    avatar: "/hispanic-woman-smiling-professional-portrait.png",
+    rating: 5,
+    text: "Memorial QR helped us create a beautiful tribute for my mother. The QR code on her headstone allows visitors to see her life story, photos, and the impact she had on so many people. It's brought our family so much comfort.",
+    memorial: "In memory of Margaret Johnson",
+  },
+  {
+    id: 2,
+    name: "Michael Chen",
+    location: "San Francisco, CA",
+    avatar: "/asian-man-engineer-smiling-professional-portrait.png",
+    rating: 5,
+    text: "As a tech professional, I was impressed by the platform's simplicity and security. Creating dad's memorial was straightforward, and now family members across the country can contribute memories and photos. It's keeping his legacy alive.",
+    memorial: "In memory of Robert Chen",
+  },
+  {
+    id: 3,
+    name: "Maria Rodriguez",
+    location: "Austin, TX",
+    avatar: "/professional-woman-doctor-white-coat-smiling.png",
+    rating: 5,
+    text: "The customer support was incredible during such a difficult time. They helped us set up everything and even assisted with uploading old family photos. The memorial has become a place where our extended family connects and shares memories.",
+    memorial: "In memory of Carlos Rodriguez",
+  },
+]
 
+export function TestimonialSection() {
   return (
-    <section className="py-16 px-4 bg-gray-50">
-      <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Trusted by Thousands of Families</h2>
-          <p className="text-gray-600 text-lg">See what families are saying about their memorial experiences</p>
+    <section className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            What Families Are <span className="gradient-text">Saying</span>
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Join thousands of families who have found comfort and connection through Memorial QR
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map((testimonial, index) => (
-            <Card key={index} className="border-0 shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial) => (
+            <Card key={testimonial.id} className="memorial-card">
               <CardContent className="p-6">
-                <div className="flex items-start space-x-4 mb-4">
-                  <Quote className="h-8 w-8 text-purple-600 flex-shrink-0 mt-1" />
-                  <div className="flex-1">
-                    <StarRating rating={testimonial.rating} size="sm" className="mb-2" />
-                    <p className="text-gray-700 leading-relaxed mb-4">"{testimonial.text}"</p>
-                  </div>
+                <div className="flex items-center mb-4">
+                  <Quote className="w-8 h-8 text-purple-600 opacity-50 mr-3" />
+                  <StarRating rating={testimonial.rating} size="sm" />
                 </div>
-
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-12 w-12">
+                <p className="text-gray-700 mb-6 leading-relaxed">{testimonial.text}</p>
+                <div className="flex items-center">
+                  <Avatar className="w-12 h-12 mr-4">
                     <AvatarImage src={testimonial.avatar || "/placeholder.svg"} alt={testimonial.name} />
-                    <AvatarFallback className="bg-purple-100 text-purple-600 font-semibold">
+                    <AvatarFallback>
                       {testimonial.name
                         .split(" ")
                         .map((n) => n[0])
@@ -89,9 +67,8 @@ export function TestimonialSection() {
                   </Avatar>
                   <div>
                     <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {testimonial.relationship} • {testimonial.location}
-                    </div>
+                    <div className="text-sm text-gray-500">{testimonial.location}</div>
+                    <div className="text-xs text-purple-600 mt-1">{testimonial.memorial}</div>
                   </div>
                 </div>
               </CardContent>
@@ -99,19 +76,35 @@ export function TestimonialSection() {
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center space-x-6 text-sm text-gray-500">
-            <div className="flex items-center space-x-2">
-              <StarRating rating={5} size="sm" />
-              <span className="font-medium">4.9/5 Average Rating</span>
+        <div className="mt-16 text-center">
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-8 max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Join Our Memorial Community</h3>
+            <p className="text-lg text-gray-600 mb-6">
+              Over 10,000 families have trusted us to preserve their most precious memories. Your loved one's story
+              deserves to be remembered and shared.
+            </p>
+            <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-600">
+              <div className="flex items-center">
+                <span className="font-semibold text-2xl text-purple-600 mr-2">4.9</span>
+                <div>
+                  <StarRating rating={5} size="sm" />
+                  <div>Average Rating</div>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="font-semibold text-2xl text-purple-600">10,000+</div>
+                <div>Memorials Created</div>
+              </div>
+              <div className="text-center">
+                <div className="font-semibold text-2xl text-purple-600">50,000+</div>
+                <div>Memories Shared</div>
+              </div>
             </div>
-            <div className="hidden sm:block w-1 h-1 bg-gray-300 rounded-full"></div>
-            <span>2,847+ Families Served</span>
-            <div className="hidden sm:block w-1 h-1 bg-gray-300 rounded-full"></div>
-            <span>99.2% Satisfaction Rate</span>
           </div>
         </div>
       </div>
     </section>
   )
 }
+
+export default TestimonialSection

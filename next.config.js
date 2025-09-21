@@ -8,7 +8,6 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-    domains: ["placeholder.svg"],
     remotePatterns: [
       {
         protocol: "https",
@@ -17,7 +16,7 @@ const nextConfig = {
     ],
   },
   experimental: {
-    serverComponentsExternalPackages: ["@supabase/supabase-js"],
+    optimizePackageImports: ["lucide-react"],
   },
 }
 

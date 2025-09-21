@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useParams } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
@@ -80,13 +79,10 @@ export default function MemorialPage() {
             <div className="bg-white p-8 rounded-lg shadow-lg">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="w-48 h-48 bg-gradient-to-br from-purple-200 to-blue-200 rounded-full flex items-center justify-center">
-                  <Image
-                    src="/placeholder.svg?height=192&width=192&text=Memorial Portrait"
+                  <img
+                    src="/elderly-man-smiling-portrait.png"
                     alt="Memorial Portrait"
-                    width={176}
-                    height={176}
-                    className="rounded-full object-cover"
-                    unoptimized
+                    className="w-44 h-44 rounded-full object-cover"
                   />
                 </div>
 
@@ -162,29 +158,20 @@ export default function MemorialPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid md:grid-cols-3 gap-4">
-                      <Image
-                        src="/placeholder.svg?height=200&width=300&text=Family Gathering"
+                      <img
+                        src="/family-gathering-outdoor-picnic.png"
                         alt="Family gathering"
-                        width={300}
-                        height={200}
                         className="w-full h-48 object-cover rounded-lg"
-                        unoptimized
                       />
-                      <Image
-                        src="/placeholder.svg?height=200&width=300&text=Teaching Moment"
+                      <img
+                        src="/elderly-man-teaching-children-classroom.png"
                         alt="Teaching moment"
-                        width={300}
-                        height={200}
                         className="w-full h-48 object-cover rounded-lg"
-                        unoptimized
                       />
-                      <Image
-                        src="/placeholder.svg?height=200&width=300&text=Family Hiking"
+                      <img
+                        src="/family-hiking-mountain-trail-together.png"
                         alt="Family hiking"
-                        width={300}
-                        height={200}
                         className="w-full h-48 object-cover rounded-lg"
-                        unoptimized
                       />
                     </div>
                   </CardContent>
