@@ -5,34 +5,49 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDate(date: Date | string) {
-  const d = new Date(date)
-  return d.toLocaleDateString("en-US", {
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount)
+}
+
+export function formatDate(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date
+  return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
-  })
+  }).format(d)
 }
 
-export function formatRelativeTime(date: Date | string) {
-  const d = new Date(date)
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - d.getTime()) / 1000)
+export function formatPhoneNumber(phone: string): string {
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, "")
 
-  if (diffInSeconds < 60) {
-    return "just now"
-  } else if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60)
-    return `${minutes} minute${minutes > 1 ? "s" : ""} ago`
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600)
-    return `${hours} hour${hours > 1 ? "s" : ""} ago`
-  } else if (diffInSeconds < 2592000) {
-    const days = Math.floor(diffInSeconds / 86400)
-    return `${days} day${days > 1 ? "s" : ""} ago`
-  } else {
-    return formatDate(d)
+  // Format as (XXX) XXX-XXXX
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
   }
+
+  return phone
+}
+
+export function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+export function validatePhone(phone: string): boolean {
+  // Fixed regex - removed problematic lookbehind
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/
+  const cleaned = phone.replace(/\D/g, "")
+  return cleaned.length >= 10 && cleaned.length <= 15
+}
+
+export function validateZipCode(zipCode: string): boolean {
+  const zipRegex = /^\d{5}(-\d{4})?$/
+  return zipRegex.test(zipCode)
 }
 
 export function generateSlug(text: string): string {
@@ -46,4 +61,59 @@ export function generateSlug(text: string): string {
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text
   return text.slice(0, maxLength).trim() + "..."
+}
+
+export function capitalizeWords(text: string): string {
+  return text.replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
+export function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0))
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+export function calculateAge(birthDate: Date, deathDate?: Date): number {
+  const endDate = deathDate || new Date()
+  const age = endDate.getFullYear() - birthDate.getFullYear()
+  const monthDiff = endDate.getMonth() - birthDate.getMonth()
+
+  if (monthDiff < 0 || (monthDiff === 0 && endDate.getDate() < birthDate.getDate())) {
+    return age - 1
+  }
+
+  return age
+}
+
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null
+
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
+}
+
+export function throttle<T extends (...args: any[]) => any>(func: T, limit: number): (...args: Parameters<T>) => void {
+  let inThrottle: boolean
+
+  return (...args: Parameters<T>) => {
+    if (!inThrottle) {
+      func(...args)
+      inThrottle = true
+      setTimeout(() => (inThrottle = false), limit)
+    }
+  }
 }
