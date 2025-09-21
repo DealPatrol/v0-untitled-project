@@ -5,48 +5,24 @@ interface StarRatingProps {
   rating: number
   maxRating?: number
   size?: "sm" | "md" | "lg"
-  showReviews?: boolean
-  reviewCount?: number
   className?: string
 }
 
-export function StarRating({
-  rating,
-  maxRating = 5,
-  size = "md",
-  showReviews = false,
-  reviewCount = 0,
-  className,
-}: StarRatingProps) {
+export function StarRating({ rating, maxRating = 5, size = "md", className }: StarRatingProps) {
   const sizeClasses = {
-    sm: "w-4 h-4",
-    md: "w-5 h-5",
-    lg: "w-6 h-6",
-  }
-
-  const textSizeClasses = {
-    sm: "text-sm",
-    md: "text-base",
-    lg: "text-lg",
+    sm: "h-4 w-4",
+    md: "h-5 w-5",
+    lg: "h-6 w-6",
   }
 
   return (
-    <div className={cn("flex items-center", className)}>
-      <div className="flex">
-        {[...Array(maxRating)].map((_, index) => (
-          <Star
-            key={index}
-            className={cn(sizeClasses[size], index < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300")}
-          />
-        ))}
-      </div>
-      {showReviews && (
-        <span className={cn("ml-2 text-gray-600", textSizeClasses[size])}>
-          {rating} ({reviewCount?.toLocaleString()} reviews)
-        </span>
-      )}
+    <div className={cn("flex items-center space-x-1", className)}>
+      {Array.from({ length: maxRating }, (_, i) => (
+        <Star
+          key={i}
+          className={cn(sizeClasses[size], i < rating ? "text-yellow-400 fill-current" : "text-gray-300")}
+        />
+      ))}
     </div>
   )
 }
-
-export default StarRating
