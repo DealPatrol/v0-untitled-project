@@ -6,42 +6,44 @@ export function TestimonialSection() {
   const testimonials = [
     {
       name: "Jennifer Martinez",
-      image: "/elderly-woman-grandmother-smiling-portrait.png",
       role: "Daughter",
+      avatar: "/hispanic-woman-smiling-professional-portrait.png",
       rating: 5,
       text: "Memorial QR helped us create a beautiful tribute to my mother. The QR code on her headstone allows visitors to see her life story and photos. It's brought our family so much comfort.",
     },
     {
-      name: "David Chen",
-      image: "/asian-man-engineer-smiling-professional-portrait.png",
+      name: "David Thompson",
       role: "Son",
+      avatar: "/elderly-veteran-man-uniform-portrait.png",
       rating: 5,
-      text: "The platform is incredibly easy to use. We were able to create a comprehensive memorial for my father in just a few hours. The support team was amazing throughout the process.",
+      text: "As a veteran's family, we wanted to honor my father's service. The memorial page showcases his military photos and stories from fellow veterans. It's exactly what we needed.",
     },
     {
-      name: "Sarah Johnson",
-      image: "/professional-woman-doctor-white-coat-smiling.png",
+      name: "Dr. Lisa Chen",
       role: "Wife",
+      avatar: "/professional-woman-doctor-white-coat-smiling.png",
       rating: 5,
-      text: "Having a digital memorial means our grandchildren will always be able to learn about their grandfather. The stories and photos are preserved forever, which gives us peace of mind.",
+      text: "The platform made it easy to collaborate with family members across the country. Everyone could contribute photos and memories. The result is a comprehensive celebration of my husband's life.",
     },
   ]
 
   return (
-    <section className="py-16 px-4">
-      <div className="max-w-6xl mx-auto">
+    <section className="py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">What Families Say</h2>
-          <p className="text-gray-600 text-lg">Trusted by thousands of families worldwide</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Families Are Saying</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Hear from families who have created lasting memorials for their loved ones
+          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="p-6">
               <CardContent className="p-0">
-                <div className="flex items-center space-x-4 mb-4">
-                  <Avatar>
-                    <AvatarImage src={testimonial.image || "/placeholder.svg"} alt={testimonial.name} />
+                <div className="flex items-center mb-4">
+                  <Avatar className="w-12 h-12 mr-4">
+                    <AvatarImage src={testimonial.avatar || "/placeholder.svg"} alt={testimonial.name} />
                     <AvatarFallback>
                       {testimonial.name
                         .split(" ")

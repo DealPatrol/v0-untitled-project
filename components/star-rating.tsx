@@ -15,12 +15,23 @@ export function StarRating({ rating, maxRating = 5, size = "sm" }: StarRatingPro
 
   return (
     <div className="flex items-center">
-      {Array.from({ length: maxRating }, (_, i) => (
-        <Star
-          key={i}
-          className={`${sizeClasses[size]} ${i < rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
-        />
-      ))}
+      {Array.from({ length: maxRating }, (_, i) => {
+        const filled = i < Math.floor(rating)
+        const halfFilled = i === Math.floor(rating) && rating % 1 !== 0
+
+        return (
+          <Star
+            key={i}
+            className={`${sizeClasses[size]} ${
+              filled
+                ? "text-yellow-400 fill-yellow-400"
+                : halfFilled
+                  ? "text-yellow-400 fill-yellow-400/50"
+                  : "text-gray-300"
+            }`}
+          />
+        )
+      })}
     </div>
   )
 }
