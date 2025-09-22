@@ -8,6 +8,14 @@ const nextConfig = {
   },
   images: {
     domains: ["blob.v0.app"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "blob.v0.app",
+        port: "",
+        pathname: "/**",
+      },
+    ],
     unoptimized: true,
   },
   experimental: {

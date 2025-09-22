@@ -10,17 +10,20 @@ interface StarRatingProps {
 
 export function StarRating({ rating, maxRating = 5, size = "md", className }: StarRatingProps) {
   const sizeClasses = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
+    sm: "h-3 w-3",
+    md: "h-4 w-4",
+    lg: "h-5 w-5",
   }
 
   return (
-    <div className={cn("flex items-center gap-1", className)}>
+    <div className={cn("flex items-center", className)}>
       {Array.from({ length: maxRating }, (_, i) => (
         <Star
           key={i}
-          className={cn(sizeClasses[size], i < rating ? "fill-gold-400 text-gold-400" : "fill-gray-200 text-gray-200")}
+          className={cn(
+            sizeClasses[size],
+            i < rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200",
+          )}
         />
       ))}
     </div>

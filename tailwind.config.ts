@@ -19,9 +19,6 @@ const config = {
       },
     },
     extend: {
-      fontFamily: {
-        dancing: ["Dancing Script", "cursive"],
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,16 +54,16 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
         gold: {
-          50: "#fefdf8",
-          100: "#fef7cd",
-          200: "#fef08a",
-          300: "#fde047",
-          400: "#facc15",
-          500: "#eab308",
-          600: "#ca8a04",
-          700: "#a16207",
-          800: "#854d0e",
-          900: "#713f12",
+          50: "#FFFDF7",
+          100: "#FFF9E6",
+          200: "#FFF2CC",
+          300: "#FFE699",
+          400: "#FFD700",
+          500: "#D4AF37",
+          600: "#B8860B",
+          700: "#9A7209",
+          800: "#7D5E07",
+          900: "#5C4505",
         },
       },
       borderRadius: {
@@ -87,6 +84,9 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      fontFamily: {
+        dancing: ["Dancing Script", "cursive"],
       },
     },
   },
