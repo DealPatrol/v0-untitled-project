@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import type React from "react"
+
+import { useState, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -17,49 +18,235 @@ import {
   Heart,
   Calendar,
   MapPin,
-  MessageCircle,
   Users,
-  Share2,
-  Download,
+  Music,
+  Camera,
+  Video,
+  MessageSquare,
+  BookOpen,
+  Edit,
+  Trash2,
   Play,
   Pause,
   Volume2,
   VolumeX,
-  BookOpen,
-  Camera,
-  Music,
+  UserPlus,
+  LogOut,
+  Share2,
+  Download,
 } from "lucide-react"
 
-export default function GlendaMemorial() {
+interface User {
+  id: string
+  name: string
+  relationship: string
+  email?: string
+  isFamily: boolean
+}
+
+interface Photo {
+  id: string
+  url: string
+  caption: string
+  uploadedBy: string
+  uploadedAt: string
+}
+
+interface VideoMemory {
+  id: string
+  url: string
+  title: string
+  description: string
+  uploadedBy: string
+  uploadedAt: string
+}
+
+interface Story {
+  id: string
+  title: string
+  content: string
+  author: string
+  createdAt: string
+}
+
+interface Message {
+  id: string
+  content: string
+  author: string
+  createdAt: string
+}
+
+interface Song {
+  id: string
+  title: string
+  artist: string
+  url: string
+  addedBy: string
+  duration: string
+  totalSeconds: number
+}
+
+export default function GlendaMemorialPage() {
+  const { toast } = useToast()
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [signInName, setSignInName] = useState("")
+  const [signInRelationship, setSignInRelationship] = useState("")
+  const [signInEmail, setSignInEmail] = useState("")
+  const [isSignInOpen, setIsSignInOpen] = useState(false)
+
+  // Music player state
+  const [currentSong, setCurrentSong] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [currentSong, setCurrentSong] = useState(0)
-  const [isSignedIn, setIsSignedIn] = useState(false)
-  const [showSignIn, setShowSignIn] = useState(false)
   const [volume, setVolume] = useState(0.5)
   const [isMuted, setIsMuted] = useState(false)
   const [playbackTime, setPlaybackTime] = useState(0)
-  const [stories, setStories] = useState<
-    Array<{ id: number; author: string; title: string; content: string; date: string }>
-  >([])
-  const [messages, setMessages] = useState<Array<{ id: number; author: string; content: string; date: string }>>([])
-  const [photos, setPhotos] = useState([
-    { src: "/glenda-memorial-portrait.jpeg", caption: "Glenda in her favorite garden" },
-    { src: "/glenda-garden-couple.jpeg", caption: "With her beloved husband in their garden" },
-    { src: "/glenda-christmas-daughter.jpeg", caption: "Christmas morning with her daughter" },
-    { src: "/glenda-hospital-visit.jpeg", caption: "Visiting friends at the hospital" },
-    { src: "/glenda-family-baseball.jpeg", caption: "Family baseball game" },
-    { src: "/glenda-restaurant-couple.jpeg", caption: "Anniversary dinner" },
-    { src: "/glenda-hospital-bedside.jpeg", caption: "Comforting a patient" },
-    { src: "/glenda-beach-walk.jpeg", caption: "Beach walk with family" },
-  ])
-  const [currentUser, setCurrentUser] = useState("")
-  const { toast } = useToast()
 
-  const songs = [
-    { title: "Amazing Grace", artist: "Traditional", duration: "3:45", totalSeconds: 225 },
-    { title: "How Great Thou Art", artist: "Traditional", duration: "4:12", totalSeconds: 252 },
-    { title: "In the Garden", artist: "Traditional", duration: "3:28", totalSeconds: 208 },
-  ]
+  // Photo state
+  const [photos, setPhotos] = useState<Photo[]>([
+    {
+      id: "1",
+      url: "/glenda-memorial-portrait.jpeg",
+      caption: "Glenda in her favorite garden",
+      uploadedBy: "Family",
+      uploadedAt: "2024-01-10",
+    },
+    {
+      id: "2",
+      url: "/glenda-garden-couple.jpeg",
+      caption: "With her beloved husband Lynn in their garden",
+      uploadedBy: "Lynn Kelso",
+      uploadedAt: "2024-01-11",
+    },
+    {
+      id: "3",
+      url: "/glenda-christmas-daughter.jpeg",
+      caption: "Christmas morning with Penny",
+      uploadedBy: "Penny Collins",
+      uploadedAt: "2024-01-12",
+    },
+    {
+      id: "4",
+      url: "/glenda-hospital-visit.jpeg",
+      caption: "Visiting friends at the hospital",
+      uploadedBy: "Eddie Kelso",
+      uploadedAt: "2024-01-13",
+    },
+    {
+      id: "5",
+      url: "/glenda-family-baseball.jpeg",
+      caption: "Family baseball game - she never missed one!",
+      uploadedBy: "Cole Collins",
+      uploadedAt: "2024-01-14",
+    },
+    {
+      id: "6",
+      url: "/glenda-restaurant-couple.jpeg",
+      caption: "Anniversary dinner at their favorite restaurant",
+      uploadedBy: "Lynn Kelso",
+      uploadedAt: "2024-01-15",
+    },
+    {
+      id: "7",
+      url: "/glenda-hospital-bedside.jpeg",
+      caption: "Comforting a patient - she had such a caring heart",
+      uploadedBy: "Family Friend",
+      uploadedAt: "2024-01-16",
+    },
+    {
+      id: "8",
+      url: "/glenda-beach-walk.jpeg",
+      caption: "Beach walk with the grandkids",
+      uploadedBy: "Kristin Kelso",
+      uploadedAt: "2024-01-17",
+    },
+  ])
+
+  // Video state
+  const [videos, setVideos] = useState<VideoMemory[]>([
+    {
+      id: "1",
+      url: "/sample-video-1.mp4",
+      title: "Glenda's 70th Birthday Celebration",
+      description:
+        "A beautiful celebration surrounded by family and friends. You can hear her infectious laugh throughout the whole video.",
+      uploadedBy: "Eddie Kelso",
+      uploadedAt: "2024-01-10",
+    },
+    {
+      id: "2",
+      url: "/sample-video-2.mp4",
+      title: "Teaching Gracie to Garden",
+      description: "Grandma Glenda showing her granddaughter how to plant tomatoes. This was just last spring.",
+      uploadedBy: "Penny Collins",
+      uploadedAt: "2024-01-12",
+    },
+  ])
+
+  // Stories state
+  const [stories, setStories] = useState<Story[]>([
+    {
+      id: "1",
+      title: "Mom's Famous Chocolate Gravy",
+      content:
+        "Every Sunday morning, Mom would make her legendary chocolate gravy from scratch. The whole house would fill with the sweet aroma, and we'd all gather around the kitchen table. She never wrote down the recipe - it was all in her heart and hands. I've tried to recreate it so many times, but it never tastes quite the same. I think the secret ingredient was her love.",
+      author: "Penny Collins",
+      createdAt: "2024-01-15",
+    },
+  ])
+
+  // Messages state
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "1",
+      content:
+        "Glenda was such a light in our community. Her kindness and humor touched everyone she met. Sending love and prayers to the entire family during this difficult time.",
+      author: "Sarah Mitchell",
+      createdAt: "2024-01-14",
+    },
+  ])
+
+  // Music state
+  const [songs, setSongs] = useState<Song[]>([
+    {
+      id: "1",
+      title: "Amazing Grace",
+      artist: "Traditional",
+      url: "/placeholder.svg?height=50&width=50",
+      addedBy: "Memorial Admin",
+      duration: "3:45",
+      totalSeconds: 225,
+    },
+    {
+      id: "2",
+      title: "How Great Thou Art",
+      artist: "Traditional",
+      url: "/placeholder.svg?height=50&width=50",
+      addedBy: "Memorial Admin",
+      duration: "4:12",
+      totalSeconds: 252,
+    },
+    {
+      id: "3",
+      title: "In the Garden",
+      artist: "Traditional",
+      url: "/placeholder.svg?height=50&width=50",
+      addedBy: "Memorial Admin",
+      duration: "3:28",
+      totalSeconds: 208,
+    },
+  ])
+
+  const [editingStory, setEditingStory] = useState<string | null>(null)
+  const [editingMessage, setEditingMessage] = useState<string | null>(null)
+  const [newPhotoCaption, setNewPhotoCaption] = useState("")
+  const [newVideoTitle, setNewVideoTitle] = useState("")
+  const [newVideoDescription, setNewVideoDescription] = useState("")
+  const [newStoryTitle, setNewStoryTitle] = useState("")
+  const [newStoryContent, setNewStoryContent] = useState("")
+  const [newMessageContent, setNewMessageContent] = useState("")
+
+  const photoInputRef = useRef<HTMLInputElement>(null)
+  const videoInputRef = useRef<HTMLInputElement>(null)
 
   const familyTree = [
     { name: "Glenda Jane Kelso", relation: "Self", dates: "July 27, 1952 - August 27, 2025" },
@@ -77,46 +264,69 @@ export default function GlendaMemorial() {
     { name: "Ridge Thompson", relation: "Grandson", dates: "" },
   ]
 
-  const handleSignIn = (name: string) => {
-    setCurrentUser(name)
-    setIsSignedIn(true)
-    setShowSignIn(false)
+  const handleSignIn = () => {
+    if (!signInName.trim() || !signInRelationship.trim()) {
+      toast({
+        title: "Please fill in required fields",
+        description: "Name and relationship are required to sign in.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const familyRelationships = ["son", "daughter", "spouse", "husband", "wife"]
+    const isFamily = familyRelationships.some((rel) => signInRelationship.toLowerCase().includes(rel))
+
+    const user: User = {
+      id: Date.now().toString(),
+      name: signInName,
+      relationship: signInRelationship,
+      email: signInEmail || undefined,
+      isFamily,
+    }
+
+    setCurrentUser(user)
+    setIsSignInOpen(false)
+    setSignInName("")
+    setSignInRelationship("")
+    setSignInEmail("")
+
     toast({
       title: "Welcome!",
-      description: `You're now signed in as ${name}. You can now contribute to Glenda's memorial.`,
+      description: `Thank you for signing in, ${user.name}. You can now contribute to Glenda's memorial.`,
     })
   }
 
-  const handlePlayPause = (songIndex: number) => {
-    if (currentSong !== songIndex) {
-      setCurrentSong(songIndex)
+  const handleSignOut = () => {
+    setCurrentUser(null)
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully.",
+    })
+  }
+
+  const handlePlayPause = (songId: string) => {
+    const song = songs.find((s) => s.id === songId)
+    if (!song) return
+
+    if (currentSong !== songId) {
+      setCurrentSong(songId)
       setIsPlaying(true)
       setPlaybackTime(0)
       toast({
         title: "Now Playing",
-        description: `${songs[songIndex].title} by ${songs[songIndex].artist}`,
+        description: `${song.title} by ${song.artist}`,
       })
     } else {
       setIsPlaying(!isPlaying)
-      if (!isPlaying) {
-        toast({
-          title: "Music Resumed",
-          description: `${songs[songIndex].title}`,
-        })
-      } else {
-        toast({
-          title: "Music Paused",
-          description: `${songs[songIndex].title}`,
-        })
-      }
     }
 
     // Simulate playback progress
-    if (!isPlaying && currentSong === songIndex) {
+    if (!isPlaying && currentSong === songId) {
       const interval = setInterval(() => {
         setPlaybackTime((prev) => {
           const newTime = prev + 1
-          if (newTime >= songs[songIndex].totalSeconds) {
+          if (newTime >= song.totalSeconds) {
             setIsPlaying(false)
             clearInterval(interval)
             return 0
@@ -133,100 +343,120 @@ export default function GlendaMemorial() {
     return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
-  const handleAddStory = (title: string, content: string) => {
-    if (!title.trim() || !content.trim()) {
-      toast({
-        title: "Error",
-        description: "Please fill in both title and story content.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const newStory = {
-      id: Date.now(),
-      author: currentUser,
-      title: title.trim(),
-      content: content.trim(),
-      date: new Date().toLocaleDateString(),
-    }
-
-    setStories([...stories, newStory])
-    toast({
-      title: "Story Added",
-      description: "Your story has been added to Glenda's memorial.",
-    })
-
-    // Clear the form
-    const titleInput = document.getElementById("story-title") as HTMLInputElement
-    const contentInput = document.getElementById("story-content") as HTMLTextAreaElement
-    if (titleInput) titleInput.value = ""
-    if (contentInput) contentInput.value = ""
-  }
-
-  const handleAddMessage = (content: string) => {
-    if (!content.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a message.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const newMessage = {
-      id: Date.now(),
-      author: currentUser,
-      content: content.trim(),
-      date: new Date().toLocaleDateString(),
-    }
-
-    setMessages([...messages, newMessage])
-    toast({
-      title: "Message Added",
-      description: "Your message has been added to Glenda's memorial.",
-    })
-
-    // Clear the form
-    const messageInput = document.getElementById("message-content") as HTMLTextAreaElement
-    if (messageInput) messageInput.value = ""
-  }
-
-  const handleAddPhoto = (files: FileList | null, caption: string) => {
-    if (!files || files.length === 0) {
-      toast({
-        title: "Error",
-        description: "Please select at least one photo.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    // Simulate photo upload
-    Array.from(files).forEach((file) => {
-      const newPhoto = {
-        src: URL.createObjectURL(file),
-        caption: caption || `Photo added by ${currentUser}`,
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file && currentUser) {
+      const newPhoto: Photo = {
+        id: Date.now().toString(),
+        url: URL.createObjectURL(file),
+        caption: newPhotoCaption,
+        uploadedBy: currentUser.name,
+        uploadedAt: new Date().toISOString().split("T")[0],
       }
       setPhotos([...photos, newPhoto])
-    })
+      setNewPhotoCaption("")
+      toast({
+        title: "Photo uploaded!",
+        description: "Your photo has been added to the memorial.",
+      })
+    }
+  }
 
+  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file && currentUser) {
+      const newVideo: VideoMemory = {
+        id: Date.now().toString(),
+        url: URL.createObjectURL(file),
+        title: newVideoTitle,
+        description: newVideoDescription,
+        uploadedBy: currentUser.name,
+        uploadedAt: new Date().toISOString().split("T")[0],
+      }
+      setVideos([...videos, newVideo])
+      setNewVideoTitle("")
+      setNewVideoDescription("")
+      toast({
+        title: "Video uploaded!",
+        description: "Your video has been added to the memorial.",
+      })
+    }
+  }
+
+  const handleAddStory = () => {
+    if (!currentUser || !newStoryTitle.trim() || !newStoryContent.trim()) return
+
+    const newStory: Story = {
+      id: Date.now().toString(),
+      title: newStoryTitle,
+      content: newStoryContent,
+      author: currentUser.name,
+      createdAt: new Date().toISOString().split("T")[0],
+    }
+    setStories([...stories, newStory])
+    setNewStoryTitle("")
+    setNewStoryContent("")
     toast({
-      title: "Photos Added",
-      description: `${files.length} photo(s) have been added to Glenda's memorial.`,
+      title: "Story added!",
+      description: "Your story has been shared on the memorial.",
     })
+  }
 
-    // Clear the form
-    const photoInput = document.getElementById("photo-upload") as HTMLInputElement
-    const captionInput = document.getElementById("photo-caption") as HTMLTextAreaElement
-    if (photoInput) photoInput.value = ""
-    if (captionInput) captionInput.value = ""
+  const handleAddMessage = () => {
+    if (!currentUser || !newMessageContent.trim()) return
+
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content: newMessageContent,
+      author: currentUser.name,
+      createdAt: new Date().toISOString().split("T")[0],
+    }
+    setMessages([...messages, newMessage])
+    setNewMessageContent("")
+    toast({
+      title: "Message added!",
+      description: "Your message has been added to the memorial.",
+    })
+  }
+
+  const canEdit = (authorName: string) => {
+    return currentUser && (currentUser.name === authorName || currentUser.isFamily)
+  }
+
+  const handleDeletePhoto = (photoId: string) => {
+    setPhotos(photos.filter((p) => p.id !== photoId))
+    toast({
+      title: "Photo deleted",
+      description: "The photo has been removed from the memorial.",
+    })
+  }
+
+  const handleDeleteVideo = (videoId: string) => {
+    setVideos(videos.filter((v) => v.id !== videoId))
+    toast({
+      title: "Video deleted",
+      description: "The video has been removed from the memorial.",
+    })
+  }
+
+  const handleDeleteStory = (storyId: string) => {
+    setStories(stories.filter((s) => s.id !== storyId))
+    toast({
+      title: "Story deleted",
+      description: "The story has been removed from the memorial.",
+    })
+  }
+
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages(messages.filter((m) => m.id !== messageId))
+    toast({
+      title: "Message deleted",
+      description: "The message has been removed from the memorial.",
+    })
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-slate-900 to-slate-700 text-white">
         <div className="absolute inset-0 bg-black/20" />
@@ -276,19 +506,43 @@ export default function GlendaMemorial() {
         </div>
       </div>
 
-      {/* Sign In Section */}
-      {!isSignedIn && (
+      {/* User Status Banner */}
+      {!currentUser ? (
         <div className="bg-yellow-50 border-b border-yellow-200">
           <div className="container mx-auto px-4 py-4">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="text-center md:text-left">
                 <p className="text-yellow-800 font-medium">Are you a family member or friend of Glenda?</p>
                 <p className="text-yellow-700 text-sm">
-                  Sign in to add photos, stories, and memories to this memorial.
+                  Sign in to add photos, videos, stories, and memories to this memorial.
                 </p>
               </div>
-              <Button onClick={() => setShowSignIn(true)} className="bg-yellow-600 hover:bg-yellow-700 text-white">
+              <Button onClick={() => setIsSignInOpen(true)} className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                <UserPlus className="h-4 w-4 mr-2" />
                 Sign In to Contribute
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-green-50 border-b border-green-200">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="text-center md:text-left">
+                <p className="text-green-800 font-medium">
+                  Welcome, {currentUser?.name}! ({currentUser?.relationship})
+                </p>
+                <p className="text-green-700 text-sm">
+                  You can now add photos, videos, stories, and messages to honor Glenda's memory.
+                </p>
+              </div>
+              <Button
+                onClick={handleSignOut}
+                variant="outline"
+                className="border-green-300 text-green-700 hover:bg-green-100 bg-transparent"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
               </Button>
             </div>
           </div>
@@ -298,9 +552,10 @@ export default function GlendaMemorial() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12">
         <Tabs defaultValue="about" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 mb-8">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 mb-8">
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="photos">Photos</TabsTrigger>
+            <TabsTrigger value="videos">Videos</TabsTrigger>
             <TabsTrigger value="music">Music</TabsTrigger>
             <TabsTrigger value="family">Family</TabsTrigger>
             <TabsTrigger value="stories">Stories</TabsTrigger>
@@ -383,8 +638,11 @@ export default function GlendaMemorial() {
           <TabsContent value="photos">
             <div className="space-y-6">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h2 className="text-2xl font-bold">Photo Gallery</h2>
-                {isSignedIn && (
+                <div>
+                  <h2 className="text-2xl font-bold">Photo Gallery</h2>
+                  <p className="text-gray-600">{photos.length} photos shared by family and friends</p>
+                </div>
+                {currentUser && (
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button>
@@ -404,16 +662,18 @@ export default function GlendaMemorial() {
                             type="file"
                             multiple
                             accept="image/*"
-                            onChange={(e) => {
-                              const caption =
-                                (document.getElementById("photo-caption") as HTMLTextAreaElement)?.value || ""
-                              handleAddPhoto(e.target.files, caption)
-                            }}
+                            ref={photoInputRef}
+                            onChange={handlePhotoUpload}
                           />
                         </div>
                         <div>
-                          <Label htmlFor="photo-caption">Caption (optional)</Label>
-                          <Textarea id="photo-caption" placeholder="Add a caption for these photos..." />
+                          <Label htmlFor="photo-caption">Caption</Label>
+                          <Textarea
+                            id="photo-caption"
+                            placeholder="Add a caption for these photos..."
+                            value={newPhotoCaption}
+                            onChange={(e) => setNewPhotoCaption(e.target.value)}
+                          />
                         </div>
                       </div>
                     </DialogContent>
@@ -422,17 +682,122 @@ export default function GlendaMemorial() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {photos.map((photo, index) => (
-                  <Card key={index} className="overflow-hidden">
-                    <Image
-                      src={photo.src || "/placeholder.svg"}
-                      alt={photo.caption}
-                      width={400}
-                      height={300}
-                      className="w-full h-64 object-cover"
-                    />
+                {photos.map((photo) => (
+                  <Card key={photo.id} className="overflow-hidden group">
+                    <div className="relative">
+                      <Image
+                        src={photo.url || "/placeholder.svg"}
+                        alt={photo.caption}
+                        width={400}
+                        height={300}
+                        className="w-full h-64 object-cover"
+                      />
+                      {currentUser && canEdit(photo.uploadedBy) && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleDeletePhoto(photo.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                     <CardContent className="p-4">
-                      <p className="text-sm text-gray-600">{photo.caption}</p>
+                      <p className="text-sm text-gray-700 mb-2">{photo.caption}</p>
+                      <p className="text-xs text-gray-500">
+                        Shared by {photo.uploadedBy} on {photo.uploadedAt}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="videos">
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold">Video Memories</h2>
+                  <p className="text-gray-600">{videos.length} videos shared by family and friends</p>
+                </div>
+                {currentUser && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Video className="h-4 w-4 mr-2" />
+                        Add Video
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>Add Video Memory</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="video-upload">Select Video</Label>
+                          <Input
+                            id="video-upload"
+                            type="file"
+                            accept="video/*"
+                            ref={videoInputRef}
+                            onChange={handleVideoUpload}
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Supported formats: MP4, MOV, AVI (max 100MB)</p>
+                        </div>
+                        <div>
+                          <Label htmlFor="video-title">Video Title</Label>
+                          <Input
+                            id="video-title"
+                            placeholder="Give your video a title..."
+                            value={newVideoTitle}
+                            onChange={(e) => setNewVideoTitle(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="video-description">Description</Label>
+                          <Textarea
+                            id="video-description"
+                            placeholder="Tell us about this video memory..."
+                            rows={3}
+                            value={newVideoDescription}
+                            onChange={(e) => setNewVideoDescription(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {videos.map((video) => (
+                  <Card key={video.id} className="overflow-hidden group">
+                    <div className="relative">
+                      <div className="video-container bg-black">
+                        <video controls className="w-full h-full" poster="/placeholder.svg?height=300&width=400">
+                          <source src={video.url} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                      {currentUser && canEdit(video.uploadedBy) && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleDeleteVideo(video.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-lg mb-2">{video.title}</h3>
+                      <p className="text-sm text-gray-700 mb-3">{video.description}</p>
+                      <p className="text-xs text-gray-500">
+                        Shared by {video.uploadedBy} on {video.uploadedAt}
+                      </p>
                     </CardContent>
                   </Card>
                 ))}
@@ -447,7 +812,7 @@ export default function GlendaMemorial() {
                   <h2 className="text-2xl font-bold">Memorial Music</h2>
                   <p className="text-gray-600">Songs that were meaningful to Glenda</p>
                 </div>
-                {isSignedIn && (
+                {currentUser && (
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button>
@@ -491,15 +856,15 @@ export default function GlendaMemorial() {
               <Card>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {songs.map((song, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    {songs.map((song) => (
+                      <div key={song.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-4">
                           <Button
                             size="sm"
-                            variant={currentSong === index && isPlaying ? "default" : "outline"}
-                            onClick={() => handlePlayPause(index)}
+                            variant={currentSong === song.id && isPlaying ? "default" : "outline"}
+                            onClick={() => handlePlayPause(song.id)}
                           >
-                            {currentSong === index && isPlaying ? (
+                            {currentSong === song.id && isPlaying ? (
                               <Pause className="h-4 w-4" />
                             ) : (
                               <Play className="h-4 w-4" />
@@ -508,7 +873,7 @@ export default function GlendaMemorial() {
                           <div>
                             <h4 className="font-medium">{song.title}</h4>
                             <p className="text-sm text-gray-600">{song.artist}</p>
-                            {currentSong === index && (
+                            {currentSong === song.id && (
                               <div className="text-xs text-gray-500 mt-1">
                                 {isPlaying ? "Playing..." : "Paused"} - {formatTime(playbackTime)} / {song.duration}
                               </div>
@@ -564,8 +929,11 @@ export default function GlendaMemorial() {
           <TabsContent value="stories">
             <div className="space-y-6">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h2 className="text-2xl font-bold">Stories & Memories</h2>
-                {isSignedIn && (
+                <div>
+                  <h2 className="text-2xl font-bold">Stories & Memories</h2>
+                  <p className="text-gray-600">{stories.length} stories shared by family and friends</p>
+                </div>
+                {currentUser && (
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button>
@@ -580,21 +948,24 @@ export default function GlendaMemorial() {
                       <div className="space-y-4">
                         <div>
                           <Label htmlFor="story-title">Story Title</Label>
-                          <Input id="story-title" placeholder="Give your story a title..." />
+                          <Input
+                            id="story-title"
+                            placeholder="Give your story a title..."
+                            value={newStoryTitle}
+                            onChange={(e) => setNewStoryTitle(e.target.value)}
+                          />
                         </div>
                         <div>
                           <Label htmlFor="story-content">Your Story</Label>
-                          <Textarea id="story-content" placeholder="Share your favorite memory of Glenda..." rows={6} />
+                          <Textarea
+                            id="story-content"
+                            placeholder="Share your favorite memory of Glenda..."
+                            rows={6}
+                            value={newStoryContent}
+                            onChange={(e) => setNewStoryContent(e.target.value)}
+                          />
                         </div>
-                        <Button
-                          onClick={() => {
-                            const title = (document.getElementById("story-title") as HTMLInputElement)?.value || ""
-                            const content =
-                              (document.getElementById("story-content") as HTMLTextAreaElement)?.value || ""
-                            handleAddStory(title, content)
-                          }}
-                          className="w-full"
-                        >
+                        <Button onClick={handleAddStory} className="w-full">
                           Share Story
                         </Button>
                       </div>
@@ -603,44 +974,48 @@ export default function GlendaMemorial() {
                 )}
               </div>
 
-              {stories.length === 0 ? (
-                <Card>
-                  <CardContent className="text-center py-12">
-                    <MessageCircle className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-xl font-medium text-gray-600 mb-2">No Stories Yet</h3>
-                    <p className="text-gray-500 mb-6">Be the first to share a memory of Glenda</p>
-                    {!isSignedIn && <Button onClick={() => setShowSignIn(true)}>Sign In to Share a Story</Button>}
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {stories.map((story) => (
-                    <Card key={story.id}>
-                      <CardHeader>
+              <div className="space-y-4">
+                {stories.map((story) => (
+                  <Card key={story.id} className="group">
+                    <CardHeader className="flex flex-row items-start justify-between">
+                      <div className="flex-1">
                         <CardTitle className="text-lg">{story.title}</CardTitle>
-                        <p className="text-sm text-gray-600">
-                          By {story.author} on {story.date}
+                        <p className="text-sm text-gray-600 mt-1">
+                          By {story.author} on {story.createdAt}
                         </p>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-700 leading-relaxed">{story.content}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                      </div>
+                      {currentUser && canEdit(story.author) && (
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleDeleteStory(story.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-700 leading-relaxed">{story.content}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </TabsContent>
 
           <TabsContent value="messages">
             <div className="space-y-6">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h2 className="text-2xl font-bold">Messages of Condolence</h2>
-                {isSignedIn && (
+                <div>
+                  <h2 className="text-2xl font-bold">Messages of Condolence</h2>
+                  <p className="text-gray-600">{messages.length} messages from family and friends</p>
+                </div>
+                {currentUser && (
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button>
-                        <MessageCircle className="h-4 w-4 mr-2" />
+                        <MessageSquare className="h-4 w-4 mr-2" />
                         Leave a Message
                       </Button>
                     </DialogTrigger>
@@ -655,16 +1030,11 @@ export default function GlendaMemorial() {
                             id="message-content"
                             placeholder="Share your condolences or a message for the family..."
                             rows={4}
+                            value={newMessageContent}
+                            onChange={(e) => setNewMessageContent(e.target.value)}
                           />
                         </div>
-                        <Button
-                          onClick={() => {
-                            const content =
-                              (document.getElementById("message-content") as HTMLTextAreaElement)?.value || ""
-                            handleAddMessage(content)
-                          }}
-                          className="w-full"
-                        >
+                        <Button onClick={handleAddMessage} className="w-full">
                           Post Message
                         </Button>
                       </div>
@@ -673,31 +1043,30 @@ export default function GlendaMemorial() {
                 )}
               </div>
 
-              {messages.length === 0 ? (
-                <Card>
-                  <CardContent className="text-center py-12">
-                    <Heart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-xl font-medium text-gray-600 mb-2">No Messages Yet</h3>
-                    <p className="text-gray-500 mb-6">Be the first to leave a message for the family</p>
-                    {!isSignedIn && <Button onClick={() => setShowSignIn(true)}>Sign In to Leave a Message</Button>}
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <Card key={message.id}>
-                      <CardHeader>
-                        <p className="text-sm text-gray-600">
-                          By {message.author} on {message.date}
-                        </p>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-700 leading-relaxed">{message.content}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+              <div className="space-y-4">
+                {messages.map((message) => (
+                  <Card key={message.id} className="group">
+                    <CardHeader className="flex flex-row items-start justify-between">
+                      <p className="text-sm text-gray-600">
+                        By {message.author} on {message.createdAt}
+                      </p>
+                      {currentUser && canEdit(message.author) && (
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleDeleteMessage(message.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-700 leading-relaxed">{message.content}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </TabsContent>
         </Tabs>
@@ -719,7 +1088,7 @@ export default function GlendaMemorial() {
       </div>
 
       {/* Sign In Dialog */}
-      <Dialog open={showSignIn} onOpenChange={setShowSignIn}>
+      <Dialog open={isSignInOpen} onOpenChange={setIsSignInOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Sign In to Contribute</DialogTitle>
@@ -727,27 +1096,33 @@ export default function GlendaMemorial() {
           <div className="space-y-4">
             <div>
               <Label htmlFor="signin-name">Your Name</Label>
-              <Input id="signin-name" placeholder="Enter your full name" />
+              <Input
+                id="signin-name"
+                placeholder="Enter your full name"
+                value={signInName}
+                onChange={(e) => setSignInName(e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="signin-relationship">Relationship to Glenda</Label>
-              <Input id="signin-relationship" placeholder="e.g., Daughter, Friend, Neighbor" />
+              <Input
+                id="signin-relationship"
+                placeholder="e.g., Daughter, Son, Friend, Neighbor, Coworker"
+                value={signInRelationship}
+                onChange={(e) => setSignInRelationship(e.target.value)}
+              />
             </div>
-            <Button
-              onClick={() => {
-                const name = (document.getElementById("signin-name") as HTMLInputElement)?.value?.trim()
-                if (name) {
-                  handleSignIn(name)
-                } else {
-                  toast({
-                    title: "Error",
-                    description: "Please enter your name.",
-                    variant: "destructive",
-                  })
-                }
-              }}
-              className="w-full"
-            >
+            <div>
+              <Label htmlFor="signin-email">Email (optional)</Label>
+              <Input
+                id="signin-email"
+                type="email"
+                placeholder="your.email@example.com"
+                value={signInEmail}
+                onChange={(e) => setSignInEmail(e.target.value)}
+              />
+            </div>
+            <Button onClick={handleSignIn} className="w-full">
               Sign In
             </Button>
           </div>
