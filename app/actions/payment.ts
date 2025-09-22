@@ -1,12 +1,6 @@
 "use server"
 
 import { z } from "zod"
-import { redirect } from "next/navigation"
-import Stripe from "stripe"
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-})
 
 // Validation schemas
 const CreateOrderSchema = z.object({
@@ -139,30 +133,44 @@ export async function createOrder(data: CreateOrderData): Promise<OrderResult> {
 }
 
 // Create Payment Intent
-export async function createPaymentIntent(formData: FormData): Promise<PaymentIntentResult> {
+export async function createPaymentIntent(data: PaymentIntentData): Promise<PaymentIntentResult> {
   try {
-    const amount = 14900 // $149.00 in cents
+    // Validate input data
+    const validatedData = PaymentIntentSchema.parse(data)
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: "usd",
-      metadata: {
-        product: "memorial_package",
-        name: formData.get("name") as string,
-        email: formData.get("email") as string,
-      },
-    })
+    // Simulate payment intent creation
+    await new Promise((resolve) => setTimeout(resolve, 800))
+
+    // Generate mock payment intent
+    const paymentIntentId = `pi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const clientSecret = `${paymentIntentId}_secret_${Math.random().toString(36).substr(2, 9)}`
+
+    // In a real implementation, you would:
+    // 1. Create Stripe payment intent
+    // 2. Set up payment methods
+    // 3. Configure webhooks
+    // 4. Handle 3D Secure if needed
+
+    console.log("Payment intent created:", { paymentIntentId, ...validatedData })
 
     return {
       success: true,
-      clientSecret: paymentIntent.client_secret,
-      paymentIntentId: paymentIntent.id,
+      clientSecret,
+      paymentIntentId,
     }
   } catch (error) {
-    console.error("Payment intent creation failed:", error)
+    console.error("Create payment intent error:", error)
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.errors.map((e) => e.message).join(", "),
+      }
+    }
+
     return {
       success: false,
-      error: "Failed to create payment intent",
+      error: "Failed to create payment intent. Please try again.",
     }
   }
 }
@@ -211,35 +219,51 @@ export async function getCheckoutSession(data: CheckoutSessionData): Promise<Che
 }
 
 // Process Payment
-export async function processPayment(paymentData: {
-  paymentIntentId: string
-  name: string
-  email: string
-  phone: string
-  address: string
-  city: string
-  state: string
-  zipCode: string
-}): Promise<PaymentResult> {
+export async function processPayment(data: ProcessPaymentData): Promise<PaymentResult> {
   try {
-    // Update payment intent with customer details
-    await stripe.paymentIntents.update(paymentData.paymentIntentId, {
-      metadata: {
-        ...paymentData,
-      },
-    })
+    // Validate input data
+    const validatedData = ProcessPaymentSchema.parse(data)
 
-    // Redirect to success page
-    redirect("/checkout/success")
+    // Simulate payment processing
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    // Generate mock payment result
+    const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const status = Math.random() > 0.1 ? "succeeded" : "failed" // 90% success rate
+
+    // In a real implementation, you would:
+    // 1. Confirm payment intent with Stripe
+    // 2. Handle payment method authentication
+    // 3. Update order status
+    // 4. Send confirmation emails
+
+    console.log("Payment processed:", { paymentId, status, ...validatedData })
+
+    if (status === "failed") {
+      return {
+        success: false,
+        error: "Payment failed. Please check your payment method and try again.",
+      }
+    }
 
     return {
       success: true,
+      paymentId,
+      status,
     }
   } catch (error) {
-    console.error("Payment processing failed:", error)
+    console.error("Process payment error:", error)
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.errors.map((e) => e.message).join(", "),
+      }
+    }
+
     return {
       success: false,
-      error: "Payment processing failed",
+      error: "Failed to process payment. Please try again.",
     }
   }
 }

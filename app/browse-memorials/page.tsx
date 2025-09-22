@@ -195,7 +195,6 @@ export default function BrowseMemorials() {
                     width={400}
                     height={300}
                     className="w-full h-48 object-cover"
-                    unoptimized
                   />
                   {memorial.featured && (
                     <Badge className="absolute top-2 right-2 bg-red-500">
@@ -242,7 +241,6 @@ export default function BrowseMemorials() {
                         width={120}
                         height={120}
                         className="w-24 h-24 object-cover rounded-lg"
-                        unoptimized
                       />
                       {memorial.featured && (
                         <Badge className="absolute -top-2 -right-2 bg-red-500">

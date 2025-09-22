@@ -15,7 +15,7 @@ const product = {
   name: "Memorial QR Plaque",
   category: "memorial",
   material: "Premium Aluminum",
-  price: 119.99,
+  price: 149,
   originalPrice: 199,
   rating: 4.9,
   reviews: 247,

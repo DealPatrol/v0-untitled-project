@@ -1,137 +1,125 @@
+import Link from "next/link"
 import { Header } from "@/components/header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function PrivacyPolicy() {
+export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Privacy Policy</h1>
-          <p className="text-xl text-purple-100 max-w-2xl mx-auto">
-            Your privacy is important to us. Learn how we protect and handle your personal information.
-          </p>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Privacy Policy</CardTitle>
-              <p className="text-gray-600">Last updated: January 1, 2024</p>
-            </CardHeader>
-            <CardContent className="prose max-w-none">
-              <h2>1. Information We Collect</h2>
-              <p>
-                We collect information you provide directly to us, such as when you create a memorial, contact us, or
-                use our services. This may include:
-              </p>
-              <ul>
-                <li>Name, email address, and contact information</li>
-                <li>Photos, videos, and stories you upload</li>
-                <li>Payment information (processed securely through Stripe)</li>
-                <li>Usage data and analytics</li>
-              </ul>
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
+          <p className="text-gray-600 mb-8">Last updated: December 2024</p>
 
-              <h2>2. How We Use Your Information</h2>
-              <p>We use the information we collect to:</p>
-              <ul>
-                <li>Provide and maintain our memorial services</li>
-                <li>Process payments and fulfill orders</li>
-                <li>Communicate with you about your account</li>
-                <li>Improve our services and user experience</li>
-                <li>Comply with legal obligations</li>
-              </ul>
+          <div className="prose prose-lg max-w-none">
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Information We Collect</h2>
+            <p className="text-gray-700 mb-4">
+              We collect information you provide directly to us when creating memorial profiles, including names, dates,
+              photos, biographical information, and contact details.
+            </p>
 
-              <h2>3. Information Sharing</h2>
-              <p>
-                We do not sell, trade, or otherwise transfer your personal information to third parties except as
-                described in this policy. We may share information:
-              </p>
-              <ul>
-                <li>With service providers who assist in our operations</li>
-                <li>When required by law or to protect our rights</li>
-                <li>In connection with a business transfer</li>
-                <li>With your consent</li>
-              </ul>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">How We Use Your Information</h2>
+            <p className="text-gray-700 mb-4">
+              We use the information to create and maintain digital memorials, process orders, provide customer support,
+              and send important updates about your memorial.
+            </p>
 
-              <h2>4. Data Security</h2>
-              <p>
-                We implement appropriate security measures to protect your personal information against unauthorized
-                access, alteration, disclosure, or destruction. This includes:
-              </p>
-              <ul>
-                <li>Encryption of data in transit and at rest</li>
-                <li>Regular security audits and updates</li>
-                <li>Limited access to personal information</li>
-                <li>Secure payment processing through Stripe</li>
-              </ul>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Information Sharing</h2>
+            <p className="text-gray-700 mb-4">
+              We do not sell, trade, or rent your personal information to third parties. Memorial content is shared only
+              according to the privacy settings you choose.
+            </p>
 
-              <h2>5. Memorial Privacy</h2>
-              <p>You control the privacy settings of your memorial. You can choose to make your memorial:</p>
-              <ul>
-                <li>Public - accessible to anyone with the QR code or link</li>
-                <li>Private - accessible only to invited family and friends</li>
-                <li>Password protected - requiring a password to access</li>
-              </ul>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Data Security</h2>
+            <p className="text-gray-700 mb-4">
+              We implement appropriate security measures to protect your personal information against unauthorized
+              access, alteration, disclosure, or destruction.
+            </p>
 
-              <h2>6. Data Retention</h2>
-              <p>
-                We retain your personal information for as long as necessary to provide our services and fulfill the
-                purposes outlined in this policy. Memorial content is stored permanently as part of our lifetime hosting
-                commitment.
-              </p>
-
-              <h2>7. Your Rights</h2>
-              <p>You have the right to:</p>
-              <ul>
-                <li>Access and update your personal information</li>
-                <li>Delete your account and associated data</li>
-                <li>Export your memorial content</li>
-                <li>Opt out of marketing communications</li>
-                <li>Request information about data processing</li>
-              </ul>
-
-              <h2>8. Cookies and Tracking</h2>
-              <p>
-                We use cookies and similar technologies to improve your experience, analyze usage, and provide
-                personalized content. You can control cookie settings through your browser.
-              </p>
-
-              <h2>9. Children's Privacy</h2>
-              <p>
-                Our services are not directed to children under 13. We do not knowingly collect personal information
-                from children under 13. If we become aware of such collection, we will delete the information promptly.
-              </p>
-
-              <h2>10. International Users</h2>
-              <p>
-                If you are accessing our services from outside the United States, please be aware that your information
-                may be transferred to, stored, and processed in the United States.
-              </p>
-
-              <h2>11. Changes to This Policy</h2>
-              <p>
-                We may update this privacy policy from time to time. We will notify you of any material changes by
-                posting the new policy on this page and updating the "last updated" date.
-              </p>
-
-              <h2>12. Contact Us</h2>
-              <p>If you have any questions about this privacy policy or our data practices, please contact us at:</p>
-              <p>
-                Email: privacy@memorialqr.com
-                <br />
-                Phone: 1-800-MEMORIAL
-                <br />
-                Address: 123 Memory Lane, Birmingham, AL 35203
-              </p>
-            </CardContent>
-          </Card>
+            <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Contact Us</h2>
+            <p className="text-gray-700 mb-4">
+              If you have questions about this Privacy Policy, please contact us at{" "}
+              <Link href="mailto:privacy@memorialqr.com" className="text-orange-600 hover:underline">
+                privacy@memorialqr.com
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Memorial QR</h3>
+              <p className="text-gray-400 text-sm">Honoring memories with digital memorials that last forever.</p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/how-it-works" className="hover:text-white">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="hover:text-white">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/browse-memorials" className="hover:text-white">
+                    Sample Memorials
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/help" className="hover:text-white">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="hover:text-white">
+                    FAQ
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/privacy-policy" className="hover:text-white">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms-of-service" className="hover:text-white">
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2024 Memorial QR. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

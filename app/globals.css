@@ -2,13 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap");
-
 @layer base {
   :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -29,17 +24,9 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
   }
 
   .dark {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -59,11 +46,6 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
   }
 }
 
@@ -76,212 +58,68 @@
   }
 }
 
-.font-dancing {
-  font-family: "Dancing Script", cursive;
+/* Custom styles for memorial site */
+.memorial-bg {
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/military-veterans-memorial-ceremony.png")
+    center / cover no-repeat;
 }
 
-.font-script {
-  font-family: "Dancing Script", cursive;
-}
-
-.font-cursive {
-  font-family: "Dancing Script", cursive;
-}
-
-.cursive {
-  font-family: "Dancing Script", cursive;
-}
-
-.cursive-logo {
-  font-family: "Dancing Script", cursive;
-  font-weight: 600;
-}
-
-.gradient-bg {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.hero-pattern {
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 0);
-  background-size: 20px 20px;
-}
-
-.hero-gradient {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4));
-}
-
-.hero-overlay {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.7) 100%);
-}
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-/* Memorial QR Custom Styles */
-.memorial-logo {
-  font-family: "Dancing Script", cursive;
-  background: linear-gradient(135deg, #d4af37, #ffd700, #b8860b);
+.gradient-text {
+  background: linear-gradient(45deg, #fbbf24, #f59e0b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 600;
 }
 
-.memorial-logo-text {
-  position: relative;
-  letter-spacing: 0.05em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  animation: gentle-glow 4s ease-in-out infinite;
-  z-index: 1;
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.memorial-logo-underline {
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-  opacity: 0.6;
+.btn-hover-lift {
+  transition: transform 0.2s ease-in-out;
 }
 
-.memorial-logo::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 75%;
-  height: 2px;
-  background: linear-gradient(to right, transparent, rgba(148, 163, 184, 0.5), transparent);
-  border-radius: 1px;
-}
-
-.memorial-bg {
-  background-image: url("/military-veterans-memorial-ceremony.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-@media (max-width: 768px) {
-  .memorial-bg {
-    background-attachment: scroll;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-gentle-pulse {
-    animation: none;
-  }
-
-  .memorial-bg {
-    background-attachment: scroll;
-  }
-}
-
-@media (prefers-contrast: high) {
-  .memorial-bg::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1;
-  }
-
-  .memorial-card {
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(0, 0, 0, 0.3);
-  }
+.btn-hover-lift:hover {
+  transform: translateY(-2px);
 }
 
 .memorial-card {
   transition: all 0.3s ease;
-  border: 1px solid #e5e7eb;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.9);
 }
 
 .memorial-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
-  border-color: #d1d5db;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.memorial-card-hover {
-  transition: all 0.3s ease;
+.countdown-bg {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(59, 130, 246, 0.8));
 }
 
-.memorial-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+.memorial-logo {
+  font-family: var(--font-great-vibes), cursive;
 }
 
-/* Video Container Styles */
 .video-container {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  width: 280px;
+  height: 157px;
 }
 
-.video-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Responsive video adjustments */
 @media (max-width: 768px) {
   .video-container {
-    max-width: 320px;
-    margin: 0 auto;
+    width: 240px;
+    height: 135px;
   }
 }
 
-@media (min-width: 769px) {
+@media (max-width: 480px) {
   .video-container {
-    max-width: 400px;
+    width: 200px;
+    height: 112px;
   }
 }
 
-/* Line clamp utilities */
-.line-clamp-1 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-}
-
+/* Line clamp utility */
 .line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;
@@ -290,371 +128,8 @@ body {
 }
 
 .line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Focus styles for accessibility */
-.focus\:ring-2:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 2px #667eea;
-}
-
-/* Print styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-}
-
-/* Animation keyframes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-in-out;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-slide-up {
-  animation: slideUp 0.8s ease-out;
-}
-
-@keyframes gentle-glow {
-  0%,
-  100% {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    text-shadow: 0 2px 8px rgba(102, 126, 234, 0.2), 0 4px 16px rgba(118, 75, 162, 0.1);
-  }
-}
-
-@keyframes gentle-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.animate-gentle-pulse {
-  animation: gentle-pulse 2s ease-in-out infinite;
-}
-
-@keyframes fade-in-up {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out;
-}
-
-.animate-delay-100 {
-  animation-delay: 0.1s;
-}
-
-.animate-delay-200 {
-  animation-delay: 0.2s;
-}
-
-.animate-delay-300 {
-  animation-delay: 0.3s;
-}
-
-@keyframes pulse-gold {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
-  }
-}
-
-.animate-pulse-gold {
-  animation: pulse-gold 2s infinite;
-}
-
-/* Memorial specific styles */
-.memorial-timeline {
-  position: relative;
-}
-
-.memorial-timeline::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(to bottom, #667eea, #764ba2);
-  transform: translateX(-50%);
-}
-
-.memorial-timeline-item {
-  position: relative;
-  margin-bottom: 2rem;
-}
-
-.memorial-timeline-item::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 1rem;
-  width: 12px;
-  height: 12px;
-  background: #667eea;
-  border-radius: 50%;
-  transform: translateX(-50%);
-  border: 3px solid white;
-  box-shadow: 0 0 0 3px #667eea;
-}
-
-/* Responsive timeline */
-@media (max-width: 768px) {
-  .memorial-timeline::before {
-    left: 1rem;
-  }
-
-  .memorial-timeline-item::before {
-    left: 1rem;
-  }
-}
-
-/* Custom button styles */
-.btn-memorial {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.btn-memorial:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-}
-
-.btn-memorial:active {
-  transform: translateY(0);
-}
-
-/* Loading spinner */
-.spinner {
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #667eea;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Toast notification styles */
-.toast {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.toast.success {
-  border-left: 4px solid #10b981;
-}
-
-.toast.error {
-  border-left: 4px solid #ef4444;
-}
-
-.toast.warning {
-  border-left: 4px solid #f59e0b;
-}
-
-.toast.info {
-  border-left: 4px solid #3b82f6;
-}
-
-/* Decorative flourishes */
-.memorial-flourish {
-  position: relative;
-}
-
-.memorial-flourish::before,
-.memorial-flourish::after {
-  content: "✦";
-  position: absolute;
-  font-size: 0.5em;
-  opacity: 0.3;
-  color: #c084fc;
-}
-
-.memorial-flourish::before {
-  top: -0.5em;
-  left: -1em;
-  animation: twinkle 3s ease-in-out infinite;
-}
-
-.memorial-flourish::after {
-  bottom: -0.5em;
-  right: -1em;
-  animation: twinkle 3s ease-in-out infinite 1.5s;
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.2);
-  }
-}
-
-/* Responsive logo adjustments */
-@media (max-width: 640px) {
-  .memorial-logo-text {
-    letter-spacing: 0.02em;
-  }
-}
-
-/* Gradient text */
-.memorial-gradient {
-  background: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #b8860b 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gold-gradient {
-  background: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #b8860b 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.gold-gradient {
-  background: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #b8860b 100%);
-}
-
-.card-hover {
-  transition: all 0.3s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.sticky-cta {
-  transform: translateY(100%);
-  transition: transform 0.3s ease-in-out;
-}
-
-.sticky-cta.visible {
-  transform: translateY(0);
-}
-
-.sticky-cta-slide-up {
-  transform: translateY(100%);
-  transition: transform 0.3s ease-in-out;
-}
-
-.sticky-cta-slide-up.show {
-  transform: translateY(0);
-}
-
-.feature-icon {
-  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-  border: 1px solid #d1d5db;
-}
-
-.testimonial-gradient {
-  background: linear-gradient(135deg, #fafafa 0%, #f3f4f6 100%);
-}
-
-.memorial-logo-gradient {
-  background: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #b8860b 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.sticky-cta-shadow {
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
