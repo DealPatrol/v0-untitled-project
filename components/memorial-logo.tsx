@@ -5,5 +5,5 @@ interface MemorialLogoProps {
 }
 
 export function MemorialLogo({ className }: MemorialLogoProps) {
-  return <span className={cn("font-dancing font-bold text-gold-600", className)}>Memorial QR</span>
+  return <span className={cn("memorial-logo font-dancing font-bold", className)}>Memorial QR</span>
 }

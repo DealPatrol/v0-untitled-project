@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    appDir: true,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -8,20 +11,7 @@ const nextConfig = {
   },
   images: {
     domains: ["blob.v0.app"],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "blob.v0.app",
-        port: "",
-        pathname: "/**",
-      },
-    ],
     unoptimized: true,
-  },
-  experimental: {
-    serverActions: {
-      allowedOrigins: ["localhost:3000", "*.vercel.app"],
-    },
   },
 }
 

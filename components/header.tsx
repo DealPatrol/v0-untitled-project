@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { MemorialLogo } from "@/components/memorial-logo"
-import { Menu, X } from "lucide-react"
+import { Menu } from "lucide-react"
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -15,14 +15,15 @@ export function Header() {
     { name: "Browse Memorials", href: "/browse-memorials" },
     { name: "Pricing", href: "/pricing" },
     { name: "Our Story", href: "/our-story" },
+    { name: "Help", href: "/help" },
   ]
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center">
             <MemorialLogo className="text-2xl" />
           </Link>
 
@@ -32,7 +33,7 @@ export function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-gold-600 transition-colors font-medium"
+                className="text-gray-700 hover:text-yellow-600 font-medium transition-colors"
               >
                 {item.name}
               </Link>
@@ -41,10 +42,10 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" asChild>
-              <Link href="/login">Sign In</Link>
+            <Button asChild variant="outline">
+              <Link href="/create-sample-memorial">Try Sample</Link>
             </Button>
-            <Button className="bg-gold-500 hover:bg-gold-600 text-black" asChild>
+            <Button asChild className="bg-yellow-600 hover:bg-yellow-700">
               <Link href="/create-memorial">Create Memorial</Link>
             </Button>
           </div>
@@ -52,39 +53,34 @@ export function Header() {
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-              <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between py-4 border-b">
-                  <MemorialLogo className="text-xl" />
-                  <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
-                    <X className="h-6 w-6" />
-                  </Button>
-                </div>
+              <div className="flex flex-col space-y-4 mt-8">
+                <Link href="/" className="flex items-center mb-8">
+                  <MemorialLogo className="text-2xl" />
+                </Link>
 
-                <nav className="flex flex-col space-y-4 py-8">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="text-lg font-medium text-gray-700 hover:text-gold-600 transition-colors py-2"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </nav>
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-700 hover:text-yellow-600 font-medium py-2 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
 
-                <div className="mt-auto space-y-4 pb-8">
-                  <Button variant="outline" className="w-full bg-transparent" asChild>
-                    <Link href="/login" onClick={() => setIsOpen(false)}>
-                      Sign In
+                <div className="pt-4 space-y-2">
+                  <Button asChild variant="outline" className="w-full bg-transparent">
+                    <Link href="/create-sample-memorial" onClick={() => setIsOpen(false)}>
+                      Try Sample
                     </Link>
                   </Button>
-                  <Button className="w-full bg-gold-500 hover:bg-gold-600 text-black" asChild>
+                  <Button asChild className="w-full bg-yellow-600 hover:bg-yellow-700">
                     <Link href="/create-memorial" onClick={() => setIsOpen(false)}>
                       Create Memorial
                     </Link>

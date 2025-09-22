@@ -1,29 +1,24 @@
 import { Star } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 interface StarRatingProps {
   rating: number
   maxRating?: number
   size?: "sm" | "md" | "lg"
-  className?: string
 }
 
-export function StarRating({ rating, maxRating = 5, size = "md", className }: StarRatingProps) {
+export function StarRating({ rating, maxRating = 5, size = "sm" }: StarRatingProps) {
   const sizeClasses = {
-    sm: "h-3 w-3",
-    md: "h-4 w-4",
-    lg: "h-5 w-5",
+    sm: "w-4 h-4",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
   }
 
   return (
-    <div className={cn("flex items-center", className)}>
+    <div className="flex items-center">
       {Array.from({ length: maxRating }, (_, i) => (
         <Star
           key={i}
-          className={cn(
-            sizeClasses[size],
-            i < rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200",
-          )}
+          className={`${sizeClasses[size]} ${i < rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
         />
       ))}
     </div>
