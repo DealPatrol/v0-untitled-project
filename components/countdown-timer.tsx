@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from "react"
 
-export function CountdownTimer() {
+interface CountdownTimerProps {
+  targetDate: Date
+  className?: string
+}
+
+export function CountdownTimer({ targetDate, className }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -11,10 +16,6 @@ export function CountdownTimer() {
   })
 
   useEffect(() => {
-    // Set target date to 7 days from now
-    const targetDate = new Date()
-    targetDate.setDate(targetDate.getDate() + 7)
-
     const timer = setInterval(() => {
       const now = new Date().getTime()
       const distance = targetDate.getTime() - now
@@ -26,39 +27,30 @@ export function CountdownTimer() {
           minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((distance % (1000 * 60)) / 1000),
         })
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
       }
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [])
+  }, [targetDate])
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-      <div className="text-center text-white mb-2">
-        <div className="text-sm font-medium">Limited Time Offer Ends In:</div>
+    <div className={`flex gap-4 ${className}`}>
+      <div className="text-center">
+        <div className="text-2xl font-bold text-gold-600">{timeLeft.days}</div>
+        <div className="text-sm text-gray-600">Days</div>
       </div>
-      <div className="flex justify-center space-x-4">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-white">{timeLeft.days}</div>
-          <div className="text-xs text-white/70">Days</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-white">{timeLeft.hours}</div>
-          <div className="text-xs text-white/70">Hours</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-white">{timeLeft.minutes}</div>
-          <div className="text-xs text-white/70">Min</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-white">{timeLeft.seconds}</div>
-          <div className="text-xs text-white/70">Sec</div>
-        </div>
+      <div className="text-center">
+        <div className="text-2xl font-bold text-gold-600">{timeLeft.hours}</div>
+        <div className="text-sm text-gray-600">Hours</div>
+      </div>
+      <div className="text-center">
+        <div className="text-2xl font-bold text-gold-600">{timeLeft.minutes}</div>
+        <div className="text-sm text-gray-600">Minutes</div>
+      </div>
+      <div className="text-center">
+        <div className="text-2xl font-bold text-gold-600">{timeLeft.seconds}</div>
+        <div className="text-sm text-gray-600">Seconds</div>
       </div>
     </div>
   )
 }
-
-export default CountdownTimer

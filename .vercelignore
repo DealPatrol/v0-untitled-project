@@ -12,12 +12,13 @@ dist
 .env.local
 .env.production.local
 .env.development.local
+.env.test.local
 
 # Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
+.pnpm-debug.log*
 
 # Runtime data
 pids
@@ -115,3 +116,11 @@ Thumbs.db
 /public/large-family-reunion-multiple-generations.png
 /public/medical-research-scientist.png
 /public/professional-woman-doctor-white-coat-smiling.png
+
+# Additional updates
+*.swp
+*.swo
+*~
+*.tsbuildinfo
+next-env.d.ts
+README.md

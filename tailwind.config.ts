@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss"
 
-const config: Config = {
+const config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -20,7 +20,6 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
         dancing: ["Dancing Script", "cursive"],
       },
       colors: {
@@ -57,6 +56,18 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        gold: {
+          50: "#fefdf8",
+          100: "#fef7cd",
+          200: "#fef08a",
+          300: "#fde047",
+          400: "#facc15",
+          500: "#eab308",
+          600: "#ca8a04",
+          700: "#a16207",
+          800: "#854d0e",
+          900: "#713f12",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -72,22 +83,10 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "gentle-pulse": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.7" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "gentle-pulse": "gentle-pulse 2s ease-in-out infinite",
-      },
-      backgroundImage: {
-        "memorial-gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        "hero-gradient": "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
-      },
-      backdropBlur: {
-        xs: "2px",
       },
     },
   },

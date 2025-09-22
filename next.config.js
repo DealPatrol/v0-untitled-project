@@ -7,16 +7,13 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    domains: ["blob.v0.app"],
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-    ],
   },
   experimental: {
-    optimizePackageImports: ["lucide-react"],
+    serverActions: {
+      allowedOrigins: ["localhost:3000", "*.vercel.app"],
+    },
   },
 }
 
