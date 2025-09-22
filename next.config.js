@@ -7,6 +7,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    domains: ["blob.v0.app"],
     remotePatterns: [
       {
         protocol: "https",

@@ -1,48 +1,57 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { StarRating } from "@/components/star-rating"
+import { Quote } from "lucide-react"
 
 export function TestimonialSection() {
   const testimonials = [
     {
-      name: "Jennifer Martinez",
+      name: "Sarah Johnson",
       role: "Daughter",
+      avatar: "/elderly-woman-grandmother-smiling-portrait.png",
+      rating: 5,
+      content:
+        "Memorial QR helped us create a beautiful tribute to my mother. The QR code on her headstone allows visitors to see her life story and photos. It's brought our family so much comfort.",
+    },
+    {
+      name: "Michael Chen",
+      role: "Son",
+      avatar: "/asian-man-engineer-smiling-professional-portrait.png",
+      rating: 5,
+      content:
+        "The platform is incredibly easy to use. We were able to create a comprehensive memorial with photos, videos, and stories from family members around the world. Highly recommended.",
+    },
+    {
+      name: "Lisa Rodriguez",
+      role: "Wife",
       avatar: "/hispanic-woman-smiling-professional-portrait.png",
       rating: 5,
-      text: "Memorial QR helped us create a beautiful tribute to my mother. The QR code on her headstone allows visitors to see her life story and photos. It's brought our family so much comfort.",
-    },
-    {
-      name: "David Thompson",
-      role: "Son",
-      avatar: "/elderly-veteran-man-uniform-portrait.png",
-      rating: 5,
-      text: "As a veteran's family, we wanted to honor my father's service. The memorial page showcases his military photos and stories from fellow veterans. It's exactly what we needed.",
-    },
-    {
-      name: "Dr. Lisa Chen",
-      role: "Wife",
-      avatar: "/professional-woman-doctor-white-coat-smiling.png",
-      rating: 5,
-      text: "The platform made it easy to collaborate with family members across the country. Everyone could contribute photos and memories. The result is a comprehensive celebration of my husband's life.",
+      content:
+        "Having a digital memorial has been a blessing. Friends and family can visit anytime to share memories and leave messages. It keeps my husband's memory alive in a meaningful way.",
     },
   ]
 
   return (
-    <section className="py-16">
+    <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Families Are Saying</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Hear from families who have created lasting memorials for their loved ones
+            Hear from families who have found comfort and connection through Memorial QR
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="p-6">
+            <Card key={index} className="relative p-6 hover:shadow-lg transition-shadow">
+              <Quote className="absolute top-4 right-4 h-8 w-8 text-gray-200" />
               <CardContent className="p-0">
-                <div className="flex items-center mb-4">
-                  <Avatar className="w-12 h-12 mr-4">
+                <div className="mb-4">
+                  <StarRating rating={testimonial.rating} size="md" />
+                </div>
+                <p className="text-gray-700 mb-6 italic">"{testimonial.content}"</p>
+                <div className="flex items-center space-x-3">
+                  <Avatar>
                     <AvatarImage src={testimonial.avatar || "/placeholder.svg"} alt={testimonial.name} />
                     <AvatarFallback>
                       {testimonial.name
@@ -52,12 +61,10 @@ export function TestimonialSection() {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h4 className="font-semibold">{testimonial.name}</h4>
+                    <p className="font-semibold text-gray-900">{testimonial.name}</p>
                     <p className="text-sm text-gray-600">{testimonial.role}</p>
                   </div>
                 </div>
-                <StarRating rating={testimonial.rating} size="md" />
-                <p className="text-gray-700 mt-4 italic">"{testimonial.text}"</p>
               </CardContent>
             </Card>
           ))}

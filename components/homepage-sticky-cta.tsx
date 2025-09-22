@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
+import { X, ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 export function HomepageStickyCTA() {
   const [isVisible, setIsVisible] = useState(false)
@@ -17,7 +17,7 @@ export function HomepageStickyCTA() {
       // Show CTA after scrolling 50% of viewport height
       if (scrollPosition > windowHeight * 0.5 && !isDismissed) {
         setIsVisible(true)
-      } else {
+      } else if (scrollPosition <= windowHeight * 0.5) {
         setIsVisible(false)
       }
     }
@@ -31,22 +31,27 @@ export function HomepageStickyCTA() {
     setIsVisible(false)
   }
 
-  if (isDismissed) return null
+  if (!isVisible || isDismissed) return null
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-40 sticky-cta-slide-up ${isVisible ? "show" : ""}`}>
-      <div className="bg-blue-600 text-white p-4 shadow-lg">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t sticky-cta-shadow">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex items-center justify-between">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg mb-1">Ready to Honor Your Loved One?</h3>
-            <p className="text-blue-100 text-sm">Create a beautiful digital memorial in minutes</p>
+            <p className="text-sm font-medium text-gray-900">Ready to honor your loved one?</p>
+            <p className="text-sm text-gray-600">Create a beautiful memorial in minutes</p>
           </div>
-          <div className="flex items-center space-x-4 ml-4">
-            <Button asChild className="bg-white text-blue-600 hover:bg-gray-100">
-              <Link href="/create-memorial">Create Memorial</Link>
+
+          <div className="flex items-center space-x-3">
+            <Button asChild className="bg-yellow-600 hover:bg-yellow-700">
+              <Link href="/create-memorial">
+                Create Memorial
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleDismiss} className="text-white hover:bg-blue-700">
-              <X className="w-5 h-5" />
+            <Button variant="ghost" size="icon" onClick={handleDismiss} className="text-gray-400 hover:text-gray-600">
+              <X className="h-4 w-4" />
+              <span className="sr-only">Dismiss</span>
             </Button>
           </div>
         </div>
