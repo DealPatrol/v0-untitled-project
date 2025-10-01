@@ -20,7 +20,9 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        dancing: ["Dancing Script", "cursive"],
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        cursive: ["var(--font-dancing-script)", "cursive"],
+        script: ["var(--font-great-vibes)", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",

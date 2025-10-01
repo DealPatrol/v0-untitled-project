@@ -2,889 +2,517 @@
 
 import { useState, useRef } from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import {
   Heart,
-  Upload,
+  Calendar,
+  MapPin,
+  MessageCircle,
+  Users,
+  Share2,
+  Download,
   Play,
   Pause,
   Volume2,
   VolumeX,
-  Trash2,
-  MessageCircle,
-  Users,
-  Calendar,
-  MapPin,
-  Camera,
-  Video,
-  Music,
   BookOpen,
+  Camera,
+  Music,
 } from "lucide-react"
 
-interface Photo {
-  id: string
-  url: string
-  caption: string
-  uploadedBy: string
-  uploadedAt: string
-}
-
-interface VideoMemory {
-  id: string
-  url: string
-  title: string
-  description: string
-  uploadedBy: string
-  uploadedAt: string
-}
-
-interface Story {
-  id: string
-  title: string
-  content: string
-  author: string
-  createdAt: string
-}
-
-interface Message {
-  id: string
-  content: string
-  author: string
-  createdAt: string
-}
-
-interface Song {
-  id: string
-  title: string
-  artist: string
-  duration: string
-  url: string
-}
-
-interface FamilyMember {
-  name: string
-  relationship: string
-  email: string
-  isFamily: boolean
-}
-
-export default function GlendaKelsoMemorial() {
-  const { toast } = useToast()
-  const [currentUser, setCurrentUser] = useState<FamilyMember | null>(null)
-  const [signInForm, setSignInForm] = useState({ name: "", relationship: "", email: "" })
-  const [photos, setPhotos] = useState<Photo[]>([
-    {
-      id: "1",
-      url: "/glenda-memorial-portrait.jpeg",
-      caption: "Glenda in her favorite garden spot",
-      uploadedBy: "Sarah Kelso",
-      uploadedAt: "2024-01-15",
-    },
-    {
-      id: "2",
-      url: "/glenda-garden-couple.jpeg",
-      caption: "Glenda and Robert in their beautiful garden",
-      uploadedBy: "Michael Kelso",
-      uploadedAt: "2024-01-14",
-    },
-    {
-      id: "3",
-      url: "/glenda-christmas-daughter.jpeg",
-      caption: "Christmas morning with daughter Sarah",
-      uploadedBy: "Sarah Kelso",
-      uploadedAt: "2024-01-13",
-    },
-    {
-      id: "4",
-      url: "/glenda-hospital-visit.jpeg",
-      caption: "Surrounded by love during her final days",
-      uploadedBy: "David Kelso",
-      uploadedAt: "2024-01-12",
-    },
-    {
-      id: "5",
-      url: "/glenda-family-baseball.jpeg",
-      caption: "Family baseball game - Glenda cheering from the sidelines",
-      uploadedBy: "Jennifer Kelso",
-      uploadedAt: "2024-01-11",
-    },
-    {
-      id: "6",
-      url: "/glenda-restaurant-couple.jpeg",
-      caption: "Date night at their favorite restaurant",
-      uploadedBy: "Robert Kelso",
-      uploadedAt: "2024-01-10",
-    },
-  ])
-
-  const [videos, setVideos] = useState<VideoMemory[]>([
-    {
-      id: "1",
-      url: "/placeholder-video.mp4",
-      title: "Glenda's 70th Birthday Speech",
-      description: "Glenda giving a heartfelt thank you speech at her surprise 70th birthday party",
-      uploadedBy: "Michael Kelso",
-      uploadedAt: "2024-01-15",
-    },
-  ])
-
-  const [stories, setStories] = useState<Story[]>([
-    {
-      id: "1",
-      title: "The Chocolate Gravy Legend",
-      content:
-        "Every Sunday morning, Glenda would make her famous chocolate gravy from scratch. The grandkids would line up with their biscuits, and she'd serve each one with a smile and a kiss on the forehead. That recipe died with her - she never wrote it down, saying \"the secret ingredient is love, and you can't measure that.\"",
-      author: "Sarah Kelso",
-      createdAt: "2024-01-15",
-    },
-    {
-      id: "2",
-      title: "Garden Wisdom",
-      content:
-        "Mom taught me that gardens, like families, need constant tending. She'd say, \"You can't plant love and expect it to grow without water.\" Every morning, she'd walk through her flowers with her coffee, talking to each plant like an old friend.",
-      author: "Michael Kelso",
-      createdAt: "2024-01-14",
-    },
-  ])
-
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      content:
-        "Glenda was like a second mother to me. Her door was always open, and there was always room at her table. I'll miss her warm hugs and wise words.",
-      author: "Mary Johnson (Family Friend)",
-      createdAt: "2024-01-15",
-    },
-    {
-      id: "2",
-      content:
-        "Mrs. Kelso made the best chocolate gravy in three counties. More than that, she made everyone feel like family. Our neighborhood won't be the same without her.",
-      author: "Tom and Linda Martinez (Neighbors)",
-      createdAt: "2024-01-14",
-    },
-  ])
-
-  const [songs] = useState<Song[]>([
-    { id: "1", title: "Amazing Grace", artist: "Traditional", duration: "3:24", url: "/placeholder-audio.mp3" },
-    { id: "2", title: "How Great Thou Art", artist: "Traditional", duration: "4:12", url: "/placeholder-audio.mp3" },
-    { id: "3", title: "In the Garden", artist: "Traditional", duration: "3:45", url: "/placeholder-audio.mp3" },
-    {
-      id: "4",
-      title: "What a Friend We Have in Jesus",
-      artist: "Traditional",
-      duration: "3:18",
-      url: "/placeholder-audio.mp3",
-    },
-  ])
-
-  const [currentSong, setCurrentSong] = useState<string | null>(null)
+export default function GlendaMemorial() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [currentSong, setCurrentSong] = useState(0)
+  const [isSignedIn, setIsSignedIn] = useState(false)
+  const [showSignIn, setShowSignIn] = useState(false)
+  const [volume, setVolume] = useState(0.5)
   const [isMuted, setIsMuted] = useState(false)
+  const [stories, setStories] = useState<
+    Array<{ id: number; author: string; title: string; content: string; date: string }>
+  >([])
+  const [messages, setMessages] = useState<Array<{ id: number; author: string; content: string; date: string }>>([])
+  const [photos, setPhotos] = useState([
+    { src: "/glenda-memorial-portrait.jpeg", caption: "Glenda in her favorite garden" },
+    { src: "/glenda-garden-couple.jpeg", caption: "With her beloved husband in their garden" },
+    { src: "/glenda-christmas-daughter.jpeg", caption: "Christmas morning with her daughter" },
+    { src: "/glenda-hospital-visit.jpeg", caption: "Visiting friends at the hospital" },
+    { src: "/glenda-family-baseball.jpeg", caption: "Family baseball game" },
+    { src: "/glenda-restaurant-couple.jpeg", caption: "Anniversary dinner" },
+    { src: "/glenda-hospital-bedside.jpeg", caption: "Comforting a patient" },
+    { src: "/glenda-beach-walk.jpeg", caption: "Beach walk with family" },
+  ])
+  const [currentUser, setCurrentUser] = useState("")
   const audioRef = useRef<HTMLAudioElement>(null)
+  const { toast } = useToast()
 
-  const [newPhoto, setNewPhoto] = useState({ caption: "" })
-  const [newVideo, setNewVideo] = useState({ title: "", description: "" })
-  const [newStory, setNewStory] = useState({ title: "", content: "" })
-  const [newMessage, setNewMessage] = useState({ content: "" })
+  const songs = [
+    { title: "Amazing Grace", artist: "Traditional", duration: "3:45", url: "/audio/amazing-grace.mp3" },
+    { title: "How Great Thou Art", artist: "Traditional", duration: "4:12", url: "/audio/how-great-thou-art.mp3" },
+    { title: "In the Garden", artist: "Traditional", duration: "3:28", url: "/audio/in-the-garden.mp3" },
+  ]
 
-  const familyMembers = ["Robert Kelso", "Michael Kelso", "David Kelso", "Sarah Kelso", "Jennifer Kelso", "Lisa Kelso"]
+  const familyTree = [
+    { name: "Glenda Jane Kelso", relation: "Self", dates: "July 27, 1952 - August 27, 2025" },
+    { name: "Desmer McAnnally", relation: "Mother", dates: "Preceded in Death" },
+    { name: "Lynn Kelso", relation: "Husband", dates: "Married 57 years" },
+    { name: "Eddie Kelso", relation: "Son", dates: "" },
+    { name: "Penny Collins", relation: "Daughter", dates: "" },
+    { name: "Cole Collins", relation: "Grandson", dates: "" },
+    { name: "Kristin Kelso", relation: "Granddaughter", dates: "" },
+    { name: "Gracie Dean", relation: "Granddaughter", dates: "" },
+    { name: "Braxton Phillips", relation: "Grandson", dates: "" },
+    { name: "Weston Green", relation: "Grandson", dates: "" },
+    { name: "Addalynn Rassman", relation: "Granddaughter", dates: "" },
+    { name: "Wrenley Hunter", relation: "Granddaughter", dates: "" },
+    { name: "Ridge Thompson", relation: "Grandson", dates: "" },
+  ]
 
-  const handleSignIn = () => {
-    if (!signInForm.name || !signInForm.relationship || !signInForm.email) {
-      toast({
-        title: "Please fill in all fields",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const isFamily = familyMembers.some(
-      (member) =>
-        member.toLowerCase().includes(signInForm.name.toLowerCase()) ||
-        signInForm.relationship.toLowerCase().includes("son") ||
-        signInForm.relationship.toLowerCase().includes("daughter") ||
-        signInForm.relationship.toLowerCase().includes("spouse") ||
-        signInForm.relationship.toLowerCase().includes("husband"),
-    )
-
-    const user: FamilyMember = {
-      name: signInForm.name,
-      relationship: signInForm.relationship,
-      email: signInForm.email,
-      isFamily,
-    }
-
-    setCurrentUser(user)
-    setSignInForm({ name: "", relationship: "", email: "" })
-
+  const handleSignIn = (name: string) => {
+    setCurrentUser(name)
+    setIsSignedIn(true)
+    setShowSignIn(false)
     toast({
-      title: `Welcome, ${user.name}`,
-      description: `Signed in as ${user.relationship}${user.isFamily ? " (Family Member)" : ""}`,
+      title: "Welcome!",
+      description: `You're now signed in as ${name}. You can now contribute to Glenda's memorial.`,
     })
   }
 
-  const handleSignOut = () => {
-    setCurrentUser(null)
-    toast({
-      title: "Signed out successfully",
-    })
-  }
-
-  const playPauseSong = (songId: string) => {
-    if (currentSong === songId && isPlaying) {
-      setIsPlaying(false)
-      audioRef.current?.pause()
-    } else {
-      setCurrentSong(songId)
+  const handlePlayPause = (songIndex: number) => {
+    if (currentSong !== songIndex) {
+      setCurrentSong(songIndex)
       setIsPlaying(true)
-      // In a real app, you'd load and play the actual audio file
-      toast({
-        title: "Playing song",
-        description: songs.find((s) => s.id === songId)?.title,
-      })
+    } else {
+      setIsPlaying(!isPlaying)
     }
-  }
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted)
+    // Simulate audio playback
     if (audioRef.current) {
-      audioRef.current.muted = !isMuted
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play()
+      }
     }
   }
 
-  const addPhoto = () => {
-    if (!currentUser) {
+  const handleAddStory = (title: string, content: string) => {
+    if (!title.trim() || !content.trim()) {
       toast({
-        title: "Please sign in to upload photos",
+        title: "Error",
+        description: "Please fill in both title and story content.",
         variant: "destructive",
       })
       return
     }
 
-    if (!newPhoto.caption) {
-      toast({
-        title: "Please add a caption",
-        variant: "destructive",
-      })
-      return
+    const newStory = {
+      id: Date.now(),
+      author: currentUser,
+      title: title.trim(),
+      content: content.trim(),
+      date: new Date().toLocaleDateString(),
     }
 
-    const photo: Photo = {
-      id: Date.now().toString(),
-      url: "/placeholder.svg?height=300&width=400&text=New+Photo",
-      caption: newPhoto.caption,
-      uploadedBy: currentUser.name,
-      uploadedAt: new Date().toISOString().split("T")[0],
-    }
-
-    setPhotos([photo, ...photos])
-    setNewPhoto({ caption: "" })
-
+    setStories([...stories, newStory])
     toast({
-      title: "Photo uploaded successfully",
-      description: "Your photo has been added to the memorial",
+      title: "Story Added",
+      description: "Your story has been added to Glenda's memorial.",
     })
   }
 
-  const deletePhoto = (photoId: string) => {
-    const photo = photos.find((p) => p.id === photoId)
-    if (!currentUser || (photo?.uploadedBy !== currentUser.name && !currentUser.isFamily)) {
+  const handleAddMessage = (content: string) => {
+    if (!content.trim()) {
       toast({
-        title: "Permission denied",
-        description: "You can only delete your own photos",
+        title: "Error",
+        description: "Please enter a message.",
         variant: "destructive",
       })
       return
     }
 
-    setPhotos(photos.filter((p) => p.id !== photoId))
+    const newMessage = {
+      id: Date.now(),
+      author: currentUser,
+      content: content.trim(),
+      date: new Date().toLocaleDateString(),
+    }
+
+    setMessages([...messages, newMessage])
     toast({
-      title: "Photo deleted",
+      title: "Message Added",
+      description: "Your message has been added to Glenda's memorial.",
     })
   }
 
-  const addVideo = () => {
-    if (!currentUser) {
+  const handleAddPhoto = (files: FileList | null, caption: string) => {
+    if (!files || files.length === 0) {
       toast({
-        title: "Please sign in to upload videos",
+        title: "Error",
+        description: "Please select at least one photo.",
         variant: "destructive",
       })
       return
     }
 
-    if (!newVideo.title || !newVideo.description) {
-      toast({
-        title: "Please fill in all fields",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const video: VideoMemory = {
-      id: Date.now().toString(),
-      url: "/placeholder-video.mp4",
-      title: newVideo.title,
-      description: newVideo.description,
-      uploadedBy: currentUser.name,
-      uploadedAt: new Date().toISOString().split("T")[0],
-    }
-
-    setVideos([video, ...videos])
-    setNewVideo({ title: "", description: "" })
-
-    toast({
-      title: "Video uploaded successfully",
-      description: "Your video has been added to the memorial",
+    // Simulate photo upload
+    Array.from(files).forEach((file) => {
+      const newPhoto = {
+        src: URL.createObjectURL(file),
+        caption: caption || `Photo added by ${currentUser}`,
+      }
+      setPhotos([...photos, newPhoto])
     })
-  }
-
-  const deleteVideo = (videoId: string) => {
-    const video = videos.find((v) => v.id === videoId)
-    if (!currentUser || (video?.uploadedBy !== currentUser.name && !currentUser.isFamily)) {
-      toast({
-        title: "Permission denied",
-        description: "You can only delete your own videos",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setVideos(videos.filter((v) => v.id !== videoId))
-    toast({
-      title: "Video deleted",
-    })
-  }
-
-  const addStory = () => {
-    if (!currentUser) {
-      toast({
-        title: "Please sign in to share a story",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (!newStory.title || !newStory.content) {
-      toast({
-        title: "Please fill in all fields",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const story: Story = {
-      id: Date.now().toString(),
-      title: newStory.title,
-      content: newStory.content,
-      author: currentUser.name,
-      createdAt: new Date().toISOString().split("T")[0],
-    }
-
-    setStories([story, ...stories])
-    setNewStory({ title: "", content: "" })
 
     toast({
-      title: "Story shared successfully",
-      description: "Your story has been added to the memorial",
-    })
-  }
-
-  const deleteStory = (storyId: string) => {
-    const story = stories.find((s) => s.id === storyId)
-    if (!currentUser || (story?.author !== currentUser.name && !currentUser.isFamily)) {
-      toast({
-        title: "Permission denied",
-        description: "You can only delete your own stories",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setStories(stories.filter((s) => s.id !== storyId))
-    toast({
-      title: "Story deleted",
-    })
-  }
-
-  const addMessage = () => {
-    if (!currentUser) {
-      toast({
-        title: "Please sign in to leave a message",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (!newMessage.content) {
-      toast({
-        title: "Please enter a message",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const message: Message = {
-      id: Date.now().toString(),
-      content: newMessage.content,
-      author: currentUser.name,
-      createdAt: new Date().toISOString().split("T")[0],
-    }
-
-    setMessages([message, ...messages])
-    setNewMessage({ content: "" })
-
-    toast({
-      title: "Message posted successfully",
-      description: "Your message has been shared with the family",
-    })
-  }
-
-  const deleteMessage = (messageId: string) => {
-    const message = messages.find((m) => m.id === messageId)
-    if (!currentUser || (message?.author !== currentUser.name && !currentUser.isFamily)) {
-      toast({
-        title: "Permission denied",
-        description: "You can only delete your own messages",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setMessages(messages.filter((m) => m.id !== messageId))
-    toast({
-      title: "Message deleted",
+      title: "Photos Added",
+      description: `${files.length} photo(s) have been added to Glenda's memorial.`,
     })
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-50">
-      {/* User Status Banner */}
-      {currentUser && (
-        <div className="bg-green-100 border-b border-green-200 px-4 py-2">
-          <div className="max-w-6xl mx-auto flex justify-between items-center">
-            <span className="text-green-800 text-sm">
-              Signed in as {currentUser.name} ({currentUser.relationship})
-              {currentUser.isFamily && <Badge className="ml-2 bg-green-600">Family Member</Badge>}
-            </span>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      )}
+    <div className="min-h-screen bg-gray-50">
+      <Header />
 
-      {/* Header */}
-      <div className="relative h-96 bg-gradient-to-r from-rose-400 to-pink-400 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
-          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg mb-6">
-            <Image
-              src="/glenda-memorial-portrait.jpeg"
-              alt="Glenda Kelso"
-              width={128}
-              height={128}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-2">Glenda Kelso</h1>
-          <p className="text-xl mb-2">March 15, 1954 - January 8, 2024</p>
-          <p className="text-lg opacity-90">Beloved Wife, Mother, and Grandmother</p>
-          <div className="flex items-center gap-4 mt-4 text-sm">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              <span>Springfield, Illinois</span>
+      {/* Hidden audio element for music playback */}
+      <audio
+        ref={audioRef}
+        src={songs[currentSong]?.url}
+        volume={isMuted ? 0 : volume}
+        onEnded={() => setIsPlaying(false)}
+      />
+
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-r from-slate-900 to-slate-700 text-white">
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative container mx-auto px-4 py-16">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-shrink-0">
+              <Image
+                src="/glenda-memorial-portrait.jpeg"
+                alt="Glenda Jane Kelso"
+                width={300}
+                height={300}
+                className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-full border-4 border-white shadow-2xl"
+              />
             </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              <span>69 years</span>
+            <div className="text-center md:text-left">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">Glenda Jane Kelso</h1>
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-4 mb-6">
+                <div className="flex items-center">
+                  <Calendar className="h-5 w-5 mr-2" />
+                  <span className="text-xl">July 27, 1952 - August 27, 2025</span>
+                </div>
+                <div className="flex items-center">
+                  <MapPin className="h-5 w-5 mr-2" />
+                  <span className="text-xl">Cullman, AL</span>
+                </div>
+              </div>
+              <p className="text-xl text-slate-200 mb-8 max-w-2xl">
+                A life so beautifully lived deserves to be beautifully remembered. The heart of her home and a force of
+                nature in the lives of all who knew her.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Badge className="bg-red-500 text-white px-4 py-2 text-sm">
+                  <Heart className="h-4 w-4 mr-2" />
+                  Beloved Wife
+                </Badge>
+                <Badge className="bg-blue-500 text-white px-4 py-2 text-sm">
+                  <Users className="h-4 w-4 mr-2" />
+                  Devoted Mother
+                </Badge>
+                <Badge className="bg-green-500 text-white px-4 py-2 text-sm">
+                  <Heart className="h-4 w-4 mr-2" />
+                  Cherished Grandmother
+                </Badge>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Sign In Section */}
-        {!currentUser && (
-          <Card className="mb-8 border-blue-200 bg-blue-50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-blue-800">
-                <Users className="w-5 h-5" />
-                Sign In to Contribute
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-blue-700 mb-4">
-                Sign in to share photos, videos, stories, and messages in memory of Glenda.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div>
-                  <Label htmlFor="name">Your Name</Label>
-                  <Input
-                    id="name"
-                    value={signInForm.name}
-                    onChange={(e) => setSignInForm({ ...signInForm, name: e.target.value })}
-                    placeholder="Enter your full name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="relationship">Relationship to Glenda</Label>
-                  <Input
-                    id="relationship"
-                    value={signInForm.relationship}
-                    onChange={(e) => setSignInForm({ ...signInForm, relationship: e.target.value })}
-                    placeholder="e.g., Son, Friend, Neighbor"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={signInForm.email}
-                    onChange={(e) => setSignInForm({ ...signInForm, email: e.target.value })}
-                    placeholder="your.email@example.com"
-                  />
-                </div>
+      {/* Sign In Section */}
+      {!isSignedIn && (
+        <div className="bg-yellow-50 border-b border-yellow-200">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="text-center md:text-left">
+                <p className="text-yellow-800 font-medium">Are you a family member or friend of Glenda?</p>
+                <p className="text-yellow-700 text-sm">
+                  Sign in to add photos, stories, and memories to this memorial.
+                </p>
               </div>
-              <Button onClick={handleSignIn} className="bg-blue-600 hover:bg-blue-700">
-                Sign In
+              <Button onClick={() => setShowSignIn(true)} className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                Sign In to Contribute
               </Button>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          </div>
+        </div>
+      )}
 
-        <Tabs defaultValue="about" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6">
-            <TabsTrigger value="about" className="flex items-center gap-2">
-              <Heart className="w-4 h-4" />
-              <span className="hidden sm:inline">About</span>
-            </TabsTrigger>
-            <TabsTrigger value="photos" className="flex items-center gap-2">
-              <Camera className="w-4 h-4" />
-              <span className="hidden sm:inline">Photos</span>
-            </TabsTrigger>
-            <TabsTrigger value="videos" className="flex items-center gap-2">
-              <Video className="w-4 h-4" />
-              <span className="hidden sm:inline">Videos</span>
-            </TabsTrigger>
-            <TabsTrigger value="music" className="flex items-center gap-2">
-              <Music className="w-4 h-4" />
-              <span className="hidden sm:inline">Music</span>
-            </TabsTrigger>
-            <TabsTrigger value="stories" className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4" />
-              <span className="hidden sm:inline">Stories</span>
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="flex items-center gap-2">
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Messages</span>
-            </TabsTrigger>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-12">
+        <Tabs defaultValue="about" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 mb-8">
+            <TabsTrigger value="about">About</TabsTrigger>
+            <TabsTrigger value="photos">Photos</TabsTrigger>
+            <TabsTrigger value="music">Music</TabsTrigger>
+            <TabsTrigger value="family">Family</TabsTrigger>
+            <TabsTrigger value="stories">Stories</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
 
-          {/* About Tab */}
-          <TabsContent value="about" className="space-y-6">
+          <TabsContent value="about">
             <Card>
               <CardHeader>
-                <CardTitle>About Glenda</CardTitle>
+                <CardTitle className="text-2xl">About Glenda Jane Kelso</CardTitle>
               </CardHeader>
               <CardContent className="prose max-w-none">
-                <p className="text-lg leading-relaxed mb-4">
-                  Glenda Kelso, 69, of Springfield, Illinois, passed away peacefully on January 8, 2024, surrounded by
-                  her loving family. Born on March 15, 1954, to Harold and Margaret Thompson, Glenda lived a life filled
-                  with love, laughter, and service to others.
+                <p className="text-lg leading-relaxed mb-6">
+                  A life so beautifully lived deserves to be beautifully remembered. Today, we gather not only in sorrow
+                  but in profound gratitude for the extraordinary woman we were blessed to know—Glenda Jane Kelso.
                 </p>
 
-                <p className="mb-4">
-                  Glenda was the devoted wife of Robert Kelso for 47 beautiful years. Together, they built a loving home
-                  and raised four wonderful children: Michael (Jennifer) Kelso of Chicago, David (Lisa) Kelso of
-                  Springfield, Sarah Kelso-Martinez (Carlos) of Phoenix, and Jennifer Kelso-Brown (Mark) of St. Louis.
+                <p className="text-lg leading-relaxed mb-6">
+                  Glenda was the heart of her home and a force of nature in the lives of all who knew her. She left this
+                  world as she lived in it: on her own terms, with a quick wit, and likely planning a joke we have yet
+                  to discover. For 57 years, she was the devoted and loving partner to her husband, Lynn. She was a
+                  selfless homemaker who dedicated her life to her children, Eddie and Penny, and to countless others
+                  she welcomed into her heart and home as her own.
                 </p>
 
-                <p className="mb-4">
-                  As a grandmother, Glenda found her greatest joy. She was "Grandma Glenda" to eight precious
-                  grandchildren: Emma, Jacob, and Sophia Kelso; Tyler and Madison Kelso; Isabella and Diego Martinez;
-                  and little Lily Brown. Her face would light up whenever she spoke of her grandchildren, and she never
-                  missed a school play, baseball game, or dance recital.
+                <p className="text-lg leading-relaxed mb-6">
+                  To know Glenda was to be loved fiercely, laugh loudly, and feel truly spoiled. She was a woman of
+                  beautiful contrasts: patient and kind, yet tough as nails. Her fanatic sense of humor was a light that
+                  could cut through the hardest days, and her legendary chocolate gravy was a taste of her deep, abiding
+                  love. She never let anyone forget who was really in charge, but she also never wavered in her loyalty,
+                  sticking by her family even when the world said no.
                 </p>
 
-                <p className="mb-4">
-                  Glenda worked as a registered nurse at Memorial Medical Center for 35 years, touching countless lives
-                  with her compassion and skill. She had a special gift for making patients feel comfortable and cared
-                  for during their most vulnerable moments. Even after retirement, she continued volunteering at the
-                  hospital's cancer center, providing comfort to patients and families facing difficult journeys.
+                <p className="text-lg leading-relaxed mb-6">
+                  Glenda found pure joy in the magic of the ordinary, especially when it brought smiles to the faces of
+                  children. She delighted in dressing up for holidays, with Halloween holding a special place in her
+                  heart, creating moments of wonder that will be cherished forever. Her happiness was found in the
+                  noisy, loving chaos of being surrounded by family, though the steady chatter of the police scanner was
+                  a close second.
                 </p>
 
-                <p className="mb-4">
-                  Those who knew Glenda will remember her infectious laugh, her legendary chocolate gravy (a closely
-                  guarded family secret), and her ability to make everyone feel like family. Her home was always open,
-                  her table always had room for one more, and her heart was big enough to love everyone who crossed her
-                  path.
+                <p className="text-lg leading-relaxed mb-6">
+                  She was a curator of joy, a teller of hard truths, and the unwavering glue that held her family
+                  together through good times and bad. Glenda's love was a vibrant tapestry woven with threads of
+                  laughter, music, fierce protection, and an occasional, loving dose of stubbornness.
                 </p>
 
-                <p className="mb-4">
-                  Glenda was an active member of First Baptist Church of Springfield, where she served in the nursery,
-                  organized countless potluck dinners, and was known for her beautiful voice in the church choir. Her
-                  faith was the cornerstone of her life, and she lived it out through her actions of love and service to
-                  others.
+                <p className="text-lg leading-relaxed mb-6">
+                  We are certain that her reunion in Heaven with her beloved mother, Desmer, is filled with laughter and
+                  a heavenly plan to keep a loving, watchful eye on us all.
                 </p>
 
-                <p className="mb-4">
-                  She had a passion for gardening and could often be found tending to her roses and vegetables in the
-                  backyard. Her garden was her sanctuary, and she loved sharing its bounty with neighbors and friends.
-                  She also enjoyed quilting, reading romance novels, and watching old movies with Robert on Sunday
-                  afternoons.
+                <p className="text-lg leading-relaxed mb-6">
+                  Glenda's incredible legacy lives on in her husband, Lynn; her children, Eddie Kelso and Penny Collins;
+                  her cherished grandchildren, Cole Collins, Kristin Kelso, Gracie Dean, Braxton Phillips, Weston Green,
+                  Addalynn Rassman, Wrenley Hunter, and Ridge Thompson; her beautiful French daughter-in-love, Caroline;
+                  her god-sent angels, Colton, Anzlie, and Remi; her children of the heart, Savannah (Bo) Pitts, Bama
+                  Thompson, Taylor (Kelly) Hunter, and Jordan Thompson; and her special friends.
                 </p>
 
-                <p className="mb-4">
-                  In addition to her husband and children, Glenda is survived by her sister, Patricia (James) Wilson of
-                  Decatur, and her brother, Thomas (Mary) Thompson of Peoria, along with numerous nieces, nephews, and
-                  cousins who all held a special place in her heart.
+                <p className="text-lg leading-relaxed mb-6">
+                  We are fortunate, blessed, and endlessly grateful to have been loved by her. Though our hearts are
+                  broken and we will miss her beyond measure, we find comfort in knowing that her spirit—her laughter,
+                  her love, and her legendary chocolate gravy—will forever be a part of us.
                 </p>
 
-                <p className="mb-4">
-                  She was preceded in death by her parents and her beloved brother, William Thompson, who passed away in
-                  2018.
+                <p className="text-lg leading-relaxed mb-6">
+                  Rest easy, dear Glenda. Your work here was a masterpiece.
                 </p>
 
-                <p className="text-lg font-medium">
-                  Glenda's legacy lives on in the love she shared, the lives she touched, and the family she cherished.
-                  She taught us that the most important things in life aren't things at all – they're the relationships
-                  we build and the love we give. Her memory will be a blessing to all who knew her.
+                <p className="text-lg leading-relaxed italic">
+                  The family extends their deepest gratitude to the compassionate staff at Cullman Regional Medical
+                  Center, Folsom Center Nursing Home, Cullman Dialysis Clinic, and Southern Care Hospice for the
+                  dignity, kindness, and peace they provided in her final days.
                 </p>
-              </CardContent>
-            </Card>
-
-            {/* Family Tree */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Family Tree
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <div className="inline-block bg-rose-100 rounded-lg p-4 mb-4">
-                      <h3 className="font-semibold text-lg">Glenda Kelso</h3>
-                      <p className="text-sm text-gray-600">March 15, 1954 - January 8, 2024</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-blue-800">Spouse</h4>
-                      <div className="bg-blue-50 rounded-lg p-3">
-                        <p className="font-medium">Robert Kelso</p>
-                        <p className="text-sm text-gray-600">Married 47 years</p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold mb-3 text-green-800">Children</h4>
-                      <div className="space-y-2">
-                        <div className="bg-green-50 rounded-lg p-3">
-                          <p className="font-medium">Michael Kelso</p>
-                          <p className="text-sm text-gray-600">Married to Jennifer • Lives in Chicago</p>
-                        </div>
-                        <div className="bg-green-50 rounded-lg p-3">
-                          <p className="font-medium">David Kelso</p>
-                          <p className="text-sm text-gray-600">Married to Lisa • Lives in Springfield</p>
-                        </div>
-                        <div className="bg-green-50 rounded-lg p-3">
-                          <p className="font-medium">Sarah Kelso-Martinez</p>
-                          <p className="text-sm text-gray-600">Married to Carlos • Lives in Phoenix</p>
-                        </div>
-                        <div className="bg-green-50 rounded-lg p-3">
-                          <p className="font-medium">Jennifer Kelso-Brown</p>
-                          <p className="text-sm text-gray-600">Married to Mark • Lives in St. Louis</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-3 text-purple-800">Grandchildren</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      {[
-                        "Emma Kelso",
-                        "Jacob Kelso",
-                        "Sophia Kelso",
-                        "Tyler Kelso",
-                        "Madison Kelso",
-                        "Isabella Martinez",
-                        "Diego Martinez",
-                        "Lily Brown",
-                      ].map((grandchild) => (
-                        <div key={grandchild} className="bg-purple-50 rounded-lg p-2 text-center">
-                          <p className="text-sm font-medium">{grandchild}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Photos Tab */}
-          <TabsContent value="photos" className="space-y-6">
-            {currentUser && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Upload a Photo</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="photo-caption">Photo Caption</Label>
-                      <Input
-                        id="photo-caption"
-                        value={newPhoto.caption}
-                        onChange={(e) => setNewPhoto({ ...newPhoto, caption: e.target.value })}
-                        placeholder="Describe this photo..."
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <Button onClick={addPhoto} className="flex items-center gap-2">
-                        <Upload className="w-4 h-4" />
-                        Upload Photo
+          <TabsContent value="photos">
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 className="text-2xl font-bold">Photo Gallery</h2>
+                {isSignedIn && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Camera className="h-4 w-4 mr-2" />
+                        Add Photos
                       </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {photos.map((photo) => (
-                <Card key={photo.id} className="overflow-hidden">
-                  <div className="aspect-square relative">
-                    <Image src={photo.url || "/placeholder.svg"} alt={photo.caption} fill className="object-cover" />
-                  </div>
-                  <CardContent className="p-4">
-                    <p className="font-medium mb-2">{photo.caption}</p>
-                    <div className="flex justify-between items-center text-sm text-gray-600">
-                      <span>By {photo.uploadedBy}</span>
-                      <span>{photo.uploadedAt}</span>
-                    </div>
-                    {currentUser && (currentUser.name === photo.uploadedBy || currentUser.isFamily) && (
-                      <Button variant="destructive" size="sm" className="mt-2" onClick={() => deletePhoto(photo.id)}>
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        Delete
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Videos Tab */}
-          <TabsContent value="videos" className="space-y-6">
-            {currentUser && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Upload a Video</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="video-title">Video Title</Label>
-                      <Input
-                        id="video-title"
-                        value={newVideo.title}
-                        onChange={(e) => setNewVideo({ ...newVideo, title: e.target.value })}
-                        placeholder="Give your video a title..."
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="video-description">Description</Label>
-                      <Textarea
-                        id="video-description"
-                        value={newVideo.description}
-                        onChange={(e) => setNewVideo({ ...newVideo, description: e.target.value })}
-                        placeholder="Describe this video memory..."
-                      />
-                    </div>
-                    <Button onClick={addVideo} className="flex items-center gap-2">
-                      <Upload className="w-4 h-4" />
-                      Upload Video
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {videos.map((video) => (
-                <Card key={video.id}>
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-                      <div className="text-center">
-                        <Video className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-                        <p className="text-sm text-gray-500">Video Player</p>
-                      </div>
-                    </div>
-                    <h3 className="font-semibold mb-2">{video.title}</h3>
-                    <p className="text-gray-600 mb-3">{video.description}</p>
-                    <div className="flex justify-between items-center text-sm text-gray-600">
-                      <span>By {video.uploadedBy}</span>
-                      <span>{video.uploadedAt}</span>
-                    </div>
-                    {currentUser && (currentUser.name === video.uploadedBy || currentUser.isFamily) && (
-                      <Button variant="destructive" size="sm" className="mt-2" onClick={() => deleteVideo(video.id)}>
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        Delete
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Music Tab */}
-          <TabsContent value="music" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Glenda's Favorite Songs</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {songs.map((song) => (
-                    <div key={song.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => playPauseSong(song.id)}
-                          className={currentSong === song.id && isPlaying ? "bg-blue-100" : ""}
-                        >
-                          {currentSong === song.id && isPlaying ? (
-                            <Pause className="w-4 h-4" />
-                          ) : (
-                            <Play className="w-4 h-4" />
-                          )}
-                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Photos</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
                         <div>
-                          <p className="font-medium">{song.title}</p>
-                          <p className="text-sm text-gray-600">{song.artist}</p>
+                          <Label htmlFor="photo-upload">Select Photos</Label>
+                          <Input
+                            id="photo-upload"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={(e) => {
+                              const caption =
+                                (document.getElementById("photo-caption") as HTMLTextAreaElement)?.value || ""
+                              handleAddPhoto(e.target.files, caption)
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="photo-caption">Caption (optional)</Label>
+                          <Textarea id="photo-caption" placeholder="Add a caption for these photos..." />
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">{song.duration}</span>
-                        <Button variant="ghost" size="sm" onClick={toggleMute}>
-                          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                        </Button>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {photos.map((photo, index) => (
+                  <Card key={index} className="overflow-hidden">
+                    <Image
+                      src={photo.src || "/placeholder.svg"}
+                      alt={photo.caption}
+                      width={400}
+                      height={300}
+                      className="w-full h-64 object-cover"
+                    />
+                    <CardContent className="p-4">
+                      <p className="text-sm text-gray-600">{photo.caption}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="music">
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold">Memorial Music</h2>
+                  <p className="text-gray-600">Songs that were meaningful to Glenda</p>
+                </div>
+                {isSignedIn && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Music className="h-4 w-4 mr-2" />
+                        Add Music
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Music</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="music-upload">Upload Audio File</Label>
+                          <Input
+                            id="music-upload"
+                            type="file"
+                            accept="audio/*"
+                            onChange={() => {
+                              toast({
+                                title: "Music Added",
+                                description: "Your music has been added to Glenda's memorial.",
+                              })
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="music-title">Song Title</Label>
+                          <Input id="music-title" placeholder="Enter song title..." />
+                        </div>
+                        <div>
+                          <Label htmlFor="music-artist">Artist</Label>
+                          <Input id="music-artist" placeholder="Enter artist name..." />
+                        </div>
                       </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {songs.map((song, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-4">
+                          <Button
+                            size="sm"
+                            variant={currentSong === index && isPlaying ? "default" : "outline"}
+                            onClick={() => handlePlayPause(index)}
+                          >
+                            {currentSong === index && isPlaying ? (
+                              <Pause className="h-4 w-4" />
+                            ) : (
+                              <Play className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <div>
+                            <h4 className="font-medium">{song.title}</h4>
+                            <p className="text-sm text-gray-600">{song.artist}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <Button size="sm" variant="ghost" onClick={() => setIsMuted(!isMuted)}>
+                              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                            </Button>
+                            <input
+                              type="range"
+                              min="0"
+                              max="1"
+                              step="0.1"
+                              value={volume}
+                              onChange={(e) => setVolume(Number.parseFloat(e.target.value))}
+                              className="w-16"
+                            />
+                          </div>
+                          <span className="text-sm text-gray-600">{song.duration}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="family">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Family Tree</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {familyTree.map((member, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-lg">{member.name}</h4>
+                        <p className="text-gray-600">{member.relation}</p>
+                      </div>
+                      {member.dates && <p className="text-sm text-gray-500">{member.dates}</p>}
                     </div>
                   ))}
                 </div>
@@ -892,122 +520,198 @@ export default function GlendaKelsoMemorial() {
             </Card>
           </TabsContent>
 
-          {/* Stories Tab */}
-          <TabsContent value="stories" className="space-y-6">
-            {currentUser && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Share a Story</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="story-title">Story Title</Label>
-                      <Input
-                        id="story-title"
-                        value={newStory.title}
-                        onChange={(e) => setNewStory({ ...newStory, title: e.target.value })}
-                        placeholder="Give your story a title..."
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="story-content">Your Story</Label>
-                      <Textarea
-                        id="story-content"
-                        value={newStory.content}
-                        onChange={(e) => setNewStory({ ...newStory, content: e.target.value })}
-                        placeholder="Share a memory or story about Glenda..."
-                        rows={4}
-                      />
-                    </div>
-                    <Button onClick={addStory} className="flex items-center gap-2">
-                      <BookOpen className="w-4 h-4" />
-                      Share Story
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
+          <TabsContent value="stories">
             <div className="space-y-6">
-              {stories.map((story) => (
-                <Card key={story.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{story.title}</CardTitle>
-                        <p className="text-sm text-gray-600 mt-1">
-                          By {story.author} • {story.createdAt}
-                        </p>
-                      </div>
-                      {currentUser && (currentUser.name === story.author || currentUser.isFamily) && (
-                        <Button variant="ghost" size="sm" onClick={() => deleteStory(story.id)}>
-                          <Trash2 className="w-4 h-4" />
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 className="text-2xl font-bold">Stories & Memories</h2>
+                {isSignedIn && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        Share a Story
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>Share a Memory of Glenda</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="story-title">Story Title</Label>
+                          <Input id="story-title" placeholder="Give your story a title..." />
+                        </div>
+                        <div>
+                          <Label htmlFor="story-content">Your Story</Label>
+                          <Textarea id="story-content" placeholder="Share your favorite memory of Glenda..." rows={6} />
+                        </div>
+                        <Button
+                          onClick={() => {
+                            const title = (document.getElementById("story-title") as HTMLInputElement)?.value || ""
+                            const content =
+                              (document.getElementById("story-content") as HTMLTextAreaElement)?.value || ""
+                            handleAddStory(title, content)
+                          }}
+                          className="w-full"
+                        >
+                          Share Story
                         </Button>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="leading-relaxed">{story.content}</p>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
+
+              {stories.length === 0 ? (
+                <Card>
+                  <CardContent className="text-center py-12">
+                    <MessageCircle className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-600 mb-2">No Stories Yet</h3>
+                    <p className="text-gray-500 mb-6">Be the first to share a memory of Glenda</p>
+                    {!isSignedIn && <Button onClick={() => setShowSignIn(true)}>Sign In to Share a Story</Button>}
                   </CardContent>
                 </Card>
-              ))}
+              ) : (
+                <div className="space-y-4">
+                  {stories.map((story) => (
+                    <Card key={story.id}>
+                      <CardHeader>
+                        <CardTitle className="text-lg">{story.title}</CardTitle>
+                        <p className="text-sm text-gray-600">
+                          By {story.author} on {story.date}
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-700 leading-relaxed">{story.content}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
 
-          {/* Messages Tab */}
-          <TabsContent value="messages" className="space-y-6">
-            {currentUser && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Leave a Message</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="message-content">Your Message</Label>
-                      <Textarea
-                        id="message-content"
-                        value={newMessage.content}
-                        onChange={(e) => setNewMessage({ ...newMessage, content: e.target.value })}
-                        placeholder="Share your condolences or a message for the family..."
-                        rows={3}
-                      />
-                    </div>
-                    <Button onClick={addMessage} className="flex items-center gap-2">
-                      <MessageCircle className="w-4 h-4" />
-                      Post Message
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <Card key={message.id}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="font-medium">{message.author}</p>
-                        <p className="text-sm text-gray-600">{message.createdAt}</p>
-                      </div>
-                      {currentUser && (currentUser.name === message.author || currentUser.isFamily) && (
-                        <Button variant="ghost" size="sm" onClick={() => deleteMessage(message.id)}>
-                          <Trash2 className="w-4 h-4" />
+          <TabsContent value="messages">
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 className="text-2xl font-bold">Messages of Condolence</h2>
+                {isSignedIn && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Leave a Message
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Leave a Message for the Family</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="message-content">Your Message</Label>
+                          <Textarea
+                            id="message-content"
+                            placeholder="Share your condolences or a message for the family..."
+                            rows={4}
+                          />
+                        </div>
+                        <Button
+                          onClick={() => {
+                            const content =
+                              (document.getElementById("message-content") as HTMLTextAreaElement)?.value || ""
+                            handleAddMessage(content)
+                          }}
+                          className="w-full"
+                        >
+                          Post Message
                         </Button>
-                      )}
-                    </div>
-                    <p className="leading-relaxed">{message.content}</p>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
+
+              {messages.length === 0 ? (
+                <Card>
+                  <CardContent className="text-center py-12">
+                    <Heart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-600 mb-2">No Messages Yet</h3>
+                    <p className="text-gray-500 mb-6">Be the first to leave a message for the family</p>
+                    {!isSignedIn && <Button onClick={() => setShowSignIn(true)}>Sign In to Leave a Message</Button>}
                   </CardContent>
                 </Card>
-              ))}
+              ) : (
+                <div className="space-y-4">
+                  {messages.map((message) => (
+                    <Card key={message.id}>
+                      <CardHeader>
+                        <p className="text-sm text-gray-600">
+                          By {message.author} on {message.date}
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-700 leading-relaxed">{message.content}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-4 mt-8 justify-center">
+          <Button variant="outline" className="flex items-center gap-2 bg-transparent">
+            <Share2 className="h-4 w-4" />
+            Share Memorial
+          </Button>
+          <Button variant="outline" className="flex items-center gap-2 bg-transparent">
+            <Download className="h-4 w-4" />
+            Download QR Code
+          </Button>
+          <Button asChild>
+            <Link href="/pricing">Create Your Own Memorial</Link>
+          </Button>
+        </div>
       </div>
 
-      <audio ref={audioRef} />
+      {/* Sign In Dialog */}
+      <Dialog open={showSignIn} onOpenChange={setShowSignIn}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign In to Contribute</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="signin-name">Your Name</Label>
+              <Input id="signin-name" placeholder="Enter your full name" />
+            </div>
+            <div>
+              <Label htmlFor="signin-relationship">Relationship to Glenda</Label>
+              <Input id="signin-relationship" placeholder="e.g., Daughter, Friend, Neighbor" />
+            </div>
+            <Button
+              onClick={() => {
+                const name = (document.getElementById("signin-name") as HTMLInputElement)?.value?.trim()
+                if (name) {
+                  handleSignIn(name)
+                } else {
+                  toast({
+                    title: "Error",
+                    description: "Please enter your name.",
+                    variant: "destructive",
+                  })
+                }
+              }}
+              className="w-full"
+            >
+              Sign In
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

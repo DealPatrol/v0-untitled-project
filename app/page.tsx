@@ -15,6 +15,19 @@ export default function HomePage() {
 
       {/* Hero Section with Military Background */}
       <section className="memorial-bg min-h-screen flex items-center justify-center relative">
+        {/* YouTube Video - Top Left */}
+        <div className="absolute top-20 left-4 z-10">
+          <div className="video-container rounded-lg overflow-hidden shadow-2xl border-2 border-white/20">
+            <iframe
+              src="https://www.youtube.com/embed/XsWR_-Yv96Y?autoplay=1&mute=0&controls=1&rel=0"
+              title="Memorial QR Video"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
             {/* Hero Content */}
@@ -36,19 +49,6 @@ export default function HomePage() {
             {/* Star Rating */}
             <div className="mb-8 flex justify-center">
               <StarRating rating={5} showReviews={true} reviewCount={10247} size="lg" />
-            </div>
-
-            {/* YouTube Video - Centered */}
-            <div className="mb-8 flex justify-center">
-              <div className="video-container rounded-lg overflow-hidden shadow-2xl border-2 border-white/20 max-w-md w-full">
-                <iframe
-                  src="https://www.youtube.com/embed/XsWR_-Yv96Y?autoplay=1&mute=0&controls=1&rel=0"
-                  title="Memorial QR Video"
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
             </div>
 
             {/* CTA Buttons */}
