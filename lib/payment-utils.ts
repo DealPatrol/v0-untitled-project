@@ -75,14 +75,16 @@ export function getStatusMessage(status: PaymentStatus): string {
 /**
  * Determine if we should retry checking payment status
  */
+const MAX_STATUS_CHECK_RETRIES = 15 // 30 seconds with 2 second intervals
+
 export function shouldRetryStatusCheck(status: PaymentStatus, attemptCount: number): boolean {
   // Don't retry if payment is in final state
   if (isPaymentFinal(status)) {
     return false
   }
   
-  // Retry up to 15 times (30 seconds with 2 second intervals)
-  return attemptCount < 15
+  // Retry up to MAX_STATUS_CHECK_RETRIES times
+  return attemptCount < MAX_STATUS_CHECK_RETRIES
 }
 
 /**

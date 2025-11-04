@@ -19,6 +19,11 @@ interface StripeCheckoutFormProps {
 
 type PaymentState = "idle" | "processing" | "verifying" | "succeeded" | "failed"
 
+// Configuration constants
+const PAYMENT_STATUS_POLL_INTERVAL_MS = 2000 // Poll every 2 seconds
+const SUPPORT_EMAIL = "support@memorialqr.com"
+const SUPPORT_PHONE = "256-595-3354"
+
 export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }: StripeCheckoutFormProps) {
   const stripe = useStripe()
   const elements = useElements()
@@ -32,7 +37,7 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
     let pollInterval: NodeJS.Timeout | null = null
 
     if (paymentState === "verifying" && paymentIntentId && stripe) {
-      // Poll every 2 seconds for payment status
+      // Poll every PAYMENT_STATUS_POLL_INTERVAL_MS for payment status
       pollInterval = setInterval(async () => {
         try {
           const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret)
@@ -70,7 +75,7 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
           console.error("Error polling payment status:", error)
           // Continue polling even on error
         }
-      }, 2000)
+      }, PAYMENT_STATUS_POLL_INTERVAL_MS)
     }
 
     return () => {
@@ -260,7 +265,7 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
                   <p className="text-xs text-red-600 mt-1">{message}</p>
                   <p className="text-xs text-red-600 mt-2">
                     If you were charged but still see this error, please don't try again. 
-                    Contact support at support@memorialqr.com with your payment details.
+                    Contact support at {SUPPORT_EMAIL} with your payment details.
                   </p>
                 </div>
               </div>
@@ -299,7 +304,7 @@ export function StripeCheckoutForm({ clientSecret, amount, onSuccess, onError }:
           {paymentState === "verifying" && (
             <div className="text-center">
               <p className="text-xs text-gray-500">
-                Having trouble? Contact us at support@memorialqr.com or call 256-595-3354
+                Having trouble? Contact us at {SUPPORT_EMAIL} or call {SUPPORT_PHONE}
               </p>
             </div>
           )}
