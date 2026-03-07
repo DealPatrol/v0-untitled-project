@@ -58,7 +58,7 @@ export default function HomePage() {
                 size="lg"
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8 py-4 btn-hover-lift"
               >
-                <Link href="/pricing">
+                <Link href="/create-memorial">
                   Create Memorial Now
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>

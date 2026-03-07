@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { Header } from "@/components/header"
-import { User, Calendar, Upload, FileText, Users, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
+import { User, Calendar, Upload, FileText, Users, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 const steps = [
@@ -23,12 +23,10 @@ const steps = [
 ]
 
 export default function CreateMemorialPage() {
-  const searchParams = useSearchParams()
   const router = useRouter()
   const { toast } = useToast()
 
   const [currentStep, setCurrentStep] = useState(1)
-  const [orderId, setOrderId] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -58,23 +56,12 @@ export default function CreateMemorialPage() {
     children: "",
     parents: "",
     siblings: "",
+    
+    // Creator info
+    creatorEmail: "",
+    creatorName: "",
+    creatorPhone: "",
   })
-
-  useEffect(() => {
-    const order = searchParams.get("order")
-
-    if (!order) {
-      toast({
-        title: "Access Denied",
-        description: "Please complete your purchase first to create your memorial.",
-        variant: "destructive",
-      })
-      router.push("/products")
-      return
-    }
-
-    setOrderId(order)
-  }, [searchParams, router, toast])
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -107,57 +94,81 @@ export default function CreateMemorialPage() {
   }
 
   const handleSubmit = async () => {
+    // Validate required fields
+    if (!formData.firstName || !formData.lastName || !formData.dateOfDeath) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in First Name, Last Name, and Date of Passing",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsSubmitting(true)
 
-    // Simulate memorial creation
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    try {
+      // Create FormData for file uploads
+      const data = new FormData()
+      
+      // Add text fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key !== "profilePhoto" && key !== "additionalPhotos" && typeof value === "string") {
+          data.append(key, value)
+        }
+      })
 
-    const memorialId = `MEM-${Date.now()}`
+      // Add profile photo
+      if (formData.profilePhoto) {
+        data.append("profilePhoto", formData.profilePhoto)
+      }
 
-    toast({
-      title: "Memorial Created Successfully!",
-      description: `Your memorial has been created with ID: ${memorialId}`,
-    })
+      // Add additional photos
+      formData.additionalPhotos.forEach((photo, index) => {
+        data.append(`additionalPhotos`, photo)
+      })
 
-    setIsSubmitting(false)
+      const response = await fetch("/api/memorials", {
+        method: "POST",
+        body: data,
+      })
 
-    // Redirect to success page
-    router.push(`/memorial-success?id=${memorialId}&order=${orderId}`)
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Failed to create memorial")
+      }
+
+      const { id } = await response.json()
+
+      toast({
+        title: "Memorial Created!",
+        description: "Your memorial draft has been saved. Activate it now to publish with a QR code!",
+      })
+
+      // Redirect to activation page
+      router.push(`/activate-memorial?memorial_id=${id}`)
+    } catch (error) {
+      console.error("Error creating memorial:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create memorial",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const progress = (currentStep / steps.length) * 100
-
-  if (!orderId) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100 flex items-center justify-center">
-        <Card className="max-w-md mx-auto text-center">
-          <CardContent className="p-8">
-            <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Purchase Required</h2>
-            <p className="text-gray-600 mb-6">
-              Please purchase a memorial product first to access the memorial creation form.
-            </p>
-            <Button asChild className="bg-purple-600 hover:bg-purple-700">
-              <Link href="/products">Browse Products</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-100">
       <Header />
 
-      {/* Order Confirmation Banner */}
-      <div className="bg-green-50 border-b border-green-200 py-3">
+      {/* Hero Banner */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 text-green-700">
-            <CheckCircle className="w-5 h-5" />
-            <span className="font-semibold">Order Confirmed!</span>
-            <span>Order #{orderId} • Now create your digital memorial</span>
-          </div>
+          <h1 className="text-3xl font-bold mb-2">Create a Memorial</h1>
+          <p className="text-purple-100">Start for free, activate anytime to publish with a QR code</p>
         </div>
       </div>
 
@@ -469,28 +480,29 @@ export default function CreateMemorialPage() {
                       <div>
                         <strong>Name:</strong> {formData.firstName} {formData.lastName}
                       </div>
-                      <div>
-                        <strong>Dates:</strong> {formData.dateOfBirth} - {formData.dateOfDeath}
-                      </div>
-                      <div>
-                        <strong>Location:</strong> {formData.location}
-                      </div>
+                      {formData.dateOfBirth && (
+                        <div>
+                          <strong>Dates:</strong> {formData.dateOfBirth} - {formData.dateOfDeath}
+                        </div>
+                      )}
+                      {formData.location && (
+                        <div>
+                          <strong>Location:</strong> {formData.location}
+                        </div>
+                      )}
                       <div>
                         <strong>Photos:</strong> {formData.additionalPhotos.length + (formData.profilePhoto ? 1 : 0)}
-                      </div>
-                      <div>
-                        <strong>Order:</strong> #{orderId}
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                     <h4 className="font-semibold text-blue-900 mb-2">What happens next?</h4>
                     <ul className="text-sm text-blue-800 space-y-1">
-                      <li>• Your digital memorial will be created and activated</li>
-                      <li>• Your physical memorial product will be manufactured</li>
-                      <li>• You'll receive a QR code linking to the digital memorial</li>
-                      <li>• Your memorial product will ship within 5-7 business days</li>
+                      <li>✓ Your memorial will be saved as a draft</li>
+                      <li>✓ You can activate it anytime to publish with a QR code</li>
+                      <li>✓ Add memorial products (necklaces, plaques, etc.) after activation</li>
+                      <li>✓ Guests can view photos, videos, and leave messages</li>
                     </ul>
                   </div>
                 </CardContent>
