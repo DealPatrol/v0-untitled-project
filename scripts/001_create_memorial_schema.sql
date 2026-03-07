@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS public.memorials (
   status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'pending_payment', 'active', 'expired', 'archived')),
   is_paid BOOLEAN DEFAULT false,
   payment_date TIMESTAMPTZ,
-  expiration_date TIMESTAMPTZ, -- For subscription model
+  expiration_date TIMESTAMPTZ,
   
   -- QR Code
   qr_code_url TEXT,
@@ -79,8 +79,8 @@ CREATE TABLE IF NOT EXISTS public.products (
   
   -- Pricing
   price DECIMAL(10,2) NOT NULL,
-  compare_at_price DECIMAL(10,2), -- Original price for showing discounts
-  cost DECIMAL(10,2), -- Your cost (for profit tracking)
+  compare_at_price DECIMAL(10,2),
+  cost DECIMAL(10,2),
   
   -- Product Type
   category TEXT NOT NULL CHECK (category IN ('memorial_plaque', 'jewelry', 'keepsake', 'accessory', 'qr_only')),
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS public.products (
   
   -- Dropship Info
   is_dropship BOOLEAN DEFAULT true,
-  supplier_name TEXT, -- e.g., "Printful", "Gooten", "Zendrop"
+  supplier_name TEXT,
   supplier_sku TEXT,
   supplier_cost DECIMAL(10,2),
   
@@ -98,15 +98,15 @@ CREATE TABLE IF NOT EXISTS public.products (
   allow_backorder BOOLEAN DEFAULT true,
   
   -- Media
-  images JSONB DEFAULT '[]'::jsonb, -- Array of image URLs
+  images JSONB DEFAULT '[]'::jsonb,
   thumbnail_url TEXT,
   
-  -- Variants (sizes, colors, etc.)
+  -- Variants
   has_variants BOOLEAN DEFAULT false,
-  variant_options JSONB DEFAULT '[]'::jsonb, -- e.g., [{"name": "Size", "values": ["Small", "Large"]}]
+  variant_options JSONB DEFAULT '[]'::jsonb,
   
   -- Features
-  features JSONB DEFAULT '[]'::jsonb, -- Array of feature strings
+  features JSONB DEFAULT '[]'::jsonb,
   includes_digital_memorial BOOLEAN DEFAULT false,
   
   -- Status
@@ -131,10 +131,10 @@ CREATE TABLE IF NOT EXISTS public.product_variants (
   product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
   
   -- Variant Details
-  name TEXT NOT NULL, -- e.g., "Small / Black"
+  name TEXT NOT NULL,
   sku TEXT,
   
-  -- Pricing (can override product price)
+  -- Pricing
   price DECIMAL(10,2),
   compare_at_price DECIMAL(10,2),
   
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS public.product_variants (
   size TEXT,
   color TEXT,
   material TEXT,
-  options JSONB DEFAULT '{}'::jsonb, -- Flexible key-value pairs
+  options JSONB DEFAULT '{}'::jsonb,
   
   -- Inventory
   inventory_count INTEGER DEFAULT 0,
@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
   customer_phone TEXT,
   
   -- Shipping Address
-  shipping_address JSONB, -- {line1, line2, city, state, postal_code, country}
+  shipping_address JSONB,
   billing_address JSONB,
   
   -- Order Details
@@ -197,11 +197,11 @@ CREATE TABLE IF NOT EXISTS public.orders (
   shipped_at TIMESTAMPTZ,
   delivered_at TIMESTAMPTZ,
   
-  -- Memorial Link (if order includes memorial activation)
+  -- Memorial Link
   memorial_id UUID REFERENCES public.memorials(id) ON DELETE SET NULL,
   includes_memorial_activation BOOLEAN DEFAULT false,
   
-  -- User Link (optional)
+  -- User Link
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   
   -- Notes
@@ -225,7 +225,7 @@ CREATE TABLE IF NOT EXISTS public.order_items (
   product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
   variant_id UUID REFERENCES public.product_variants(id) ON DELETE SET NULL,
   
-  -- Item Details (snapshot at time of purchase)
+  -- Item Details
   product_name TEXT NOT NULL,
   variant_name TEXT,
   sku TEXT,
@@ -236,7 +236,7 @@ CREATE TABLE IF NOT EXISTS public.order_items (
   total_price DECIMAL(10,2) NOT NULL,
   
   -- Dropship Fulfillment
-  dropship_order_id TEXT, -- ID from supplier
+  dropship_order_id TEXT,
   dropship_status TEXT DEFAULT 'pending' CHECK (dropship_status IN ('pending', 'submitted', 'processing', 'shipped', 'delivered', 'cancelled')),
   
   -- Media snapshot
@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS public.memorial_messages (
   author_email TEXT,
   message TEXT NOT NULL,
   
-  is_approved BOOLEAN DEFAULT true, -- For moderation
+  is_approved BOOLEAN DEFAULT true,
   is_visible BOOLEAN DEFAULT true,
   
   created_at TIMESTAMPTZ DEFAULT NOW()
