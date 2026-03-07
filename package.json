@@ -26,6 +26,7 @@
     "@radix-ui/react-toast": "latest",
     "@stripe/react-stripe-js": "latest",
     "@stripe/stripe-js": "latest",
+    "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.39.0",
     "antd": "5.27.3",
     "class-variance-authority": "^0.7.1",
