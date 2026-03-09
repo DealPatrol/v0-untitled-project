@@ -22,7 +22,7 @@ const steps = [
   { id: 6, title: "Review & Submit", icon: CheckCircle },
 ]
 
-export default function CreateMemorialPage() {
+export default function SubmitMemorialPage() {
   const router = useRouter()
   const { toast } = useToast()
 
