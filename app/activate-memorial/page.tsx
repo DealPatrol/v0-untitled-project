@@ -22,7 +22,7 @@ export default function ActivateMemorialPage() {
 
   useEffect(() => {
     if (!memorialId) {
-      router.push('/create-memorial')
+      router.push('/submit')
       return
     }
 
