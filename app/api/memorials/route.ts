@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { cookies } from "next/headers"
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // Extract form data
     const firstName = formData.get("firstName") as string
