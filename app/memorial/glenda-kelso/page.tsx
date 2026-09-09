@@ -67,6 +67,7 @@ export default function GlendaMemorial() {
     { name: "Lynn Kelso", relation: "Husband", dates: "Married 57 years" },
     { name: "Eddie Kelso", relation: "Son", dates: "" },
     { name: "Penny Collins", relation: "Daughter", dates: "" },
+    { name: "Caroline (Caro)", relation: "Daughter-in-Love", dates: "" },
     { name: "Cole Collins", relation: "Grandson", dates: "" },
     { name: "Kristin Kelso", relation: "Granddaughter", dates: "" },
     { name: "Gracie Dean", relation: "Granddaughter", dates: "" },
@@ -75,6 +76,13 @@ export default function GlendaMemorial() {
     { name: "Addalynn Rassman", relation: "Granddaughter", dates: "" },
     { name: "Wrenley Hunter", relation: "Granddaughter", dates: "" },
     { name: "Ridge Thompson", relation: "Grandson", dates: "" },
+    { name: "Savannah (Bo) Pitts", relation: "Child of Her Heart", dates: "" },
+    { name: "Bama Thompson", relation: "Child of Her Heart", dates: "" },
+    { name: "Taylor (Kelly) Hunter", relation: "Child of Her Heart", dates: "" },
+    { name: "Jordan Thompson", relation: "Child of Her Heart", dates: "" },
+    { name: "Colton", relation: "God-Sent Angel", dates: "" },
+    { name: "Anzlie", relation: "God-Sent Angel", dates: "" },
+    { name: "Remi", relation: "God-Sent Angel", dates: "" },
   ]
 
   const handleSignIn = (name: string) => {
@@ -272,74 +280,94 @@ export default function GlendaMemorial() {
           </TabsList>
 
           <TabsContent value="about">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">About Glenda Jane Kelso</CardTitle>
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-slate-50">
+              <CardHeader className="border-b border-slate-200 pb-8">
+                <CardTitle className="text-4xl font-serif text-slate-900 mb-4">
+                  The Woman, The Legend, The Chocolate Gravy Maker
+                </CardTitle>
+                <p className="text-xl text-slate-600 font-light italic">
+                  A Life Lived Fully, Loved Fiercely, and Remembered Forever
+                </p>
               </CardHeader>
-              <CardContent className="prose max-w-none">
-                <p className="text-lg leading-relaxed mb-6">
-                  A life so beautifully lived deserves to be beautifully remembered. Today, we gather not only in sorrow
-                  but in profound gratitude for the extraordinary woman we were blessed to know—Glenda Jane Kelso.
-                </p>
+              <CardContent className="prose prose-lg max-w-none pt-8">
+                <div className="space-y-6 text-slate-700 leading-relaxed">
+                  <p className="text-lg first-letter:text-2xl first-letter:font-serif">
+                    Glenda Jane Kelso lived life on her own terms. For 57 years, she was the anchor for her husband, Lynn, 
+                    and a mother to anyone who needed one. She didn&apos;t just &apos;house&apos; people; she took them in and made 
+                    them her own.
+                  </p>
 
-                <p className="text-lg leading-relaxed mb-6">
-                  Glenda was the heart of her home and a force of nature in the lives of all who knew her. She left this
-                  world as she lived in it: on her own terms, with a quick wit, and likely planning a joke we have yet
-                  to discover. For 57 years, she was the devoted and loving partner to her husband, Lynn. She was a
-                  selfless homemaker who dedicated her life to her children, Eddie and Penny, and to countless others
-                  she welcomed into her heart and home as her own.
-                </p>
+                  <p>
+                    She was known for three things: her legendary chocolate gravy, her razor-sharp wit, and her habit of 
+                    listening to the police scanner. She was a woman who would dress up for Halloween just to see a child smile, 
+                    but she was also tough as nails and never afraid to stand up for her family when the world said &apos;no.&apos;
+                  </p>
 
-                <p className="text-lg leading-relaxed mb-6">
-                  To know Glenda was to be loved fiercely, laugh loudly, and feel truly spoiled. She was a woman of
-                  beautiful contrasts: patient and kind, yet tough as nails. Her fanatic sense of humor was a light that
-                  could cut through the hardest days, and her legendary chocolate gravy was a taste of her deep, abiding
-                  love. She never let anyone forget who was really in charge, but she also never wavered in her loyalty,
-                  sticking by her family even when the world said no.
-                </p>
+                  <p>
+                    To know Glenda was to be loved fiercely and completely. She was a woman of beautiful contrasts—patient yet 
+                    firm, kind yet sharp-tongued, a homemaker who could also command a room. Her laughter was infectious, her 
+                    loyalty unwavering, and her love for family was the foundation upon which everything in her life was built.
+                  </p>
 
-                <p className="text-lg leading-relaxed mb-6">
-                  Glenda found pure joy in the magic of the ordinary, especially when it brought smiles to the faces of
-                  children. She delighted in dressing up for holidays, with Halloween holding a special place in her
-                  heart, creating moments of wonder that will be cherished forever. Her happiness was found in the
-                  noisy, loving chaos of being surrounded by family, though the steady chatter of the police scanner was
-                  a close second.
-                </p>
+                  <p>
+                    She found pure joy in the ordinary moments—especially those that brought smiles to the faces of children. 
+                    Her holiday traditions, particularly her beloved Halloween celebrations, created memories that will last 
+                    generations. She was as comfortable listening to the police scanner for hours as she was commanding respect 
+                    at the family dinner table.
+                  </p>
 
-                <p className="text-lg leading-relaxed mb-6">
-                  She was a curator of joy, a teller of hard truths, and the unwavering glue that held her family
-                  together through good times and bad. Glenda's love was a vibrant tapestry woven with threads of
-                  laughter, music, fierce protection, and an occasional, loving dose of stubbornness.
-                </p>
+                  <p>
+                    Glenda was the glue that held her family together through the good times and the impossible ones. She never 
+                    wavered in her commitment to those she loved, and she made certain everyone around her knew they were cherished 
+                    beyond measure.
+                  </p>
 
-                <p className="text-lg leading-relaxed mb-6">
-                  We are certain that her reunion in Heaven with her beloved mother, Desmer, is filled with laughter and
-                  a heavenly plan to keep a loving, watchful eye on us all.
-                </p>
+                  <p>
+                    Her greatest creation was not just a recipe—though her chocolate gravy was legendary—but the legacy of love, 
+                    laughter, and loyalty she left behind. She planned her own funeral for years, down to the last joke, and we 
+                    know she&apos;s in Heaven right now, probably keeping check on us and making sure we aren&apos;t being too quiet.
+                  </p>
 
-                <p className="text-lg leading-relaxed mb-6">
-                  Glenda's incredible legacy lives on in her husband, Lynn; her children, Eddie Kelso and Penny Collins;
-                  her cherished grandchildren, Cole Collins, Kristin Kelso, Gracie Dean, Braxton Phillips, Weston Green,
-                  Addalynn Rassman, Wrenley Hunter, and Ridge Thompson; her beautiful French daughter-in-love, Caroline;
-                  her god-sent angels, Colton, Anzlie, and Remi; her children of the heart, Savannah (Bo) Pitts, Bama
-                  Thompson, Taylor (Kelly) Hunter, and Jordan Thompson; and her special friends.
-                </p>
+                  <div className="bg-slate-50 border-l-4 border-purple-600 p-6 my-8 rounded">
+                    <h3 className="font-serif text-xl text-slate-900 mb-4">Her Beloved Family</h3>
+                    <div className="space-y-3 text-slate-800">
+                      <p>
+                        <strong>Husband:</strong> Lynn Kelso (57 years of marriage)
+                      </p>
+                      <p>
+                        <strong>Children:</strong> Eddie Kelso, Penny Collins
+                      </p>
+                      <p>
+                        <strong>Children of Her Heart:</strong> Savannah (Bo) Pitts, Bama Thompson, Taylor (Kelly) Hunter, Jordan Thompson
+                      </p>
+                      <p>
+                        <strong>Grandchildren:</strong> Cole Collins, Kristin Kelso, Gracie Dean, Braxton Phillips, Weston Green, Addalynn Rassman, Wrenley Hunter, Ridge Thompson
+                      </p>
+                      <p>
+                        <strong>Daughter-in-Love:</strong> Caroline (Caro)
+                      </p>
+                      <p>
+                        <strong>God-Sent Angels:</strong> Colton, Anzlie, Remi
+                      </p>
+                      <p>
+                        <strong>Special Friends:</strong> Eric Wells, Shana Melton
+                      </p>
+                      <p className="text-slate-700 italic pt-2 border-t border-slate-200 mt-3">
+                        Preceded in death by her mother, Desmer McAnnally
+                      </p>
+                    </div>
+                  </div>
 
-                <p className="text-lg leading-relaxed mb-6">
-                  We are fortunate, blessed, and endlessly grateful to have been loved by her. Though our hearts are
-                  broken and we will miss her beyond measure, we find comfort in knowing that her spirit—her laughter,
-                  her love, and her legendary chocolate gravy—will forever be a part of us.
-                </p>
+                  <p className="text-base text-slate-600 italic">
+                    The family extends their deepest gratitude to the compassionate staff at Cullman Regional Medical Center, 
+                    Folsom Center Nursing Home, Cullman Dialysis Clinic, and Southern Care Hospice for the dignity, kindness, 
+                    and peace they provided during her final days.
+                  </p>
 
-                <p className="text-lg leading-relaxed mb-6">
-                  Rest easy, dear Glenda. Your work here was a masterpiece.
-                </p>
-
-                <p className="text-lg leading-relaxed italic">
-                  The family extends their deepest gratitude to the compassionate staff at Cullman Regional Medical
-                  Center, Folsom Center Nursing Home, Cullman Dialysis Clinic, and Southern Care Hospice for the
-                  dignity, kindness, and peace they provided in her final days.
-                </p>
+                  <p className="text-center text-2xl font-serif text-purple-700 mt-8 pt-6 border-t border-slate-200">
+                    Rest easy, dear Glenda. Your work here was a masterpiece.
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

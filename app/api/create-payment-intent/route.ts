@@ -2,6 +2,10 @@ import { type NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import { z } from "zod"
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-06-20",
+})
+
 const createPaymentIntentSchema = z.object({
   amount: z.number().min(1),
   currency: z.string().default("usd"),
@@ -21,19 +25,6 @@ const createPaymentIntentSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Validate Stripe configuration at runtime
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error("STRIPE_SECRET_KEY is not configured")
-      return NextResponse.json(
-        { error: "Payment processing is not configured. Please contact support." },
-        { status: 503 },
-      )
-    }
-
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2024-06-20",
-    })
-
     const body = await request.json()
     const { amount, currency, customerInfo } = createPaymentIntentSchema.parse(body)
 
